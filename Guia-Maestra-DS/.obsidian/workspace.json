@@ -1,0 +1,207 @@
+{
+  "main": {
+    "id": "4858065e73902725",
+    "type": "split",
+    "children": [
+      {
+        "id": "cf85730ab7074a23",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f7d942e645f5569f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "19-NLP-y-LLMs.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "19-NLP-y-LLMs"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "8e6a4f5d7fdeccdf",
+    "type": "split",
+    "children": [
+      {
+        "id": "563f0d5a51c312d9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2348d44a2af2b5da",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorador de archivos"
+            }
+          },
+          {
+            "id": "d6910adfa946c4ff",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Buscar"
+            }
+          },
+          {
+            "id": "ca5c9c5b997c05ea",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Marcadores"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "126e3c9beb9780c0",
+    "type": "split",
+    "children": [
+      {
+        "id": "c1947efaff4c7d2a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7664e8a8c8c586ce",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Enlaces entrantes"
+            }
+          },
+          {
+            "id": "56bfe18ea6fbca25",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Enlaces salientes"
+            }
+          },
+          {
+            "id": "ffc86b2283d86b20",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Etiquetas"
+            }
+          },
+          {
+            "id": "9297cff60a11bbfc",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Todas las propiedades"
+            }
+          },
+          {
+            "id": "2cc1bf498187a04c",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Esquema"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Abrir selector rápido": false,
+      "graph:Abrir vista gráfica": false,
+      "canvas:Crear nuevo lienzo": false,
+      "daily-notes:Abrir la nota de hoy": false,
+      "templates:Insertar plantilla": false,
+      "command-palette:Abrir paleta de comandos": false,
+      "bases:Crear nueva base": false
+    }
+  },
+  "active": "f7d942e645f5569f",
+  "lastOpenFiles": [
+    "17-Series-de-Tiempo.md",
+    "02-Fundamentos-Matematicos.md",
+    "03-Preparacion-de-Datos.md",
+    "04-EDA.md",
+    "08-Metricas-de-Evaluacion.md",
+    "09-Reglas-de-Asociacion.md",
+    "10-Validacion-y-Leakage.md",
+    "11-Mejora-de-Modelos.md",
+    "12-Deep-Learning.md",
+    "21-Supervivencia-y-Bandits.md",
+    "20-Sistemas-de-Recomendacion.md",
+    "19-NLP-y-LLMs.md",
+    "18-Causalidad-y-Uplift.md",
+    "06-Clustering.md",
+    "05-Escalado-de-Datos.md",
+    "00-MOC-Guia-Maestra.md",
+    "01-Introduccion-Ejecutiva.md",
+    "14-Anexo-Interpretar-Resultados.md",
+    "13-MLOps-XAI-Etica.md",
+    "07-Modelos-Supervisados.md",
+    "15-Glosario-Ejecutivo.md"
+  ]
+}
