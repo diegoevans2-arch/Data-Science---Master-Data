@@ -3,7 +3,8 @@ title: "Tomo 03 — Preparación y Calidad de Datos"
 tags: [data-science, machine-learning, data-quality, preprocessing, feature-engineering]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 03
-version: 6.0
+version: 6.1
+updated: 2026-07-29
 ---
 
 # 🧹 Tomo 03 — Preparación y Calidad de Datos
@@ -440,6 +441,8 @@ Audiencia: 🔧
 **👔 En una frase para el negocio:** compresión "a medida" aprendida de tus propios datos — máxima potencia, al precio de entrenar y mantener una red.
 
 ### Comparación directa: t-SNE vs UMAP
+
+Audiencia: 🔧 🧭
 
 | Aspecto | t-SNE | UMAP |
 |---|---|---|

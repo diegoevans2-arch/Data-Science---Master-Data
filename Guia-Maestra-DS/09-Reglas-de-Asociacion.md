@@ -3,7 +3,8 @@ title: "Tomo 09 — Reglas de Asociación"
 tags: [data-science, machine-learning, association-rules, market-basket]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 09
-version: 6.0
+version: 6.1
+updated: 2026-07-29
 ---
 
 # 🛒 Tomo 09 — Reglas de Asociación
@@ -75,6 +76,8 @@ Audiencia: 🔧 🧭
 
 ### Apriori
 
+Audiencia: 🔧 🧭
+
 > [!tip] 💡 Analogía
 > Revisar ingredientes de cocina nivel por nivel: primero qué ingredientes solos son populares, luego qué **parejas**, luego qué tríos… con un atajo brillante: si "aceitunas" solas ya son impopulares, ninguna combinación con aceitunas puede ser popular — ni te molestas en revisarlas.
 
@@ -84,6 +87,8 @@ Audiencia: 🔧 🧭
 
 ### FP-Growth
 
+Audiencia: 🔧 🧭
+
 > [!tip] 💡 Analogía
 > En vez de releer todas las boletas una y otra vez, arma un **mapa mental comprimido** de todas las compras (el FP-Tree) en solo dos lecturas, y después explora ese mapa en memoria. Como resumir un libro en un esquema y estudiar del esquema.
 
@@ -92,6 +97,8 @@ Audiencia: 🔧 🧭
 **🧭 Dataset ideal y caso de uso:** datasets grandes (millones de boletas, clickstream de e-commerce); el default de producción.
 
 ### Eclat
+
+Audiencia: 🔧 🧭
 
 > [!tip] 💡 Analogía
 > Gira la pregunta: en lugar de "¿qué compró cada persona?", pregunta "¿**quiénes** compraron cada producto?" y busca intersecciones de listas de compradores. Dos productos van juntos si sus listas de clientes se traslapan mucho.

@@ -3,7 +3,8 @@ title: "Tomo 12 — Deep Learning: de los Fundamentos a las Arquitecturas Modern
 tags: [data-science, machine-learning, deep-learning, redes-neuronales, transformers]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 12
-version: 6.0
+version: 6.1
+updated: 2026-07-27
 ---
 
 # 🧠 Tomo 12 — Deep Learning: de los Fundamentos a las Arquitecturas Modernas
@@ -167,6 +168,9 @@ Audiencia: 🔧 🧭
 
 **🧭 Cuándo usarlas:** series de tiempo de tamaño moderado, sensores, secuencias donde un Transformer es sobredimensionado. En NLP, los Transformers las desplazaron. **👔 En una frase:** la memoria artificial para datos que llegan en orden — útil aún donde lo gigante no se justifica.
 
+> [!info] 📌 Nota de vigencia — State Space Models (Mamba)
+> Desde 2023 resurgió, con otro nombre y otras matemáticas, la idea de "un estado que se propaga en el tiempo": los **State Space Models (SSM) selectivos**, popularizados por **Mamba** (Gu & Dao, 2023). A diferencia de la RNN clásica, el SSM se formula como una ecuación de estado continua discretizada, y su versión "selectiva" hace que los parámetros de esa transición se calculen dinámicamente en función de cada entrada (no son fijos como en un SSM lineal simple). La ganancia frente al self-attention: complejidad **lineal** en la longitud de secuencia (`O(n)` en vez de `O(n²)`), lo que abarata drásticamente el manejo de contextos de cientos de miles o millones de tokens. En 2025–2026 el patrón que se ve en producción no es "Mamba puro" sino **arquitecturas híbridas**: intercalar aproximadamente 1 capa de self-attention cada 8–10 capas SSM, combinando la eficiencia lineal del SSM con la capacidad de recuperación exacta de la atención (patrón reportado en desarrollos de NVIDIA, Kimi y Tencent Hunyuan, entre otros). **Es una práctica emergente que vale la pena monitorear, no un reemplazo consolidado del Transformer** — la inmensa mayoría de los LLMs de referencia en 2026 siguen siendo Transformer puro o híbridos con atención dominante.
+
 ### 6.3 Transformers y el Mecanismo de Atención
 
 Audiencia: 🔧 🧭 👔
@@ -191,10 +195,24 @@ Audiencia: 🔧 🧭 👔
 
 **🧭 Cuándo usarlo:** todo NLP moderno, visión (ViT), audio, multimodal, biología — vía modelos pre-entrenados de Hugging Face; entrenar uno desde cero es territorio de laboratorios. **👔 En una frase:** la arquitectura que convirtió el lenguaje en un problema resuelto a nivel comercial — y el motor de los LLMs que hoy redefinen procesos completos.
 
-### 6.4 Autoencoders, VAE, GAN y GNN
+### 6.4 Mixture of Experts (MoE)
+
+Audiencia: 🔧 🧭 👔
+
+> [!tip] 💡 Analogía
+> Un hospital gigante con cientos de especialistas contratados (los expertos) y una enfermera de triage en la puerta (el router): cada paciente que entra (cada token) no ve a todos los médicos — la enfermera lo deriva solo a los 2 o 3 especialistas relevantes para su caso. El hospital como institución "sabe" muchísimo (parámetros totales altísimos), pero cada consulta individual solo activa una fracción minúscula de ese conocimiento (parámetros activos bajos) — por eso es rápido y barato de operar pese a ser enorme.
+
+**🔧 Definición técnica:** un bloque MoE reemplaza la capa feed-forward densa del Transformer (sección 6.3) por N subredes feed-forward independientes ("expertos") más un **router** — típicamente una capa lineal + softmax — que, para cada token, selecciona los **top-k** expertos (k=2 es el valor más común) y combina sus salidas ponderadas por el score del router; el resto de expertos ni siquiera se computa para ese token. La distinción que importa en la práctica: **parámetros totales** (la suma de todos los expertos, lo que define cuánto "sabe" el modelo y cuánta memoria/VRAM ocupa) vs. **parámetros activos** (los que realmente se usan por token, lo que define el costo de cómputo de la inferencia) — un modelo puede tener cientos de miles de millones de parámetros totales activando solo una fracción de ellos por token. Entrenar un MoE exige una **pérdida auxiliar de balanceo de carga** para evitar que el router colapse enrutando casi todo hacia un puñado de expertos favoritos, dejando al resto sin entrenar. (Jiang et al., 2024) documenta el caso de referencia: Mixtral 8x7B, con 8 expertos y routing top-2, iguala o supera a LLaMA-2-70B siendo notablemente más rápido en inferencia al activar solo una fracción de sus parámetros totales por token. Es, con variantes de grano cada vez más fino (más expertos, más pequeños, algunos "compartidos" siempre activos), la arquitectura detrás de la mayoría de los LLMs open-weight de referencia de 2025-2026 (DeepSeek-V3/R1, Mixtral y sucesores).
+
+**🧭 Cuándo usarlo:** cuando la meta es escalar la capacidad de un modelo (más conocimiento almacenado) sin escalar proporcionalmente el costo de cómputo por inferencia; el trade-off es una arquitectura de entrenamiento más compleja (balanceo de carga, comunicación de tokens entre GPUs/nodos) y una huella de memoria alta (todos los expertos deben estar cargados aunque no todos se activen). Frente a un modelo denso del mismo tamaño en parámetros activos, un MoE bien entrenado casi siempre gana en calidad; frente a un denso del mismo tamaño en parámetros totales, el MoE gana en velocidad y costo de inferencia.
+
+**👔 En una frase para el negocio:** más "cerebro" almacenado sin pagar todo el costo de cómputo en cada consulta — la arquitectura que hizo que modelos de clase frontera tuvieran facturas de inferencia razonables.
+
+### 6.5 Diffusion Models, Autoencoders, VAE, GAN y GNN
 
 Audiencia: 🔧 🧭
 
+- **Diffusion Model:** (Ho, Jain & Abbeel, 2020) el modelo aprende a revertir un **forward process** que destruye progresivamente una imagen agregando ruido gaussiano paso a paso hasta dejarla en ruido puro; una red (típicamente una U-Net, o un Transformer en versiones recientes) aprende el **reverse process**: predecir y remover ese ruido paso a paso hasta reconstruir, partiendo de ruido puro, una imagen nueva y coherente. **Latent diffusion** (Rombach et al., 2022 — la base técnica de Stable Diffusion) aplica ese mismo proceso no sobre los píxeles sino sobre el espacio latente comprimido de un autoencoder (el mismo concepto de la primera viñeta de esta lista), lo que reduce drásticamente el costo de entrenar y de generar. Desde 2022 desplazó a las GAN como estándar de generación de imagen y video (Stable Diffusion, DALL-E 3, Midjourney, generadores de video). Entrenamiento más estable que el de una GAN, pero la generación es iterativa (decenas a cientos de pasos de denoising), por lo que la inferencia es más lenta. 💡 *Un escultor que parte de un bloque de ruido puro y, paso a paso, quita lo que sobra hasta que aparece la figura — exactamente al revés de cómo se "ensucia" una foto agregándole ruido.*
 - **Autoencoder:** encoder comprime → cuello de botella (latent space) → decoder reconstruye; aprende la esencia de los datos. Usos: reducción de dimensionalidad no lineal ([[03-Preparacion-de-Datos]]), denoising, detección de anomalías por error de reconstrucción ([[07-Modelos-Supervisados]]). 💡 *Resumir el capítulo en una ficha y re-explicarlo desde la ficha.*
 - **VAE (Variational Autoencoder):** (Kingma & Welling, 2014) el espacio latente se vuelve una **distribución** continua (μ, σ + reparameterization trick) → se puede muestrear y generar datos nuevos coherentes. 💡 *En vez de una ficha exacta, guardas "la receta con tolerancias" — y puedes cocinar variaciones.*
 - **GAN (Generative Adversarial Network):** (Goodfellow et al., 2014) dos redes en duelo: el **generador** falsifica, el **discriminador** detecta falsificaciones; compitiendo, ambos mejoran hasta que las falsificaciones son indistinguibles. Usos: imágenes sintéticas, super-resolución, data augmentation. Entrenamiento notoriamente inestable (mode collapse). 💡 *El falsificador y el perito: la carrera armamentista que perfecciona al falsificador.*
@@ -249,6 +267,7 @@ Audiencia: 🔧 🧭
 - (Hochreiter & Schmidhuber, 1997) — LSTM. · (LeCun et al., 1998) — LeNet. · (He et al., 2016) — ResNet. · (Dosovitskiy et al., 2021) — ViT.
 - (Kingma & Ba, 2015) — Adam. · (Ioffe & Szegedy, 2015) — BatchNorm. · (Srivastava et al., 2014) — Dropout.
 - (Goodfellow et al., 2014) — GAN. · (Kingma & Welling, 2014) — VAE. · (Hu et al., 2021) — LoRA.
+- (Jiang et al., 2024) — Mixtral: Mixture of Experts. · (Gu & Dao, 2023) — Mamba: State Space Models. · (Ho et al., 2020) — DDPM: diffusion models. · (Rombach et al., 2022) — Latent diffusion: base de Stable Diffusion.
 
 Fichas completas con datos de publicación en [[16-Bibliografia]].
 

@@ -3,7 +3,7 @@ title: "Tomo 04 — Semantic search, embeddings y hybrid search"
 tags: [rag, semantic-search, embeddings, vector-space, cosine-similarity, contrastive-training, hybrid-search, rrf, dense-retrieval]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 04
-version: 1.1
+version: 1.3
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -615,6 +615,19 @@ Verificado sobre dos rankings de ejemplo — fíjate cómo **el ganador cambia s
 
 `docA` era **1º en keyword y 3º en semantic**; `docC` era **3º en keyword y 1º en semantic**. Con `beta` bajo gana `docA`; al cruzar `beta = 0.5`, gana `docC`. **La misma query, el mismo corpus, distinta respuesta** — según una sola perilla.
 
+> [!warning] ⚠️ En el código real esta perilla se llama `alpha`, no `beta`
+> El curso usa **`beta`** al explicar la teoría en este módulo, pero cuando llegues a implementarlo en una vector database el parámetro se llama **`alpha`** — así se llama en Weaviate y es el nombre de facto en la industria. **Significan exactamente lo mismo:** el peso del lado semántico.
+>
+> ```
+>   beta (teoría del curso)  ≡  alpha (Weaviate y la mayoría de las vector DBs)
+>
+>   alpha = 1.0  →  semantic puro
+>   alpha = 0.5  →  mitad y mitad
+>   alpha = 0.0  →  keyword puro
+> ```
+>
+> Ojo con la dirección al leer documentación ajena: **algunas implementaciones invierten el sentido** y usan el parámetro como peso del lado *keyword*. Verifica siempre con un caso extremo (`alpha=0` y `alpha=1`) qué lado se apaga antes de confiar en el valor. El uso concreto en Weaviate se desarrolla en [[Guia-Maestra-RAG_05-Vector-Databases-y-ANN|Tomo 05]].
+
 Nota también el comportamiento de los extremos: `docF` (solo en la lista semántica) y `docD` (solo en la keyword) **quedan al fondo en las configuraciones balanceadas**. RRF premia estructuralmente a los documentos que **ambas** técnicas consideran relevantes.
 
 > [!tip] 🧭 Cómo elegir `beta`
@@ -662,6 +675,15 @@ top_k = [doc for doc, _ in resultado[:5]]
 > - **`top_k`** → cuántos documentos van al LLM
 >
 > Ninguna se deduce: todas **se miden**. Y para medirlas necesitas métricas de retrieval, que es lo que viene en [[Guia-Maestra-RAG_09-Hallucinations-Evaluacion-y-Agentic-RAG|Tomo 09]].
+
+---
+
+> [!example] 📊 Caso de negocio — Seguros: el asistente que no encontraba la cláusula
+> **Problema:** una aseguradora despliega un asistente para que sus ejecutivos resuelvan consultas de cobertura sobre un corpus de pólizas y condicionados. Falla en las dos direcciones a la vez. El cliente llama y dice *"se me inundó el subterráneo por una rotura de matriz"*; la póliza dice *"daño por agua de origen no atmosférico"*. Cero palabras en común: **keyword search no encuentra nada**. Y al revés: cuando el ejecutivo busca la cláusula exacta `CL-1142`, la búsqueda semántica devuelve cláusulas *parecidas* — pero no esa.
+>
+> **Técnica aplicada:** hybrid search en vez de elegir un bando. Semantic search para el lenguaje del cliente (resuelve el *vocabulary mismatch* de la sección 1); keyword search para los códigos de cláusula, montos y nombres de producto, donde la coincidencia literal es irremplazable. Los dos rankings se fusionan con RRF. La perilla `beta` se calibra por tipo de consulta: **más peso a keyword (≈0.4)** porque el corpus está lleno de identificadores exactos que no admiten sinónimo. Y como el asistente sirve a varias líneas de negocio, se suman filtros de metadata por producto y vigencia — la restricción dura no se le pide al embedding, se le pide al filtro (la lección del caso Kyoto, sección 5.3).
+>
+> **Resultado:** la misma consulta funciona escrita como la dice el cliente **y** como la busca el especialista. Y el hallazgo que nadie esperaba: al medir con las queries reales del call center, el equipo descubrió que **una parte de los "no hay cobertura" históricos eran fallos de búsqueda, no de póliza** — la cláusula existía y nadie la había encontrado. La lección: **en un corpus con jerga propia y códigos, apostar todo a lo semántico falla exactamente en las consultas de mayor valor.**
 
 ---
 
@@ -736,7 +758,8 @@ Audiencia: 🔧 🧭 👔
 - **Consecuencia directa del truncation** → [[Guia-Maestra-RAG_06-Chunking|Tomo 06 · Chunking]] (cómo partir documentos que no caben)
 - Mejorar el ranking antes del corte `top_k` → [[Guia-Maestra-RAG_07-Reranking-Cross-Encoders-y-ColBERT|Tomo 07 · Reranking]]
 - **Medir el retriever** (precision@k, recall@k, MAP@K, MRR) → [[Guia-Maestra-RAG_09-Hallucinations-Evaluacion-y-Agentic-RAG|Tomo 09 · Evaluación]]
-- Técnicas avanzadas sobre esta base (HyDE, query transformation, GraphRAG) → [[Guia-Maestra-RAG_12-Tecnicas-Avanzadas-Hybrid-HyDE-GraphRAG|Tomo 12]]
+- **HyDE** (buscar con un documento hipotético en vez de con la pregunta) → [[Guia-Maestra-RAG_07-Reranking-Cross-Encoders-y-ColBERT|Tomo 07 · Query parsing y re-ranking]] (es contenido del curso, no complemento externo)
+- Técnicas avanzadas sobre esta base (query decomposition, multi-query, GraphRAG) → [[Guia-Maestra-RAG_12-Query-Decomposition-Multi-Query-y-GraphRAG|Tomo 12 · ⭐ Técnicas avanzadas de query]]
 - Índice general → [[Guia-Maestra-RAG_00-MOC-Guia-Maestra-RAG|🗺️ MOC de la Guía Maestra de RAG]]
 
 ---

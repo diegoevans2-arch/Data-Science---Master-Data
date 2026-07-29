@@ -35,12 +35,12 @@ Audiencia: 🔧 🧭 👔
 
 ### Sistema de etiquetado por audiencia
 
-| Etiqueta | Perfil | Qué contiene |
-|---|---|---|
-| 🔧 **[Técnico]** | Data Scientist / Data Engineer / ML Engineer | Definiciones formales, fórmulas, hiperparámetros, supuestos, implementación, limitaciones |
-| 🧭 **[Puente]** | Product Owner / Líder técnico / Analista | Traducción negocio↔técnica, cuándo usar qué, trade-offs de decisión |
-| 👔 **[Ejecutivo]** | Gerente / C-level / Stakeholder | Impacto en el negocio, decisiones que habilita, riesgos, costo de hacerlo mal |
-| 💡 **[Analogía]** | Todos | Explicación intuitiva con analogía cotidiana. Sin prerrequisitos |
+| Etiqueta           | Perfil                                       | Qué contiene                                                                              |
+| ------------------ | -------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 🔧 **[Técnico]**   | Data Scientist / Data Engineer / ML Engineer | Definiciones formales, fórmulas, hiperparámetros, supuestos, implementación, limitaciones |
+| 🧭 **[Puente]**    | Product Owner / Líder técnico / Analista     | Traducción negocio↔técnica, cuándo usar qué, trade-offs de decisión                       |
+| 👔 **[Ejecutivo]** | Gerente / C-level / Stakeholder              | Impacto en el negocio, decisiones que habilita, riesgos, costo de hacerlo mal             |
+| 💡 **[Analogía]**  | Todos                                        | Explicación intuitiva con analogía cotidiana. Sin prerrequisitos                          |
 
 Toda sección o concepto relevante abre con una línea del tipo `Audiencia: 🔧 🧭 👔` indicando a qué perfiles aplica.
 
@@ -170,29 +170,35 @@ El orden natural es el del ciclo de vida: [[02-Fundamentos-Matematicos]] → [[0
 | Tomo | Estado |
 |---|---|
 | 00 — MOC | ✅ Generado |
-| 01 — Introducción Ejecutiva | ✅ Generado |
+| 01 — Introducción Ejecutiva | ✅ Generado · 📚 bibliografía 6/6 verificada (2026-07-19) |
 | 02 — Fundamentos Matemáticos | ✅ Generado |
-| 03 — Preparación de Datos | ✅ Generado |
-| 04 — EDA | ✅ Generado |
-| 05 — Escalado de Datos | ✅ Generado |
-| 06 — Clustering | ✅ Generado |
-| 07 — Modelos Supervisados | ✅ Generado |
-| 08 — Métricas de Evaluación | ✅ Generado |
-| 09 — Reglas de Asociación | ✅ Generado |
-| 10 — Validación y Leakage | ✅ Generado |
-| 11 — Mejora de Modelos | ✅ Generado |
-| 12 — Deep Learning | ✅ Generado |
-| 13 — MLOps, XAI y Ética | ✅ Generado |
+| 03 — Preparación de Datos | ✅ Generado · 👥 +1 audiencia (v6.1, 2026-07-29) |
+| 04 — EDA | ✅ Generado · 👥 +7 audiencia (v6.1, 2026-07-29) |
+| 05 — Escalado de Datos | ✅ Generado · 🚫 2 bloques `python` → diagramas ASCII (v6.1, 2026-07-29) · 👥 +5 audiencia |
+| 06 — Clustering | ✅ Generado · 📚 bibliografía 4/4 verificada (2026-07-27) |
+| 07 — Modelos Supervisados | ✅ Generado · 📚 bibliografía 6/6 verificada (2026-07-27) |
+| 08 — Métricas de Evaluación | ✅ Generado · 📚 bibliografía 5/5 verificada (2026-07-27) |
+| 09 — Reglas de Asociación | ✅ Generado · 📚 bibliografía 3/3 verificada (2026-07-27) · 👥 +3 audiencia (v6.1, 2026-07-29) |
+| 10 — Validación y Leakage | ✅ Generado · 📚 bibliografía 3/3 verificada (2026-07-27) · 👥 +3 audiencia (v6.2, 2026-07-29) |
+| 11 — Mejora de Modelos | ✅ Generado · 📚 bibliografía 5/5 verificada (2026-07-27) |
+| 12 — Deep Learning | ✅ Generado · 📚 bibliografía 15/15 verificada · 🔎 vanguardia v6.1 (2026-07-27): MoE, Diffusion Models, nota de Mamba/SSM |
+| 13 — MLOps, XAI y Ética | ✅ Generado · 📚 bibliografía 5/5 verificada · 🔎 vanguardia v6.2 (2026-07-27): EU AI Act/NIST/ISO 42001, model cards · 👥 +5 audiencia · ✅ dato del Digital Omnibus verificado y actualizado (v6.4, 2026-07-29) — ya es ley vigente (Reglamento UE 2026/1744) |
 | 14 — Anexo Interpretación | ✅ Generado |
 | 15 — Glosario Ejecutivo | ✅ Generado |
-| 16 — Bibliografía | ✅ Generado |
-| 17 — Series de Tiempo | ✅ Generado · 🔎 revisado v6.1 (2026-07-19) |
-| 18 — Causalidad y Uplift | ✅ Generado · 🔎 revisado v6.1 (2026-07-19) |
-| 19 — NLP y LLMs | ✅ Generado |
-| 20 — Sistemas de Recomendación | ✅ Generado |
-| 21 — Supervivencia y Bandits | ✅ Generado |
+| 16 — Bibliografía | ✅ Generado · 👥 +1 audiencia (v6.5, 2026-07-29) |
+| 17 — Series de Tiempo | ✅ Generado · 🔎 revisado v6.1 (2026-07-19) · 📚 bibliografía 7/7 verificada (2026-07-27) |
+| 18 — Causalidad y Uplift | ✅ Generado · 🔎 revisado v6.1 (2026-07-19) · 📚 bibliografía 10/10 verificada (2026-07-27) |
+| 19 — NLP y LLMs | ✅ Generado · 🔎 revisado v6.1 (2026-07-19) · verificado vs. Guía RAG · 📚 bibliografía 15/15 verificada · 🔎 vanguardia v6.2 (2026-07-27): reasoning models, MCP/tool use, context rot, prompt caching |
+| 20 — Sistemas de Recomendación | ✅ Generado · 🔎 revisado v6.1 (2026-07-19) · 📚 bibliografía 8/8 verificada · 🔎 vanguardia v6.2 (2026-07-27): generative recommenders (HSTU, OneRec) |
+| 21 — Supervivencia y Bandits | ✅ Generado · 🔎 revisado v6.1 (2026-07-19) · 📚 bibliografía 8/8 verificada (2026-07-27) · 👥 +10 audiencia (v6.2, 2026-07-29) |
 
-**🏁 Guía completa: 22/22 notas generadas — núcleo 00–16 + extensión aplicada 17–21 (v6.0).**
+**🔎 Extensión aplicada (17–21) nivelada al núcleo (v6.1, 2026-07-19):** los cinco tomos pasaron de 10–13 KB a 19–30 KB, con secciones nuevas de profundidad (forecasting jerárquico y probabilístico, supuestos de identificación causal y robustez, arquitectura de recomendadores en dos etapas, competing risks, trampas de bandits en producción). El Tomo 19 (NLP/LLMs) además se **verificó contra la Guía Maestra de RAG** para coherencia de fórmulas y terminología.
+
+**👥 Etiquetado de audiencia normalizado (2026-07-29):** deuda #3 cerrada — 35 líneas `Audiencia:` agregadas vía auditoría por subagentes en los 8 tomos con huecos reales (arriba). Los otros 14 tomos ya cumplían la convención. Detalle en `Instrucciones-Guia-Maestra-DS.md` §3 y §12.
+
+**🏁 Guía completa: 22/22 notas generadas — núcleo 00–16 + extensión aplicada 17–21. Deuda técnica conocida: 0 ítems abiertos** (ver `Instrucciones-Guia-Maestra-DS.md` §12).
+
+**📚 Bibliografía: 121 fuentes verificadas (2026-07-27)** — 116 en el cuerpo bibliográfico (Secciones 1–12, 14–18) + 5 enlaces de documentación oficial. Deuda #4 cerrada; detalle en `Instrucciones-Guia-Maestra-DS.md` §5. **10 de las 116 se agregaron el mismo día en el primer escaneo de vanguardia** (§10 de Instrucciones) sobre los Tomos 12, 13, 19 y 20 — ver tabla de hallazgos ahí.
 
 ---
 

@@ -687,7 +687,8 @@ Audiencia: 🔧 🧭 👔
 - Cómo se parten los documentos antes de indexarlos → [[Guia-Maestra-RAG_06-Chunking|Tomo 06 · Chunking]]
 - Mejorar el ranking antes del corte `top_k` → [[Guia-Maestra-RAG_07-Reranking-Cross-Encoders-y-ColBERT|Tomo 07 · Reranking]]
 - Medir si el retriever funciona → [[Guia-Maestra-RAG_09-Hallucinations-Evaluacion-y-Agentic-RAG|Tomo 09 · Evaluación]]
-- Hybrid search en profundidad (RRF, pesos) → [[Guia-Maestra-RAG_12-Tecnicas-Avanzadas-Hybrid-HyDE-GraphRAG|Tomo 12 · Técnicas avanzadas]]
+- **Hybrid search en profundidad (RRF, pesos)** → [[Guia-Maestra-RAG_04-Semantic-Search-y-Embeddings|Tomo 04 · Semantic search y embeddings]] §6 (el curso lo cubre ahí; este enlace apuntaba antes al Tomo 12, cuando se planificaba como complemento externo)
+- Expandir o reformular la query para atacar el vocabulary mismatch → [[Guia-Maestra-RAG_12-Query-Decomposition-Multi-Query-y-GraphRAG|Tomo 12 · ⭐ Técnicas avanzadas de query]]
 - Índice general → [[Guia-Maestra-RAG_00-MOC-Guia-Maestra-RAG|🗺️ MOC de la Guía Maestra de RAG]]
 
 ---

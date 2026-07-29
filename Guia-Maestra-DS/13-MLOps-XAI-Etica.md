@@ -3,8 +3,8 @@ title: "Tomo 13 — MLOps, XAI y Ética"
 tags: [data-science, machine-learning, mlops, xai, fairness, etica]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 13
-version: 6.1
-updated: 2026-07-19
+version: 6.4
+updated: 2026-07-29
 ---
 
 # 🏭 Tomo 13 — MLOps, XAI y Ética
@@ -37,6 +37,8 @@ Audiencia: 🔧 🧭 👔
 
 ### Métodos globales (explican el modelo completo)
 
+Audiencia: 🔧
+
 | Método | Mecanismo | Qué métrica genera / rango válido | Fortalezas | Cuidados |
 |---|---|---|---|---|
 | Feature Importance (MDI) | Reducción media de impureza por feature en los árboles | Importancias normalizadas 0–1 (suman 1) | Gratis en RF/boosting | Sesgada hacia alta cardinalidad y continuas ([[07-Modelos-Supervisados]]) |
@@ -46,6 +48,8 @@ Audiencia: 🔧 🧭 👔
 | SHAP | Valores de Shapley: reparto justo de `f(x) − E[f(x)]` entre features (Lundberg & Lee, 2017) | Contribución aditiva por feature y predicción | Propiedades formales: efficiency, symmetry, dummy, additivity; **TreeExplainer** lo hace tratable en árboles (O(TLD²)); summary plot (global) y dependence plot (interacciones) | Costoso fuera de árboles; explicar ≠ causalidad |
 
 ### Métodos locales (explican UNA predicción)
+
+Audiencia: 🔧 🧭
 
 - **LIME:** (Ribeiro et al., 2016) perturba la instancia, obtiene predicciones del modelo negro y ajusta un modelo lineal ponderado por cercanía — la explicación es ese modelo local. Rápido e intuitivo; inestable si el vecindario está mal definido.
 - **SHAP local / force plot:** los valores SHAP de una instancia muestran qué features empujaron su predicción sobre o bajo el valor base — el estándar para "¿por qué rechazaron MI crédito?".
@@ -73,6 +77,19 @@ Audiencia: 🔧 🧭
 | MLflow Tracking | `log_param()`, `log_metric()`, `log_artifact()` por experimento; UI para comparar corridas; Model Registry para versionar modelos |
 | Weights & Biases | Alternativa con UI superior: Sweeps (búsqueda distribuida de hiperparámetros), Reports compartibles, Artifacts versionados; integración nativa con PyTorch/Keras/HF |
 
+### Model cards y system cards: documentar el modelo para quien no lo construyó
+
+Audiencia: 🔧 🧭 👔
+
+> [!tip] 💡 Analogía
+> El prospecto de un medicamento no le explica al paciente la química de la molécula: le dice para qué sirve, qué dosis y qué contraindicaciones tiene. Una model card es el prospecto del modelo — no reemplaza el código ni los logs de MLflow, pero le dice a quien audita, a quien lo despliega en otro contexto o a quien lo hereda dentro de dos años, qué puede y qué no puede hacer con seguridad.
+
+**🔧 Definición técnica:** una model card (Mitchell et al., 2019) es un documento estructurado y corto que acompaña al modelo con uso previsto y usos fuera de alcance, datos y procedimiento de entrenamiento, métricas de evaluación desagregadas por subgrupo (conecta con la auditoría de fairness de la sección 4) y limitaciones conocidas. No es un artefacto de tracking técnico — eso ya lo cubren MLflow/W&B/DVC — sino de **comunicación**: dirigido a auditores, equipos legales y stakeholders no técnicos.
+
+**🧭 Cuándo usarlo:** en todo modelo que se comparta fuera del equipo que lo entrenó — publicado en un hub de modelos, entregado a otro equipo, o sujeto a auditoría regulatoria (sección 4.1). Es de facto el estándar en Hugging Face Hub pese a no ser un requisito técnico de la plataforma; los laboratorios de frontera publican la variante extendida ("system card") para sus modelos más grandes, cubriendo también riesgos de mal uso.
+
+**👔 En una frase para el negocio:** un modelo sin model card es una caja negra incluso para tu propio equipo dentro de un año — la documentación es la diferencia entre heredar un activo y heredar un misterio.
+
 ---
 
 ## 3. MLOps — de experimento a sistema
@@ -81,11 +98,15 @@ Audiencia: 🔧 🧭 👔
 
 ### 3.1 Pipelines de ML
 
+Audiencia: 🔧
+
 - **sklearn Pipeline:** `Pipeline([('scaler', StandardScaler()), ('model', RFC())])` — encadena preprocesamiento + modelo; `fit()` solo toca train; exportable como objeto único; la vacuna anti-leakage ([[05-Escalado-de-Datos]], [[10-Validacion-y-Leakage]]).
 - **ColumnTransformer:** transformaciones distintas por subconjunto de columnas (numéricas → StandardScaler; categóricas → OneHotEncoder) integradas al Pipeline.
 - **FunctionTransformer:** convierte cualquier función Python en un paso de Pipeline.
 
 ### 3.2 Serialización y serving
+
+Audiencia: 🔧
 
 | Herramienta | Qué hace | Nota clave |
 |---|---|---|
@@ -97,6 +118,8 @@ Audiencia: 🔧 🧭 👔
 | MLflow serve | `mlflow models serve` expone el modelo como API REST | Rápido de montar desde el registry |
 
 ### 3.3 Monitoreo de drift en producción
+
+Audiencia: 🔧 🧭 👔
 
 > [!tip] 💡 Analogía
 > El modelo es un mapa; el mundo, el territorio. **Data drift:** el territorio cambió de aspecto (llegan clientes distintos a los del mapa). **Concept drift:** cambiaron las reglas del territorio (los mismos clientes ahora se comportan distinto — pre y post pandemia). **Performance drift:** el GPS empieza a equivocarse y lo notas… si tienes contra qué comparar. Un mapa sin actualizaciones es una promesa de perderse.
@@ -146,6 +169,22 @@ Audiencia: 🔧 🧭 👔
 
 > [!danger] 🚨 Error costoso: "el algoritmo es neutro"
 > Ningún modelo entrenado con historia humana es neutro por defecto. Si decide sobre personas (crédito, contratación, salud, justicia), la auditoría de fairness por grupo protegido es parte del checklist de salida a producción — no un anexo voluntario (Barocas et al., 2019).
+
+### 4.1 Marco regulatorio: el EU AI Act y los estándares de gobernanza
+
+Audiencia: 🔧 🧭 👔
+
+> [!tip] 💡 Analogía
+> El EU AI Act funciona como el semáforo del tránsito de la IA: no todos los vehículos se regulan igual. Un chatbot que se identifica como tal circula casi libre; un sistema que decide sobre crédito, empleo, salud o justicia es como el camión de mercancía sensible — necesita permisos, inspecciones y un conductor certificado antes de salir a la calle; y algunos vehículos directamente no pueden circular (el scoring social gubernamental).
+
+**🔧 Definición técnica:** el Reglamento (UE) 2024/1689 ("EU AI Act") — la principal regulación de IA del mundo — clasifica los sistemas en cuatro niveles de riesgo: **inaceptable** (prohibido: scoring social gubernamental, manipulación subliminal, biometría remota en tiempo real en espacios públicos con excepciones acotadas), **alto** (permitido bajo obligaciones estrictas de gestión de riesgo, gobernanza de datos, documentación técnica, supervisión humana y evaluación de conformidad), **limitado** (obligaciones de transparencia: declarar que es un chatbot, etiquetar deepfakes) y **mínimo** (sin obligaciones). Los ejemplos que este tomo usa para ilustrar fairness — crédito, contratación, salud, justicia — caen precisamente en la categoría de **riesgo alto**. Las prohibiciones del nivel 1 están vigentes desde el 2-feb-2025; las obligaciones para modelos de propósito general (GPAI) rigen desde ago-2025.
+
+> [!info] 📌 Actualizado (29-jul-2026): el Digital Omnibus ya es ley vigente, no un acuerdo pendiente
+> El marco de 4 niveles de riesgo es consenso sólido y estable. Lo que en la redacción original de este tomo (jul-2026) era "noticia de semanas, a confirmar" ya se resolvió: el paquete **"Digital Omnibus on AI"** fue aprobado por el Parlamento Europeo (16-jun-2026, 423 votos a favor) y el Consejo de la UE (29-jun-2026), adoptado el 8-jul-2026 como **Reglamento (UE) 2026/1744**, publicado en el Diario Oficial de la UE (OJ L, 2026/1744) el 24-jul-2026 y **en vigor desde el 27-jul-2026**. Retrasa las obligaciones de alto riesgo del **Anexo III** (sistemas autónomos) de ago-2026 al **2-dic-2027**, y las del **Anexo I** (IA embebida en productos regulados por legislación de armonización de la UE) al **2-ago-2028**. Verificado vía búsqueda web contra eur-lex.europa.eu/eli/reg/2026/1744/oj/eng (fuente primaria).
+
+**🧭 Cuándo usarlo:** si tu modelo decide sobre personas en crédito, empleo, salud, educación o justicia y opera en la UE (o sirve a clientes que sí), la clasificación de riesgo determina qué documentación, auditoría de fairness y supervisión humana son exigibles por ley, no solo recomendables. Para la operación día a día, dos estándares voluntarios complementan la ley dura: el **NIST AI Risk Management Framework** — con su **Generative AI Profile** (jul-2024), que añade categorías de riesgo específicas de IA generativa (confabulación, sesgo y homogeneización, integridad de la información, entre otras) — y la **ISO/IEC 42001:2023**, el primer estándar internacional certificable de sistema de gestión de IA. Ninguno de los dos es ley; ambos son cada vez más exigidos en procesos de procurement de sectores regulados como capa operativa para demostrar cumplimiento del AI Act.
+
+**👔 En una frase para el negocio:** si tu sistema decide sobre crédito, empleo, salud o justicia, la pregunta ya no es "¿deberíamos auditar fairness?" sino "¿qué evidencia documentada exige el regulador?" — y esa exigencia ya tiene ley detrás en la UE.
 
 ---
 
@@ -198,6 +237,10 @@ Audiencia: 🔧 🧭
 - (Molnar, 2022) — *Interpretable Machine Learning* (libro abierto de referencia).
 - (Sculley et al., 2015) — deuda técnica oculta en sistemas de ML.
 - (Dwork et al., 2006) — privacidad diferencial. · (Barocas et al., 2019) — fairness y ML.
+- (Mitchell et al., 2019) — model cards para reporte de modelos.
+
+> [!info] 📌 Sobre el marco regulatorio citado en la sección 4.1
+> El Reglamento (UE) 2024/1689 (EU AI Act), el NIST AI Risk Management Framework y la ISO/IEC 42001:2023 son textos legales y estándares, no papers académicos, por lo que no llevan ficha en el Tomo 16 — igual convención que ya usa este tomo para GDPR en la sección 1.
 
 Fichas completas con datos de publicación en [[16-Bibliografia]].
 

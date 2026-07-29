@@ -3,7 +3,8 @@ title: "Tomo 05 — Escalado de Datos"
 tags: [data-science, machine-learning, scaling, preprocessing, transformaciones]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 05
-version: 6.0
+version: 6.1
+updated: 2026-07-29
 ---
 
 # ⚖️ Tomo 05 — Escalado de Datos
@@ -84,6 +85,8 @@ Audiencia: 🔧 🧭
 
 ### 2.1 ¿Cuándo usar transformación logarítmica?
 
+Audiencia: 🔧 🧭 👔
+
 **🔧 Definición técnica — tres señales de que toca log:**
 
 1. La distribución tiene fuerte **asimetría positiva** (cola larga a la derecha: ingresos, montos, conteos) ([[04-EDA]]).
@@ -95,6 +98,8 @@ Usar `log1p` (log(x+1)) para tolerar ceros; recordar revertir con `expm1` al rep
 **👔 En una frase para el negocio:** cuando los datos viven en porcentajes y múltiplos (como casi todo lo económico), el log los lleva al terreno donde los modelos lineales piensan bien.
 
 ### 2.2 Box-Cox: cómo se elige λ
+
+Audiencia: 🔧
 
 **🔧 Definición técnica:** `scipy.stats.boxcox()` estima automáticamente el λ que maximiza la log-likelihood de normalidad. Guía de lectura del λ resultante:
 
@@ -128,22 +133,23 @@ Audiencia: 🔧 🧭 👔
 
 ### 3.1 Fit solo en train — sin excepciones
 
+Audiencia: 🔧
+
 > [!danger] 🚨 Regla absoluta: `fit()` solo sobre entrenamiento
 > El `scaler.fit()` se ejecuta ÚNICAMENTE sobre datos de entrenamiento; luego `transform()` se aplica a train, validación y test por separado. Fitear con todo el dataset introduce **data leakage**: el modelo "conoce" la escala (min, max, μ, σ) de los datos de test antes de verlos ([[10-Validacion-y-Leakage]]).
 
-```python
-# ❌ INCORRECTO — leakage de escala
-scaler.fit(X)                        # aprendió μ y σ de TODO el dataset
-X_train, X_test = train_test_split(X)
+```
+ ❌ INCORRECTO — leakage de escala          ✅ CORRECTO — escala solo desde train
 
-# ✅ CORRECTO
-X_train, X_test = train_test_split(X)
-scaler.fit(X_train)                  # solo train define la escala
-X_train_s = scaler.transform(X_train)
-X_test_s  = scaler.transform(X_test) # test se transforma con reglas de train
+ 1. fit(TODO el dataset)                    1. split → train / test
+    (μ y σ ya "vieron" el test)             2. fit(train)      ← solo train define μ, σ
+ 2. split → train / test                    3. transform(train)
+    (train y test comparten escala)         4. transform(test) ← con la escala de train
 ```
 
 ### 3.2 Algoritmos que NO requieren escalado
+
+Audiencia: 🔧 🧭
 
 > [!info] 📌 Los inmunes a la escala
 > **Árboles de decisión, Random Forest, XGBoost, LightGBM, CatBoost, GBM clásico** — todo modelo basado en árboles es invariante a la escala (solo pregunta "¿mayor que el umbral?"). **Naive Bayes** tampoco lo requiere (trabaja con probabilidades por feature). En ellos, escalar no daña pero tampoco ayuda.
@@ -156,20 +162,17 @@ X_test_s  = scaler.transform(X_test) # test se transforma con reglas de train
 
 ### 3.3 Pipeline de sklearn: el cinturón de seguridad
 
+Audiencia: 🔧
+
 > [!warning] ⚠️ Regla crítica: el scaler vive dentro del Pipeline
 > `Pipeline([('scaler', StandardScaler()), ('model', LogisticRegression())])` garantiza que el scaler se fittee **solo con el fold de train en cada iteración** del cross-validation. Es la forma correcta de integrar preprocesamiento y modelo — y la única que sobrevive honesta a un `GridSearchCV` ([[10-Validacion-y-Leakage]], [[13-MLOps-XAI-Etica]]).
 
-```python
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import cross_val_score
+```
+ fold 1  [ train ][ train ][ test  ]  →  fit(scaler, train) → transform(train) → transform(test)
+ fold 2  [ train ][ test  ][ train ]  →  fit(scaler, train) → transform(train) → transform(test)
+ fold 3  [ test  ][ train ][ train ]  →  fit(scaler, train) → transform(train) → transform(test)
 
-pipe = Pipeline([
-    ('scaler', StandardScaler()),
-    ('model', LogisticRegression())
-])
-scores = cross_val_score(pipe, X, y, cv=5)  # cada fold re-fittea el scaler solo con su train
+ el scaler se re-fittea en CADA fold, solo con la porción de train de ESE fold
 ```
 
 ---

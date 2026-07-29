@@ -3,8 +3,8 @@ title: "Tomo 10 — Validación y Data Leakage"
 tags: [data-science, machine-learning, validacion, cross-validation, leakage]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 10
-version: 6.1
-updated: 2026-07-19
+version: 6.2
+updated: 2026-07-29
 ---
 
 # 🛡️ Tomo 10 — Validación y Data Leakage
@@ -88,6 +88,8 @@ Audiencia: 🔧 🧭 👔
 
 ### 3.1 Tipos de leakage
 
+Audiencia: 🔧 🧭
+
 | Tipo | Qué es | Ejemplo típico |
 |---|---|---|
 | Target leakage | Una feature contiene información del target o solo disponible DESPUÉS del evento | Predecir si el paciente tomará un medicamento usando "tomó medicamento 30 días después"; la feature `dias_hasta_proximo_control` del caso del [[04-EDA|Tomo 04]] |
@@ -98,12 +100,16 @@ Audiencia: 🔧 🧭 👔
 
 ### 3.2 Cómo detectarlo
 
+Audiencia: 🔧 🧭
+
 - **Métrica sospechosamente alta:** AUC > 0.98 en un problema real de negocio es casi siempre leakage — la perfección en datos reales es una bandera roja, no un triunfo.
 - **Importancia concentrada:** una sola feature explica casi todo ([[13-MLOps-XAI-Etica]]) → probable proxy del target.
 - **Correlación feature-target > 0.95** en el EDA ([[04-EDA]]).
 - **Gap CV vs producción:** la señal definitiva (y la más cara): brillante offline, mediocre online.
 
 ### 3.3 Cómo prevenirlo
+
+Audiencia: 🔧 🧭 👔
 
 - **Pipeline de sklearn para TODO el preprocesamiento:** cada fold re-ajusta imputers, scalers, encoders y selección solo con su train ([[05-Escalado-de-Datos]], [[03-Preparacion-de-Datos]]).
 - **Separación temporal por diseño:** en datos con tiempo, split cronológico + gap si hay autocorrelación.

@@ -3,7 +3,8 @@ title: "Tomo 04 — EDA: Análisis Exploratorio de Datos"
 tags: [data-science, machine-learning, eda, visualizacion, data-quality]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 04
-version: 6.0
+version: 6.1
+updated: 2026-07-29
 ---
 
 # 🔍 Tomo 04 — EDA: Análisis Exploratorio de Datos
@@ -159,17 +160,25 @@ Audiencia: 🔧 🧭 👔
 
 ### 3.1 Target de clasificación
 
+Audiencia: 🔧
+
 **🔧 Definición técnica:** `value_counts(normalize=True)` para el balanceo. Si la clase minoritaria < 10%, diseñar la estrategia de desbalance **desde el inicio** ([[03-Preparacion-de-Datos]]) y elegir métricas acordes — accuracy queda descartada de plano ([[08-Metricas-de-Evaluacion]]). Verificar también: ¿las clases significan lo mismo en todo el histórico? (cambios de definición de "churn" a mitad de período son más comunes de lo que se admite).
 
 ### 3.2 Target de regresión
+
+Audiencia: 🔧
 
 **🔧 Definición técnica:** histograma + estadísticos del target: rango, media vs mediana, outliers extremos. Si es muy asimétrico, considerar transformar con `log1p` (y **revertir con `expm1`** al reportar predicciones — las métricas en escala log no se comunican al negocio). Outliers del target merecen diagnóstico propio: ¿errores o los casos más valiosos? ([[03-Preparacion-de-Datos]]).
 
 ### 3.3 Relación features–target
 
+Audiencia: 🔧
+
 **🔧 Definición técnica:** para cada feature: scatter vs target (numérica) o boxplot por clase (categórica); mutual information con el target para capturar relaciones no lineales ([[03-Preparacion-de-Datos]]). Detectar features con **cero** relación (candidatas a salir) y features con relación **demasiado perfecta** (candidatas a leakage — ver abajo).
 
 ### 3.4 Detección temprana de leakage
+
+Audiencia: 🔧 👔
 
 **🔧 Definición técnica:** tres banderas rojas en el EDA: (1) feature con correlación r ≈ 1 (o mutual information desproporcionada) con el target; (2) nombres sospechosos — columnas que contienen "resultado", "final", "aprobado", "post_", o IDs/timestamps generados después del evento; (3) features con disponibilidad temporal dudosa: ¿este dato existía **en el momento de la predicción**? El catálogo completo de tipos de leakage y su prevención está en [[10-Validacion-y-Leakage]].
 
@@ -186,6 +195,8 @@ Audiencia: 🔧 🧭
 
 ### 4.1 Multicolinealidad y VIF
 
+Audiencia: 🔧 🧭 👔
+
 > [!tip] 💡 Analogía
 > Tres comentaristas deportivos que repiten exactamente lo mismo con distintas palabras: en el panel "hay tres voces", pero la información es una. El VIF mide cuánto de cada feature es repetición de las demás.
 
@@ -197,12 +208,16 @@ Audiencia: 🔧 🧭
 
 ### 4.2 Parallel coordinates
 
+Audiencia: 🔧
+
 > [!tip] 💡 Analogía
 > El electrocardiograma de cada fila: cada observación es una línea que atraviesa todos los ejes (features). Cuando las líneas de una clase siguen un ritmo distinto a las de otra, estás **viendo** separabilidad multidimensional a ojo desnudo.
 
 **🔧 Definición técnica:** cada eje vertical es una feature (escalada, [[05-Escalado-de-Datos]]); cada observación, una polilínea coloreada por clase o cluster. Útil para detectar patrones entre clases en alta dimensión y para perfilar clusters ya construidos ([[06-Clustering]]). Con muchas filas: muestrear o usar transparencia.
 
 ### 4.3 Análisis de grupos
+
+Audiencia: 🔧 🧭
 
 **🔧 Definición técnica:** si existe una hipótesis de segmentación (por región, por plan, por canal), comparar estadísticos y distribuciones entre los grupos potenciales — puede revelar que "un solo modelo para todos" es la decisión equivocada, o motivar un clustering formal previo ([[06-Clustering]]).
 
