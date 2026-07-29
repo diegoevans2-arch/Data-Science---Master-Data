@@ -85,28 +85,13 @@ En [`Retrieval Augment Generation - RAG/Guía Maestra/`](Retrieval%20Augment%20G
 
 > 🗺️ **Punto de entrada:** [`Guia-Maestra-RAG_00-MOC-Guia-Maestra-RAG.md`](Retrieval%20Augment%20Generation%20-%20RAG/Gu%C3%ADa%20Maestra/Guia-Maestra-RAG_00-MOC-Guia-Maestra-RAG.md)
 
-## 🔍 Qué significa "verificado" aquí
-
-No es una palabra decorativa. Es el trabajo que separa estas guías de un buen resumen:
-
-- **173 fuentes verificadas** (121 en DS, 52 en RAG) contra su **fuente primaria** —editorial, DOI, actas del congreso—, cada una con evidencia textual y URL. No basta el veredicto: hay que poder mostrar de dónde salió.
-- **Los errores encontrados se corrigieron y se documentaron**, incluido el mecanismo que los produjo. El más recurrente: confundir la fecha del *preprint*, la del *early access* y la de la publicación formal — un mismo trabajo tiene tres fechas legítimas y los gestores bibliográficos suelen elegir mal.
-- **En la guía de RAG, el código se ejecuta.** Eso encontró errores reales *en el material del curso*, no solo en la guía: pipelines que nunca demuestran lo que dicen demostrar, parámetros documentados al revés, filtros que se descartan solos. Todos verificados corriéndolos, y documentados en el tomo correspondiente.
-- **Lo no verificado se declara como tal.** Cuando una afirmación es reciente, discutida o se apoya en literatura gris, la guía lo dice en su propio texto en vez de enterrarlo.
-
 ## 🧭 Cómo usarlas
 
 - **En Obsidian (recomendado):** abre la carpeta raíz como *vault*. Ambas guías comparten espacio de nombres, así que los wikilinks cruzan de una a otra: el tomo de NLP y LLMs de DS enlaza con los de RAG, y viceversa.
 - **En cualquier lector Markdown / GitHub:** cada tomo es un `.md` autocontenido y legible por sí solo; los diagramas son ASCII y las fórmulas, notación inline —sin dependencias externas—.
 - **Por perfil:** cada índice maestro propone rutas de lectura para ejecutivos, perfiles puente y técnicos.
 
-## 📐 Convenciones
-
-- **Idioma:** español neutro profesional. Los **términos técnicos se mantienen en inglés** (`pipeline`, `overfitting`, `embedding`, `chunking`, `data leakage`, `reranking`…): así el vocabulario coincide con la documentación y las herramientas reales.
-- **Autocontenidas:** cada tomo se lee sin los anteriores; los prerrequisitos se **enlazan** con wikilinks, no se repiten.
-- **Verificables:** las afirmaciones se citan `(Autor, Año)` y se consolidan en el tomo de Bibliografía de cada guía.
-- **Casos de negocio reales, sin nombres propios:** cada sección grande aterriza en una industria concreta —retail, banca, salud, telco, manufactura, logística, farmacéutica— con el formato problema → técnica → resultado.
-- **Nombres de archivo sin colisión:** la guía de RAG prefija sus tomos con `Guia-Maestra-RAG_`; la de DS usa el prefijo numérico `NN-`. Es lo que permite que ambas convivan en un mismo vault de Obsidian.
+![Vault de Obsidian con ambas guías](Vaul_Obsidian.png)
 
 ## 🤖 Doble función: manual humano + base de conocimiento para IA
 
