@@ -3,8 +3,8 @@ title: "Tomo 18 — Causalidad y Uplift Modeling"
 tags: [data-science, machine-learning, causalidad, uplift, experimentacion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 18
-version: 6.1
-updated: 2026-07-19
+version: 6.2
+updated: 2026-07-29
 ---
 
 # 🎯 Tomo 18 — Causalidad y Uplift Modeling
@@ -138,6 +138,8 @@ El RCT es el gold standard, pero no es a prueba de balas. Estas son las grietas 
 > Si analizas "solo los que efectivamente usaron el producto", estás condicionando en un **collider** (la decisión de usar depende de variables no observadas) y reintroduces el sesgo que la aleatorización había eliminado. El análisis honesto por defecto es **intention-to-treat**: cada quien cuenta en el grupo al que fue asignado, cumpla o no. Suena contraintuitivo, pero es lo que preserva la validez causal.
 
 **🧭 Cuándo NO se puede experimentar:** ética (no le niegas un beneficio de salud a un grupo al azar), costo/riesgo (no subes precios al azar a la mitad de la cartera), historia (la política ya se aplicó a todos). Ahí entran los métodos observacionales.
+
+**👔 En una frase para el negocio:** la aleatorización es la forma más barata de comprar una verdad causal — pero solo si nadie hizo peeking, revisaste el SRM y analizaste por asignación (ITT); un experimento corrido a la ligera dice mentiras con la autoridad de un p-valor.
 
 ---
 

@@ -1,11 +1,6 @@
 ---
-title: "Tomo 04 — EDA: Análisis Exploratorio de Datos"
-tags: [data-science, machine-learning, eda, visualizacion, data-quality]
-audiencias: [tecnico, puente, ejecutivo]
-tomo: 04
-version: 6.1
-updated: 2026-07-29
----
+
+## title: "Tomo 04 — EDA: Análisis Exploratorio de Datos" tags: [data-science, machine-learning, eda, visualizacion, data-quality] audiencias: [tecnico, puente, ejecutivo] tomo: 04 version: 6.2 updated: 2026-08-27
 
 # 🔍 Tomo 04 — EDA: Análisis Exploratorio de Datos
 
@@ -13,24 +8,17 @@ updated: 2026-07-29
 
 ---
 
-> [!info] 📌 ¿Por qué importa el EDA?
-> El EDA es el paso que te dice "oye, tus datos están sesgados", "esta variable no sirve para nada" o "hay una relación oculta que ningún modelo va a encontrar sin tu ayuda". **Entrenar sin EDA es conducir con los ojos cerrados.** Es la auditoría previa que decide dónde invertir el esfuerzo de preparación ([[03-Preparacion-de-Datos]]) y la primera línea de defensa contra el data leakage ([[10-Validacion-y-Leakage]]). Y no es un paso único: se hace **antes** del preprocesamiento para guiar las decisiones y **después** para validar que las transformaciones hicieron lo esperado.
+> [!info] 📌 ¿Por qué importa el EDA? El EDA es el paso que te dice "oye, tus datos están sesgados", "esta variable no sirve para nada" o "hay una relación oculta que ningún modelo va a encontrar sin tu ayuda". **Entrenar sin EDA es conducir con los ojos cerrados.** Es la auditoría previa que decide dónde invertir el esfuerzo de preparación ([[03-Preparacion-de-Datos]]) y la primera línea de defensa contra el data leakage ([[10-Validacion-y-Leakage]]). Y no es un paso único: se hace **antes** del preprocesamiento para guiar las decisiones y **después** para validar que las transformaciones hicieron lo esperado.
 
-> [!abstract] 👔 Impacto ejecutivo
-> El EDA es la inspección técnica antes de comprometer recursos en entrenamiento: barato de hacer, carísimo de saltar.
->
+> [!abstract] 👔 Impacto ejecutivo El EDA es la inspección técnica antes de comprometer recursos en entrenamiento: barato de hacer, carísimo de saltar.
 > - **Decisiones que habilita:** aprobar (o frenar) el paso a modelado con evidencia, dimensionar el esfuerzo real de limpieza, detectar a tiempo sesgos y trampas que invalidarían todo lo posterior.
 > - **Costo de hacerlo mal:** semanas de modelado sobre datos con errores de unidades, leakage descubierto post-deployment, y "hallazgos" que eran artefactos de calidad de datos.
 > - **Pregunta ejecutiva que responde:** *¿estos datos son suficientemente sanos y honestos como para apostar un proyecto sobre ellos?*
 
-> [!tip] 💡 Analogía general: la inspección de la casa antes de comprarla
-> Nadie compra una casa solo por las fotos del anuncio. Contratas un inspector que revisa cimientos (calidad de datos), instalaciones (relaciones entre variables), humedades escondidas (nulos y outliers) y si la ampliación tiene permisos (leakage). El EDA es esa inspección: dos días de trabajo que te salvan de comprar una ruina remodelada con maquillaje.
+> [!tip] 💡 Analogía general: la inspección de la casa antes de comprarla Nadie compra una casa solo por las fotos del anuncio. Contratas un inspector que revisa cimientos (calidad de datos), instalaciones (relaciones entre variables), humedades escondidas (nulos y outliers) y si la ampliación tiene permisos (leakage). El EDA es esa inspección: dos días de trabajo que te salvan de comprar una ruina remodelada con maquillaje.
 
-> [!example] 📊 Caso de negocio — Salud: la auditoría que evitó el deployment de una trampa
-> **Problema:** un grupo hospitalario construye un modelo de reingreso a 30 días. El equipo, presionado por el calendario, salta directo al modelado y celebra un AUC de 0.97. Antes del deployment, se exige un EDA formal.
->
+> [!example] 📊 Caso de negocio — Salud: la auditoría que evitó el deployment de una trampa **Problema:** un grupo hospitalario construye un modelo de reingreso a 30 días. El equipo, presionado por el calendario, salta directo al modelado y celebra un AUC de 0.97. Antes del deployment, se exige un EDA formal.
 > **Técnica aplicada:** el EDA disciplinado encuentra cuatro problemas en dos días: (1) el histograma de glucosa es **bimodal** — dos hospitales del grupo registran en unidades distintas (mg/dL vs mmol/L); (2) el target tiene 8% de positivos y nadie había planificado el manejo del desbalance ([[03-Preparacion-de-Datos]]); (3) los nulos de presión arterial se concentran en pacientes de urgencias — missingness MNAR, no aleatoria; (4) la feature `dias_hasta_proximo_control` tiene mutual information altísima con el target… porque **solo se registra para pacientes que ya reingresaron**: leakage de manual ([[10-Validacion-y-Leakage]]).
->
 > **Resultado:** corregidas las unidades, eliminada la feature filtrada y tratado el desbalance, el AUC honesto es 0.79 — y ese sí se sostiene en producción. El hallazgo de unidades, de paso, corrige los reportes clínicos del grupo. Dos días de EDA evitaron un deployment tramposo y un escándalo clínico.
 
 **El EDA es de doble pasada:**
@@ -40,21 +28,21 @@ updated: 2026-07-29
               │ ¿qué hay? ¿qué falta? ¿qué está raro?        │
  Datos crudos ┤ ¿el target está sano? ¿hay señales de        ├──► decisiones de limpieza,
               │ leakage?                                     │    imputación y encoding
-              └──────────────────────────────────────────────┘    ([[03-Preparacion-de-Datos]])
-                                   │
-                                   ▼
-                    Preparación y transformaciones
-                                   │
-                                   ▼
+              └──────────────────────────────────────────────┘                               ([[03-Preparacion-de-Datos]])
+                                     │
+                                     ▼
+                      Preparación y transformaciones
+                                     │
+                                     ▼
               ┌────────────── EDA · 2ª pasada ───────────────┐
               │ ¿las transformaciones hicieron lo esperado?  │
               │ ¿la imputación deformó distribuciones?       ├──► dataset validado
               │ ¿apareció algo nuevo?                        │    → modelar
               └──────────────────────────────────────────────┘
+
 ```
 
-> [!warning] ⚠️ Los estadísticos mienten sin gráficos
-> El cuarteto de (Anscombe, 1973): cuatro datasets con la **misma** media, varianza, correlación y recta de regresión — y formas completamente distintas (una lineal, una curva, una con un outlier que fabrica la relación…). Moraleja permanente: `describe()` nunca reemplaza al gráfico.
+> [!warning] ⚠️ Los estadísticos mienten sin gráficos El cuarteto de (Anscombe, 1973): cuatro datasets con la **misma** media, varianza, correlación y recta de regresión — y formas completamente distintas (una lineal, una curva, una con un outlier que fabrica la relación…). Moraleja permanente: `describe()` nunca reemplaza al gráfico.
 
 ---
 
@@ -62,8 +50,7 @@ updated: 2026-07-29
 
 Audiencia: 🔧 🧭
 
-> [!tip] 💡 Analogía
-> Antes de la reunión grupal, el buen jefe hace un 1:1 con cada persona del equipo. El univariado es eso: entrevistar a **cada columna por separado** — quién es, cómo se distribuye, qué esconde — antes de estudiar cómo se relacionan entre sí.
+> [!tip] 💡 Analogía Antes de la reunión grupal, el buen jefe hace un 1:1 con cada persona del equipo. El univariado es eso: entrevistar a **cada columna por separado** — quién es, cómo se distribuye, qué esconde — antes de estudiar cómo se relacionan entre sí.
 
 ### 1.1 Variables numéricas continuas
 
@@ -72,7 +59,7 @@ Audiencia: 🔧
 **🔧 Definición técnica — el kit completo:**
 
 | Herramienta | Qué revela | 💡 Analogía | Detalles clave |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Estadísticos descriptivos | Centro, dispersión y extremos: mean, median, std, min, max, Q1, Q3, P5, P95, P99 (`describe()` + percentiles custom) | La ficha médica básica de la columna | Si media ≫ mediana → asimetría positiva; revisar P99 vs max delata outliers |
 | Histograma | La forma real de la distribución | El censo por tramos: cuánta gente hay en cada rango de edad | El nº de bins cambia la historia: Sturges `k = 1 + log₂(N)`, regla de la raíz `k = √N`, o Freedman-Diaconis (ancho `2·IQR/N^(1/3)`, robusta a outliers). Probar más de uno |
 | KDE plot | Versión suavizada y continua del histograma | La silueta de la montaña dibujada a mano alzada | No presuponer normalidad: mirar bimodalidades (¡mezcla de poblaciones o de unidades!) |
@@ -91,13 +78,12 @@ Audiencia: 🔧
 **🔧 Definición técnica — el kit completo:**
 
 | Herramienta | Qué revela | Detalles clave |
-|---|---|---|
+| --- | --- | --- |
 | Frecuencias absolutas y relativas | Peso de cada categoría: `value_counts()`, `value_counts(normalize=True)` | Categorías con frecuencia casi nula → candidatas a agruparse en 'Other' antes del encoding |
 | Cardinalidad | Nº de valores únicos: `nunique()` | Alta cardinalidad (> 50 categorías) exige estrategia especial de encoding ([[03-Preparacion-de-Datos]]): Target/Frequency/Hashing en lugar de One-Hot |
 | Barplot / countplot | Distribución visual de categorías | Ordenar por frecuencia para lectura inmediata; el orden alfabético esconde el patrón |
 
-> [!tip] 💡 Analogía
-> La cardinalidad es el menú del restaurante: 12 platos se gestionan; 900 platos son una señal de que algo anda mal — o de que muchos "platos" son el mismo escrito distinto ("Stgo" / "Santiago"), un problema de normalización de texto ([[03-Preparacion-de-Datos]]), no de cocina.
+> [!tip] 💡 Analogía La cardinalidad es el menú del restaurante: 12 platos se gestionan; 900 platos son una señal de que algo anda mal — o de que muchos "platos" son el mismo escrito distinto ("Stgo" / "Santiago"), un problema de normalización de texto ([[03-Preparacion-de-Datos]]), no de cocina.
 
 **🧭 Cuándo usarlo:** toda categórica antes del encoding. Qué buscar: variantes de escritura de la misma categoría, cardinalidad inesperada (¿por qué "región" tiene 87 valores si el país tiene 16?), categorías dominantes (> 90% en una sola → poca señal) y categorías nuevas que podrían aparecer en producción.
 
@@ -109,13 +95,12 @@ Audiencia: 🔧
 
 Audiencia: 🔧 🧭
 
-> [!tip] 💡 Analogía
-> Después de los 1:1, toca ver cómo **bailan en pareja**: hay dúos que se coordinan perfecto (correlación fuerte), dúos que se pisan (relación inversa) y dúos que bailan canciones distintas (independencia). El bivariado examina cada pareja de variables — y la elección de gráfico y test depende del tipo de cada bailarín.
+> [!tip] 💡 Analogía Después de los 1:1, toca ver cómo **bailan en pareja**: hay dúos que se coordinan perfecto (correlación fuerte), dúos que se pisan (relación inversa) y dúos que bailan canciones distintas (independencia). El bivariado examina cada pareja de variables — y la elección de gráfico y test depende del tipo de cada bailarín.
 
 **🔧 La matriz de decisión completa** (gráfico + test según los tipos involucrados):
 
 | Combinación | Gráficos | Test estadístico ([[02-Fundamentos-Matematicos]]) | Qué buscar |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Numérica vs Numérica | Scatter plot; hexbin o KDE 2D cuando hay demasiados puntos | Correlación de Pearson (lineal) y Spearman (monotónica) | Forma de la relación (¿lineal, curva, umbral?), clusters, outliers bivariados, relaciones que Pearson no ve (r≈0 con patrón claro) |
 | Numérica vs Categórica | Boxplot por grupo; violin plot (boxplot + KDE); barplot de medias con intervalos de confianza | t-test (2 grupos), ANOVA (3+), Mann-Whitney / Kruskal-Wallis si no hay normalidad | ¿Las distribuciones difieren entre grupos de verdad o solo en el gráfico? Validar con el test antes de declarar hallazgo |
 | Categórica vs Categórica | Crosstab con proporciones; heatmap de la tabla de contingencia | Chi-cuadrado de independencia (frecuencias esperadas ≥ 5) | Dependencias entre catálogos (¿el plan contratado depende de la región?), celdas vacías o dominantes |
@@ -124,8 +109,7 @@ Audiencia: 🔧 🧭
 
 Audiencia: 🔧 🧭
 
-> [!tip] 💡 Analogía
-> El mapa de amistades del curso: de un vistazo ves qué variables "andan siempre juntas". Dos features abrazadas (│r│ > 0.8) son sospechosas de contar la misma historia — y un modelo lineal no sabrá a cuál darle el crédito (multicolinealidad, [[02-Fundamentos-Matematicos]]).
+> [!tip] 💡 Analogía El mapa de amistades del curso: de un vistazo ves qué variables "andan siempre juntas". Dos features abrazadas (│r│ > 0.8) son sospechosas de contar la misma historia — y un modelo lineal no sabrá a cuál darle el crédito (multicolinealidad, [[02-Fundamentos-Matematicos]]).
 
 **🔧 Definición técnica:** matriz de correlación de Pearson entre todas las numéricas, visualizada con máscara triangular (la mitad es espejo). Buscar: pares con │r│ > 0.8 (candidatos a fusión o eliminación), features con r ≈ 0 contra todo (candidatas a salir… tras verificar no-linealidad con mutual information, [[03-Preparacion-de-Datos]]), y bloques de features correlacionadas (familias redundantes).
 
@@ -137,8 +121,7 @@ Audiencia: 🔧 🧭
 
 Audiencia: 🔧
 
-> [!tip] 💡 Analogía
-> El speed-dating de las variables: todas las parejas posibles en una sola grilla — scatter de cada par y la distribución de cada una en la diagonal. Con más de ~15 features la fiesta se vuelve ilegible: selecciona antes a los candidatos.
+> [!tip] 💡 Analogía El speed-dating de las variables: todas las parejas posibles en una sola grilla — scatter de cada par y la distribución de cada una en la diagonal. Con más de ~15 features la fiesta se vuelve ilegible: selecciona antes a los candidatos.
 
 **🔧 Definición técnica:** `seaborn.pairplot(df, hue='target')` — grilla de scatters por par + histograma/KDE en la diagonal, coloreable por clase. Útil para ver separabilidad de clases y relaciones a granel. Costoso en cómputo y en píxeles: usar con subconjuntos de features (< 15) o con una muestra de filas.
 
@@ -152,11 +135,9 @@ Audiencia: 🔧
 
 Audiencia: 🔧 🧭 👔
 
-> [!info] 📌 Por qué importa
-> El target es la variable que el modelo va a aprender: si está desbalanceado, sesgado o contaminado, **todo lo demás hereda el problema**. Es el análisis con mayor retorno por minuto invertido de todo el EDA.
+> [!info] 📌 Por qué importa El target es la variable que el modelo va a aprender: si está desbalanceado, sesgado o contaminado, **todo lo demás hereda el problema**. Es el análisis con mayor retorno por minuto invertido de todo el EDA.
 
-> [!tip] 💡 Analogía
-> Es estudiar al rival antes del partido: puedes entrenar mil jugadas (features), pero si no sabes cómo juega el equipo contrario (target) — si casi nunca ataca (clase rara), si cambia de táctica por temporada (drift), si te filtraron su plan (leakage) — vas a preparar el partido equivocado.
+> [!tip] 💡 Analogía Es estudiar al rival antes del partido: puedes entrenar mil jugadas (features), pero si no sabes cómo juega el equipo contrario (target) — si casi nunca ataca (clase rara), si cambia de táctica por temporada (drift), si te filtraron su plan (leakage) — vas a preparar el partido equivocado.
 
 ### 3.1 Target de clasificación
 
@@ -168,7 +149,7 @@ Audiencia: 🔧
 
 Audiencia: 🔧
 
-**🔧 Definición técnica:** histograma + estadísticos del target: rango, media vs mediana, outliers extremos. Si es muy asimétrico, considerar transformar con `log1p` (y **revertir con `expm1`** al reportar predicciones — las métricas en escala log no se comunican al negocio). Outliers del target merecen diagnóstico propio: ¿errores o los casos más valiosos? ([[03-Preparacion-de-Datos]]).
+**🔧 Definición técnica:** histograma + estadísticos del target: rango, media vs mediana, outliers extremos. Si es muy asimétrico, considerar transformar con `log1p` (y **revertir con **`expm1` al reportar predicciones — las métricas en escala log no se comunican al negocio). Outliers del target merecen diagnóstico propio: ¿errores o los casos más valiosos? ([[03-Preparacion-de-Datos]]).
 
 ### 3.3 Relación features–target
 
@@ -184,8 +165,7 @@ Audiencia: 🔧 👔
 
 **👔 En una frase para el negocio:** cinco minutos preguntando "¿y este dato existía cuando había que decidir?" valen más que cualquier métrica de laboratorio.
 
-> [!danger] 🚨 La feature demasiado buena para ser verdad
-> Si una sola feature "explica" casi todo el target, no celebres: audita. En 9 de cada 10 casos es un proxy del target que se registró **después** del evento (el `dias_hasta_proximo_control` del caso de negocio). El modelo no descubrió nada: le soplaron la respuesta.
+> [!danger] 🚨 La feature demasiado buena para ser verdad Si una sola feature "explica" casi todo el target, no celebres: audita. En 9 de cada 10 casos es un proxy del target que se registró **después** del evento (el `dias_hasta_proximo_control` del caso de negocio). El modelo no descubrió nada: le soplaron la respuesta.
 
 ---
 
@@ -197,8 +177,7 @@ Audiencia: 🔧 🧭
 
 Audiencia: 🔧 🧭 👔
 
-> [!tip] 💡 Analogía
-> Tres comentaristas deportivos que repiten exactamente lo mismo con distintas palabras: en el panel "hay tres voces", pero la información es una. El VIF mide cuánto de cada feature es repetición de las demás.
+> [!tip] 💡 Analogía Tres comentaristas deportivos que repiten exactamente lo mismo con distintas palabras: en el panel "hay tres voces", pero la información es una. El VIF mide cuánto de cada feature es repetición de las demás.
 
 **🔧 Definición técnica:** `VIF_j = 1 / (1 − R²_j)`, donde R²_j resulta de regresar la feature j contra todas las demás. Lectura: VIF ≈ 1 independiente; VIF > 5 multicolinealidad moderada; VIF > 10 severa. Impacta la interpretabilidad de modelos lineales (coeficientes inestables, [[02-Fundamentos-Matematicos]]). Tratamiento: elegir una representante por cluster de features correlacionadas, combinar (ratios, PCA — [[03-Preparacion-de-Datos]]) o regularizar con Ridge ([[11-Mejora-de-Modelos]]).
 
@@ -210,8 +189,7 @@ Audiencia: 🔧 🧭 👔
 
 Audiencia: 🔧
 
-> [!tip] 💡 Analogía
-> El electrocardiograma de cada fila: cada observación es una línea que atraviesa todos los ejes (features). Cuando las líneas de una clase siguen un ritmo distinto a las de otra, estás **viendo** separabilidad multidimensional a ojo desnudo.
+> [!tip] 💡 Analogía El electrocardiograma de cada fila: cada observación es una línea que atraviesa todos los ejes (features). Cuando las líneas de una clase siguen un ritmo distinto a las de otra, estás **viendo** separabilidad multidimensional a ojo desnudo.
 
 **🔧 Definición técnica:** cada eje vertical es una feature (escalada, [[05-Escalado-de-Datos]]); cada observación, una polilínea coloreada por clase o cluster. Útil para detectar patrones entre clases en alta dimensión y para perfilar clusters ya construidos ([[06-Clustering]]). Con muchas filas: muestrear o usar transparencia.
 
@@ -229,11 +207,10 @@ Audiencia: 🔧 🧭
 
 Audiencia: 🔧 🧭
 
-> [!tip] 💡 Analogía
-> Cocinar a mano vs el robot de cocina: `pandas + seaborn` es el cuchillo del chef (control absoluto, más lento); los profilers automáticos son el robot que pica todo en 5 minutos (perfecto para empezar, insuficiente para el plato final). Los profesionales usan ambos: robot para la primera pasada, cuchillo para lo fino.
+> [!tip] 💡 Analogía Cocinar a mano vs el robot de cocina: `pandas + seaborn` es el cuchillo del chef (control absoluto, más lento); los profilers automáticos son el robot que pica todo en 5 minutos (perfecto para empezar, insuficiente para el plato final). Los profesionales usan ambos: robot para la primera pasada, cuchillo para lo fino.
 
 | Herramienta | Descripción | Fortaleza principal | Limitación | 🧭 Momento ideal |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | pandas + matplotlib/seaborn | EDA manual con control total sobre cada análisis y visualización | Máxima flexibilidad y personalización | Requiere código para cada análisis | Análisis dirigido y reproducible; la 2ª pasada del EDA |
 | ydata-profiling (ex pandas-profiling) | Reporte HTML automático completo: estadísticos, distribuciones, correlaciones, alertas de calidad | Visión completa en una línea de código | Lento en datasets grandes (> 500K filas → muestrear) | Primera mirada del proyecto, en minutos |
 | sweetviz | Reporte HTML visual con **comparación automática train vs test** | Detección de drift/diferencias entre conjuntos | Menos detalle estadístico que ydata-profiling | Justo después del split: ¿train y test se parecen? |
@@ -246,7 +223,107 @@ Audiencia: 🔧 🧭
 
 ---
 
-## 6. Checklist de un EDA completo
+### 5.1 EDA Automatizado — el patrón "report → hypotheses → drill-down"
+
+Audiencia: 🔧 🧭
+
+> [!tip] 💡 Analogía El checkup médico de rutina: no reemplaza al especialista, pero detecta qué merece una segunda mirada. El profiler automático es el checkup; el análisis manual dirigido es el cardiólogo que solo miras después de la alerta.
+
+**🔧 Definición técnica — el patrón en tres fases:**
+
+```
+ ┌───── Fase 1: REPORT AUTOMÁTICO ──────┐
+ │ ydata-profiling / sweetviz / dtale   │
+ │ Una línea de código → reporte HTML   │
+ │ completo con alertas de calidad      │
+ └──────────────────┬───────────────────┘
+                    │ señala anomalías
+                    ▼
+ ┌───── Fase 2: HYPOTHESES ─────────────┐
+ │ Leer alertas del profiler:           │
+ │ · correlaciones altas (>0.9)         │
+ │ · variables con >30% nulos           │
+ │ · distribuciones sesgadas            │
+ │ · valores constantes / cuasi-cte     │
+ │ · cardinalidad inesperada            │
+ │ Formular hipótesis: "¿esto es un     │
+ │ problema real o artefacto del dato?" │
+ └──────────────────┬───────────────────┘
+                    │ dirige la investigación
+                    ▼
+ ┌───── Fase 3: DRILL-DOWN MANUAL ──────┐
+ │ pandas + seaborn dirigido:           │
+ │ · solo las anomalías señaladas       │
+ │ · gráficos custom, cruces específicos│
+ │ · validación con dominio de negocio  │
+ └──────────────────────────────────────┘
+
+```
+
+**🔧 Cuándo usar cada profiler:**
+
+| Situación | Herramienta recomendada | Razón |
+| --- | --- | --- |
+| Primera mirada de un dataset nuevo (< 500K filas) | **ydata-profiling** | Reporte más completo: alertas, correlaciones, interacciones, missingness pattern |
+| Dataset grande (> 500K filas) | ydata-profiling con `minimal=True` o **sobre una muestra** | El modo completo puede tardar minutos en datasets millonarios |
+| Comparación train vs test post-split | **sweetviz** (`compare()`) | Fue diseñado para esto: detecta drift entre dos conjuntos |
+| Exploración interactiva con un stakeholder | **dtale** | Dashboard vivo en navegador; el no-técnico puede filtrar y explorar |
+| Solo diagnóstico de nulos | **missingno** | Visualización especializada: matriz, dendrograma, heatmap de co-ocurrencia |
+
+**🔧 Caveats del EDA automatizado:**
+
+- **No reemplaza el juicio de dominio.** El profiler detecta que una variable es bimodal; solo tú sabes si son dos hospitales con unidades distintas o dos segmentos legítimos.
+- **Las alertas tienen falsos positivos.** Alta correlación entre `ingresos_mensuales` e `ingresos_anuales` no es hallazgo — es aritmética. El drill-down separa la señal del ruido.
+- **Escalabilidad.** Con millones de filas o cientos de features, el reporte automático colapsa o tarda demasiado. Solución: muestrear (estratificado por target) para la Fase 1; la Fase 3 puede correr sobre el dataset completo si el análisis es puntual.
+- **Reproducibilidad.** El reporte HTML es ephemeral; documentar los hallazgos en un `.md` o notebook con los gráficos clave y las decisiones tomadas.
+
+**🧭 Cuándo usarlo:** siempre que empieces un proyecto nuevo. La inversión es < 5 minutos para la Fase 1; las Fases 2 y 3 se ejecutan solo donde el reporte señala anomalías. Es el EDA del 80/20: el 80% de los hallazgos viene de la primera pasada automática.
+
+**👔 En una frase para el negocio:** el equivalente de un diagnóstico por imagen antes de operar — cuesta minutos, evita cirugías innecesarias y focaliza al especialista en lo que importa.
+
+---
+
+## 6. EDA para dominios especializados
+
+Audiencia: 🔧 🧭
+
+### 6.1 EDA para series de tiempo
+
+> [!tip] 💡 Analogía El cardiólogo no te mira solo una foto: te mira el electrocardiograma — cómo se mueve tu corazón en el TIEMPO. El EDA temporal hace lo mismo con los datos: no basta con el histograma (la "foto"); necesitas la película.
+
+**🔧 Kit de herramientas temporal:**
+
+| Herramienta | Qué revela | Detalles clave |
+| --- | --- | --- |
+| Line plot temporal | Tendencia, estacionalidad, rupturas, huecos | Siempre el primer gráfico; con `resample()` para distintas granularidades |
+| Descomposición (STL / seasonal_decompose) | Componentes separados: trend, seasonal, residual | STL es más robusto a outliers que el método clásico (Cleveland et al., 1990); detalle en [[17-Series-de-Tiempo]] |
+| Lag plot (scatter t vs t-1) | Autocorrelación de primer orden a simple vista | Si los puntos forman una línea → alta autocorrelación; una nube → el pasado no predice |
+| ACF / PACF (correlograma) | Estructura de dependencia temporal: qué lags importan | ACF muestra el efecto acumulado; PACF aísla el efecto directo; lectura en [[17-Series-de-Tiempo]] |
+| Seasonal subseries plot | ¿Cada mes/día de la semana se comporta igual entre años? | Un gráfico por período estacional con las observaciones de cada ciclo superpuestas |
+| Rolling statistics (media/varianza móvil) | ¿La serie es estacionaria o cambia de nivel/volatilidad? | Media que crece → no estacionaria; varianza que explota → heterocedasticidad → revisar transformación log |
+
+**🧭 Cuándo usarlo:** siempre que una feature o el target tenga un índice temporal. Aplicar **antes** de decidir si un modelo cross-sectional es válido o si se requiere un enfoque de forecasting ([[17-Series-de-Tiempo]]).
+
+### 6.2 EDA para texto (NLP)
+
+> [!tip] 💡 Analogía Antes de entrenar un sommelier (modelo NLP), necesitas saber qué hay en la bodega: ¿cuántas botellas (documentos), de qué tamaño, en qué idiomas, con qué etiquetas? El EDA de texto es el inventario de la bodega antes de la cata.
+
+**🔧 Kit de herramientas textuales:**
+
+| Herramienta | Qué revela | Detalles clave |
+| --- | --- | --- |
+| Distribución de longitudes (tokens/caracteres) | ¿Los textos son homogéneos o hay tweets mezclados con ensayos? | Histograma de `len(text.split())`; outliers de longitud suelen ser errores de ingesta o documentos pegados |
+| Frecuencia de tokens (top-N, hapax legomena) | ¿El vocabulario es razonable? ¿Hay basura de encoding? | Tokens que aparecen 1 sola vez (hapax) > 50% del vocabulario = alta sparsity; considerar subword tokenization |
+| Word cloud (tf o tf-idf) | Visión rápida de los temas dominantes | Más útil para presentar a stakeholders que para análisis riguroso; complementar con topic modeling [[19-NLP-y-LLMs]] |
+| Distribución por clase (si es clasificación) | ¿Las clases difieren en longitud, vocabulario, estilo? | Un modelo que clasifica por longitud en vez de por contenido es un leakage semántico |
+| Idioma y encoding | ¿Todo está en el idioma esperado? ¿Hay caracteres rotos? | `langdetect` o `fasttext` para detectar filas en idioma inesperado; `chardet` para encoding corrupto |
+| Duplicados y near-duplicates | ¿Hay textos copiados o casi-copiados entre train y test? | Leakage por duplicación: si el mismo review aparece en train y test, la métrica es una mentira |
+
+**🧭 Cuándo usarlo:** siempre que el dataset incluya una columna de texto libre, antes de cualquier vectorización (TF-IDF, embeddings). Aplica tanto a NLP clásico como a proyectos que alimenten un pipeline RAG ([[19-NLP-y-LLMs]]).
+
+---
+
+## 7. Checklist de un EDA completo
 
 Audiencia: 🔧 🧭
 
@@ -259,6 +336,9 @@ Audiencia: 🔧 🧭
 - [ ] **Multivariado:** VIF sobre las familias de features correlacionadas
 - [ ] **Nulos:** patrón de missingness con missingno; hipótesis MCAR/MAR/MNAR
 - [ ] **Leakage:** auditoría de disponibilidad temporal de cada feature ([[10-Validacion-y-Leakage]])
+- [ ] **EDA automatizado:** reporte de profiler corrido y alertas revisadas (§5.1)
+- [ ] **Temporal (si aplica):** line plot, descomposición, ACF/PACF, estacionariedad (§6.1, [[17-Series-de-Tiempo]])
+- [ ] **Texto (si aplica):** distribución de longitudes, idioma, duplicados, balance por clase (§6.2, [[19-NLP-y-LLMs]])
 - [ ] **Documentación:** hallazgos, decisiones y pendientes escritos — el EDA que no se documenta se repite
 
 ---
@@ -268,6 +348,8 @@ Audiencia: 🔧 🧭
 - (Tukey, 1977) — el texto fundacional del análisis exploratorio de datos.
 - (Anscombe, 1973) — el cuarteto: por qué los estadísticos no reemplazan a los gráficos.
 - (James et al., 2021) y (Géron, 2022) — el EDA como etapa del flujo aplicado de ML.
+- (Cleveland et al., 1990) — STL: A Seasonal-Trend Decomposition Procedure Based on Loess. *Journal of Official Statistics* 6(1), 3–33. Descomposición robusta para series de tiempo.
+- (Brink et al., 2017) — *Real-World Machine Learning*. Manning. EDA automatizado como primer paso del flujo de trabajo.
 
 Fichas completas con datos de publicación en [[16-Bibliografia]].
 

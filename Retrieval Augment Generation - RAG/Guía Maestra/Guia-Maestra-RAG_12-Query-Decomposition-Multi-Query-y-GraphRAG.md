@@ -3,7 +3,8 @@ title: "Tomo 12 — ⭐ Técnicas avanzadas de query: decomposition, multi-query
 tags: [rag, complemento, vanguardia, query-decomposition, multi-query, graphrag, raptor, self-rag, ircot, step-back, hyde]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 12
-version: 1.0
+version: 1.1
+updated: 2026-08-28
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -253,6 +254,61 @@ El diagnóstico del paper es la clave: *"what to retrieve depends on what has al
 
 **🔧 Definición (Asai et al., ICLR 2024 *Oral*):** un modelo que *"adaptively retrieves passages on-demand, and generates and reflects on retrieved passages and its own generations using special tokens, called reflection tokens"*.
 
+**📄 Paper:** Asai, S., Wu, Z., Wang, Y., Sil, A. & Hajishirzi, H. (2023). *Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection.* arXiv:2310.11511. Aceptado como **Oral** en ICLR 2024 — el nivel de prestigio más alto posible en ese venue.
+
+#### 6.2.1 El mecanismo de reflection tokens — en detalle
+
+La innovación central de Self-RAG no es *cuándo* recuperar, sino que **el propio modelo aprende a criticarse** mediante tokens especiales inyectados durante el fine-tuning. Hay cuatro tipos:
+
+| Token | Pregunta que responde | Valores posibles | Cuándo se emite |
+|---|---|---|---|
+| **[Retrieve]** | *"¿Necesito buscar información para responder esto?"* | `yes` / `no` / `continue` | **Antes** de generar (o entre segmentos) |
+| **[IsRel]** | *"¿Este pasaje recuperado es relevante para la query?"* | `relevant` / `irrelevant` | **Después** de recuperar, por cada documento |
+| **[IsSup]** | *"¿Mi generación está respaldada por el pasaje?"* | `fully supported` / `partially supported` / `no support` | **Después** de generar un segmento |
+| **[IsUse]** | *"¿Mi respuesta final es útil para el usuario?"* | Escala de 1 a 5 | Al **final** de la respuesta completa |
+
+> [!important] 🎯 Esto no es un prompt — es vocabulario aprendido
+> Los reflection tokens se añaden al vocabulario del modelo y se entrenan con supervisión (un modelo "critic" genera las etiquetas de entrenamiento). El generador aprende **cuándo emitirlos y con qué valor**. No hay un segundo modelo en inference — es un solo forward pass que intercala tokens de control con tokens de texto.
+
+#### 6.2.2 El flujo completo
+
+```
+   QUERY del usuario
+      │
+      ▼
+   El modelo genera el primer segmento y decide:
+   ┌─────────────────────────────────────────────┐
+   │  [Retrieve] = yes?                          │
+   │     SÍ → invoca retriever → obtiene docs    │
+   │     NO → genera sin contexto externo        │
+   └─────────────────────────────────────────────┘
+      │ (si recuperó)
+      ▼
+   Por cada documento recuperado:
+   ┌─────────────────────────────────────────────┐
+   │  [IsRel] = relevant?                        │
+   │     SÍ → el doc entra al contexto           │
+   │     NO → se descarta                        │
+   └─────────────────────────────────────────────┘
+      │
+      ▼
+   Genera respuesta (o segmento de respuesta) condicionada al contexto
+      │
+      ▼
+   ┌─────────────────────────────────────────────┐
+   │  [IsSup] = fully supported?                 │
+   │     SÍ → acepta el segmento                 │
+   │     NO → puede re-retriever o regenerar     │
+   └─────────────────────────────────────────────┘
+      │
+      ▼
+   [IsUse] evalúa la respuesta completa → score de utilidad
+```
+
+**El punto clave:** este ciclo puede ejecutarse **múltiples veces por respuesta**. El modelo puede decidir [Retrieve] = `yes` en mitad de una generación larga, buscar más contexto, evaluar si lo nuevo es relevante, y continuar. Eso lo diferencia de un RAG con un solo paso de retrieval.
+
+#### 6.2.3 El costo de adopción — por qué casi nadie lo usa
+
 > [!danger] 🚨 Dos cosas que hay que decir sobre Self-RAG
 > **① No es una técnica de prompting: es un modelo entrenado.** Requiere fine-tuning del generador con los *reflection tokens*. Presentarlo junto a step-back o multi-query como si fueran intercambiables es engañoso — **el costo de adopción es de otro orden de magnitud.**
 >
@@ -260,18 +316,116 @@ El diagnóstico del paper es la clave: *"what to retrieve depends on what has al
 >
 > **Matiz obligatorio, para no sobrevender el hallazgo:** FlashRAG marca Self-RAG con asterisco = *"the use of a trained generator"*, o sea que corre su propio modelo y no el de la comparación. **Parte de la brecha es desajuste experimental, no fallo del método.** Los propios autores advierten que *"this setting may differ from the original setting of the method"*. No es "Self-RAG está roto"; es "en un entorno unificado no reproduce su ventaja".
 
+El problema de reproducibilidad tiene raíces estructurales:
+
+1. **Dependencia del critic model.** La calidad de los reflection tokens depende de la calidad del modelo que genera las etiquetas de entrenamiento. Si entrenas con GPT-4 como critic, los tokens son mejores — pero el costo de generar los datos de entrenamiento es alto.
+2. **El modelo base importa.** Self-RAG se demostró originalmente sobre Llama 2 7B/13B. Las ganancias reportadas son **relativas a ese baseline**. Modelos más capaces ya incorporan parte de la capacidad de autocrítica, reduciendo el delta.
+3. **No hay un checkpoint universal.** Cada dominio necesita su propio fine-tuning, lo que multiplica el costo de adopción por cada caso de uso.
+
+#### 6.2.4 Cuándo tiene sentido Self-RAG
+
+| Condición | ¿Aplica? |
+|---|---|
+| La **calidad factual** es más importante que la latencia (e.g., médico, legal) | ✅ Candidato fuerte |
+| Tienes presupuesto para **fine-tunear** el modelo generador con reflection tokens | ✅ Requisito obligatorio |
+| Tu modelo base es pequeño (7B–13B) y necesitas que se "comporte mejor de lo que es" | ✅ Donde más delta se observa |
+| Necesitas una solución **drop-in** sin reentrenar nada | ❌ Self-RAG no es eso |
+| Tu modelo base ya es frontier (GPT-4, Claude 3.5) y rara vez alucina | ⚠️ El delta será mínimo |
+| La latencia importa más que la precisión factual | ❌ Cada reflection token es cómputo extra |
+
 **Estado: alto prestigio académico, adopción práctica limitada.** Esa tensión es el dato.
 
 ### 6.3 CRAG — evaluar lo recuperado y corregir
+
+**📄 Paper:** Yan, S., Gu, J., Zhu, Y. & Ling, Z. (2024). *Corrective Retrieval Augmented Generation.* arXiv:2401.15884.
 
 **🔧 Definición (Yan et al., 2024):** *"a lightweight retrieval evaluator is designed to assess the overall quality of retrieved documents for a query, returning a confidence degree based on which different knowledge retrieval actions can be triggered"*. Si el retrieval falla, se recurre a búsqueda web.
 
 **🔧 El problema que ataca** es real y poco tratado: *"it relies heavily on the relevance of retrieved documents, raising concerns about how the model behaves if retrieval goes wrong."*
 
+#### 6.3.1 El pipeline detallado — tres acciones posibles
+
+El flujo de CRAG tiene una estructura de **triage** que decide qué hacer con los documentos recuperados:
+
+```
+   QUERY → Retriever → documentos candidatos
+                              │
+                              ▼
+                   ┌─────────────────────┐
+                   │  RETRIEVAL EVALUATOR │
+                   │  (modelo ligero que  │
+                   │   puntúa relevancia) │
+                   └─────────────────────┘
+                              │
+              ┌───────────────┼───────────────┐
+              ▼               ▼               ▼
+         CORRECT         AMBIGUOUS       INCORRECT
+     (confianza alta)  (confianza media) (confianza baja)
+              │               │               │
+              ▼               ▼               ▼
+     Usar docs tal cual   Refinar docs    Web search
+     como contexto        + re-retrieve   como fallback
+              │               │               │
+              └───────────────┼───────────────┘
+                              ▼
+                   Knowledge Refinement
+                   (descomponer en strips)
+                              │
+                              ▼
+                        GENERACIÓN
+```
+
+**Las tres acciones en detalle:**
+
+| Acción | Condición | Qué hace |
+|---|---|---|
+| **① Correct** | El evaluador da confianza **alta** — los docs recuperados son relevantes | Se pasa directamente a generación con los documentos como contexto. Opcionalmente se aplica *knowledge refinement* para filtrar ruido |
+| **② Incorrect** | El evaluador da confianza **baja** — los docs son irrelevantes | Se **descarta** lo recuperado de la KB interna y se dispara una búsqueda web como fallback. Los resultados web pasan por *knowledge refinement* antes de alimentar al generador |
+| **③ Ambiguous** | Confianza **intermedia** — mix de docs relevantes e irrelevantes | Se combinan ambas fuentes: se filtran los docs internos relevantes via *knowledge refinement*, se complementa con búsqueda web si hace falta, y se genera con el subset resultante |
+
+#### 6.3.2 Knowledge Refinement — el paso que distingue a CRAG
+
+Este es el mecanismo más distintivo del paper y el menos citado en tutoriales:
+
+1. **Descomposición en knowledge strips.** Los documentos largos se segmentan en unidades mínimas de información (*strips*) — oraciones o proposiciones atómicas.
+2. **Evaluación por strip.** Cada strip se evalúa independientemente: ¿es relevante para la query? Las irrelevantes se descartan.
+3. **Recombinación.** Solo las strips que pasan el filtro se recomponen como contexto para el generador.
+
+> [!tip] 💡 Por qué importa
+> El retriever opera a nivel de **chunk** (típicamente 200–500 tokens). Un chunk puede contener 3 hechos relevantes y 7 irrelevantes. Sin refinamiento, esos 7 hechos irrelevantes **contaminan** el contexto y pueden provocar alucinaciones. CRAG ataca exactamente esa granularidad.
+>
+> Es la misma lógica que el *groundedness check* del [[Guia-Maestra-RAG_09-Guardrails-y-Seguridad|Tomo 09 §4.4]] — pero aplicada **antes** de generar, no después. CRAG evalúa la relevancia del contexto *preventivamente*; el T09 evalúa si la respuesta *ya generada* está anclada. Son complementarios: CRAG reduce la probabilidad de que el generador alucine; el groundedness check detecta las que se le escapan.
+
+#### 6.3.3 El evaluador de retrieval — fortalezas y debilidades
+
+El evaluador de CRAG es un modelo ligero (T5-large en la implementación original) entrenado para clasificar la relevancia doc-query. Ventajas y limitaciones:
+
+**Ventajas:**
+- Rápido — mucho más barato que usar el LLM generador para evaluar
+- Se puede entrenar con datos de relevancia estándar (e.g., MS MARCO)
+- Desacopla la decisión de "¿sirve esto?" de la generación
+
+**Limitaciones (de la reproducción independiente):**
+- El evaluador *"primarily relies on named entity alignment rather than semantic similarity"* — es decir, **es frágil** y se puede engañar con documentos que comparten entidades sin ser relevantes
+- Documentos que mencionan las mismas entidades en un contexto diferente pasan como "relevantes" cuando no lo son
+
+#### 6.3.4 Cuándo tiene sentido CRAG
+
+| Condición | ¿Aplica? |
+|---|---|
+| Tu knowledge base **no cubre todo** — hay preguntas legítimas fuera de cobertura | ✅ Caso ideal: el fallback a web resuelve lagunas |
+| Toleras **latencia extra** (evaluador + posible web search + refinement) | ✅ Requisito: CRAG añade 1–2 pasos al pipeline |
+| Necesitas **alta fiabilidad factual** y prefieres buscar en web antes que alucinar | ✅ Mejor que generar con contexto irrelevante |
+| Tu sistema es **solo intranet** sin acceso a web | ⚠️ Pierdes la acción "Incorrect" — solo queda refinar o abstener |
+| La latencia es crítica (< 2s por respuesta) | ❌ Los pasos extra de evaluación y refinement cuestan tiempo |
+| Tu KB es exhaustiva y rara vez falla el retriever | ⚠️ El evaluador añade costo sin beneficio si casi siempre puntúa "Correct" |
+
 > [!note] Estado: preprint, con una reproducción independiente favorable pero débil
 > CRAG **no ha pasado revisión por pares** — DBLP lo cataloga solo como CoRR. Existe una reproducción independiente (2026) que concluye que *"our open-source pipeline achieves comparable performance to the original system"* ✅, pero es un **preprint de autor único**: es señal, no prueba.
 >
 > Su aporte más útil es una crítica al propio método: el evaluador *"primarily relies on named entity alignment rather than semantic similarity"* — es decir, **es frágil**, y se puede engañar con documentos que comparten entidades sin ser relevantes.
+>
+> **Valor práctico:** la *arquitectura* de CRAG — evaluar antes de generar, con acciones diferenciadas — es más adoptable que la implementación específica. Puedes implementar la misma lógica de triage (correct/ambiguous/incorrect) con un reranker como evaluador y sin el web search, adaptándola a tu contexto.
 
 ---
 

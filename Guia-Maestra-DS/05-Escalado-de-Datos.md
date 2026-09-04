@@ -3,8 +3,8 @@ title: "Tomo 05 — Escalado de Datos"
 tags: [data-science, machine-learning, scaling, preprocessing, transformaciones]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 05
-version: 6.1
-updated: 2026-07-29
+version: 6.2
+updated: 2026-08-28
 ---
 
 # ⚖️ Tomo 05 — Escalado de Datos
@@ -174,6 +174,50 @@ Audiencia: 🔧
 
  el scaler se re-fittea en CADA fold, solo con la porción de train de ESE fold
 ```
+
+### 3.4 Interacción escalado ↔ imputación — el orden del pipeline
+
+Audiencia: 🔧 🧭
+
+> [!tip] 💡 Analogía
+> No puedes medir tu estatura si te falta un pie: primero te ponen la prótesis (imputación), después te miden (escalado). Invertir el orden fuerza al metro a inventar una medida sin dato — y contamina la escala con valores ficticios.
+
+**🔧 Definición técnica — el orden correcto dentro del Pipeline:**
+
+```
+ Pipeline([
+   ('imputer', SimpleImputer(strategy='median')),  ← 1° llenar huecos
+   ('scaler',  StandardScaler()),                  ← 2° escalar
+   ('model',   LogisticRegression())               ← 3° entrenar
+ ])
+```
+
+**🔧 Por qué este orden y no al revés:**
+
+| Orden | Qué pasa | Problema |
+|---|---|---|
+| Imputar → Escalar ✅ | El scaler ve datos completos; sus estadísticos (μ, σ, min, max) son estables | Ninguno — es el correcto |
+| Escalar → Imputar ❌ | El scaler calcula μ/σ ignorando NaNs (o falla); la imputación posterior inserta valores en escala original que ya no matchea | Los imputados quedan en escala distinta al resto; sesgo silencioso |
+
+**🔧 Caveats adicionales:**
+
+- **KNNImputer** opera con distancias → necesita features en la misma escala para funcionar. Pero si escalas antes, los NaNs no tienen escala. Solución: usar un IterativeImputer (que es model-based y tolera NaN) o una imputación por mediana primero, escalar, y luego refinar con KNN.
+- **Imputación con constante (-999, 0)**: si se imputa con un valor fuera de rango y luego se aplica Min-Max, ese valor extremo colapsa el rango útil. Preferir mediana/media para imputar antes de scalers sensibles a extremos.
+- **ColumnTransformer** cuando distintas columnas necesitan distinto tratamiento: numéricas → impute + scale; categóricas → impute + encode. Cada rama con su orden propio ([[03-Preparacion-de-Datos]]).
+
+### 3.5 Escalado de features ordinales
+
+Audiencia: 🔧
+
+**🔧 Definición técnica:** variables categóricas con orden intrínseco (nivel_educativo: básica < media < superior < postgrado; satisfacción: 1 < 2 < 3 < 4 < 5) pueden codificarse como enteros y luego escalarse — pero con cuidado:
+
+| Estrategia | Cuándo funciona | Cuándo falla |
+|---|---|---|
+| OrdinalEncoder → StandardScaler | Si los intervalos entre niveles son aproximadamente iguales (ratings 1-5) | Si los intervalos son desiguales (ingreso bajo/medio/alto donde "alto" es 10× más que "medio") |
+| OrdinalEncoder → QuantileTransformer | Si la distribución de las categorías es muy desigual (80% en nivel 1, 10% en 2, etc.) | Pierde la noción de equidistancia; úsalo solo cuando la distribución manda más que el orden |
+| Target Encoding (luego escalar) | Features de alta cardinalidad ordinal (ej: código postal que correlaciona con income) | Requiere regularización para evitar overfitting; debe hacerse con folds para evitar leakage ([[10-Validacion-y-Leakage]]) |
+
+**🧭 Regla de decisión:** si la ordinal tiene ≤ 7 niveles con espaciado razonable, OrdinalEncoder + StandardScaler es suficiente. Si tiene muchos niveles o espaciado dudoso, considerar target encoding (con folds) o simplemente tratarla como numérica continua.
 
 ---
 

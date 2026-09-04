@@ -3,7 +3,8 @@ title: "Tomo 09 — Hallucinations, evaluación y agentic RAG"
 tags: [rag, evaluacion, metricas, precision, recall, map, mrr, ragas, faithfulness, hallucinations, agentic-rag, fine-tuning]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 09
-version: 1.0
+version: 1.1
+updated: 2026-08-28
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -499,6 +500,117 @@ Audiencia: 🔧 🧭
 > *"Como la calidad de las respuestas de un LLM es algo subjetiva, deberías planear usar **o evals basados en LLM-as-a-judge, o feedback humano**, para evaluar la calidad del LLM. Una combinación de estas técnicas te permitirá evaluar con confianza."*
 >
 > En la práctica: **LLM-as-a-judge para iterar rápido** (barato, escalable, corre en CI) y **feedback humano para validar** que el juez está bien calibrado. Si las dos señales divergen, confía en la humana y recalibra el juez.
+
+### 4.4 LLM-as-judge en profundidad — evaluación escalable del generador
+
+Audiencia: 🔧 🧭
+
+> [!tip] 💡 Analogía
+> Evaluar manualmente cada respuesta de tu RAG es como contratar un inspector para revisar cada plato que sale de la cocina — no escala. LLM-as-judge es poner una cámara inteligente que inspecciona automáticamente y solo llama al inspector humano cuando detecta algo raro.
+
+**🔧 Definición técnica:** usar un LLM (generalmente uno más potente que el del pipeline, o el mismo con un prompt de evaluación distinto) para **puntuar las respuestas del sistema** según criterios definidos en una rúbrica. Es el estándar de facto en 2026 para evaluación continua en producción porque combina escalabilidad con correlación razonable con juicio humano (~80-85% de acuerdo inter-rater, comparable a acuerdo humano-humano).
+
+**🔧 Los tres paradigmas de judging:**
+
+| Paradigma | Mecanismo | Ventaja | Limitación | Cuándo usarlo |
+|---|---|---|---|---|
+| **Pointwise** | El judge evalúa UNA respuesta y le asigna un score (1-5) según una rúbrica | Simple; independiente; paralelizable | Calibración difícil: ¿qué es un "3"? Depende del judge | Monitoreo continuo; dashboards de calidad |
+| **Pairwise** | El judge compara DOS respuestas (A vs B) y declara cuál es mejor | Más estable que pointwise; humanos también prefieren comparar | No da score absoluto; escala mal a N candidatos | A/B testing de prompts; comparar modelos |
+| **Listwise** | El judge rankea N respuestas de mejor a peor | Eficiente para evaluar muchos candidatos a la vez | Position bias severo; inconsistente con listas largas | Selección de modelo entre muchos candidatos |
+
+**🔧 Los frameworks de referencia:**
+
+- **G-Eval (Liu et al., 2023):** el judge genera primero un chain-of-thought con los pasos de evaluación según la rúbrica, luego emite un score. La rúbrica es personalizable por caso de uso. Criterios típicos: coherence, relevance, fluency, groundedness, completeness. Resultado: alta correlación con humanos en NLG tasks.
+
+- **MT-Bench / Chatbot Arena (Zheng et al., 2023):** pairwise comparison a gran escala. MT-Bench usa preguntas curadas multi-turn; Arena usa crowdsourcing con Elo rating. El insight: pairwise con GPT-4 como judge tiene >80% agreement con humanos — comparable al acuerdo entre evaluadores humanos.
+
+**🔧 Comparativa de métodos de evaluación:**
+
+| Método | Velocidad | Costo por 1000 evals | Correlación con humanos | Mejor para |
+|---|---|---|---|---|
+| Human evaluation | Horas/días | $$$$ (anotadores) | Referencia (100%) | Ground truth; calibración; edge cases |
+| LLM-as-judge (pointwise) | Segundos | $ (API calls) | ~80-85% | Monitoreo continuo; CI/CD pipeline |
+| RAGAS (faithfulness + relevancy) | Segundos | $ (API calls) | ~75-80% (métrica-specific) | Evaluación del pipeline RAG end-to-end |
+| Métricas automáticas (BLEU, ROUGE) | Milisegundos | Gratis | ~50-60% | Solo como pre-filtro; NO como métrica final en generación abierta |
+
+**🧭 Cuándo usarlo:** para **toda evaluación recurrente** del generador. La evaluación humana queda reservada para (1) calibrar al judge, (2) edge cases que el judge marca con baja confianza, (3) auditorías periódicas de calidad.
+
+### 4.5 Groundedness verification automatizada
+
+Audiencia: 🔧 🧭 👔
+
+> [!tip] 💡 Analogía
+> Un periodista puede escribir un artículo brillante — pero si el editor no puede verificar las fuentes de cada afirmación, no se publica. Groundedness verification es ese editor: extrae cada claim de la respuesta y verifica si hay evidencia en los chunks recuperados.
+
+**🔧 El patrón en tres pasos:**
+
+```
+ Respuesta del LLM
+        │
+        ▼
+ ┌─── CLAIM EXTRACTION ───┐
+ │ "La política permite     │
+ │  devolución en 30 días"  │
+ │ "El envío es gratis      │
+ │  sobre $50.000"          │
+ └───────────┬──────────────┘
+             │
+             ▼
+ ┌─── EVIDENCE MATCHING ──────────────────┐
+ │ Para cada claim: ¿hay un chunk que lo  │
+ │ soporte? (NLI / similarity / LLM-judge)│
+ └───────────┬────────────────────────────┘
+             │
+             ▼
+ ┌─── SCORING ────────────────────────────┐
+ │ % de claims con soporte = groundedness │
+ │ score. Claims sin soporte = potencial  │
+ │ hallucination → flag o bloquear        │
+ └────────────────────────────────────────┘
+```
+
+**🔧 Conexión con §4.2 (Faithfulness de RAGAS):** RAGAS faithfulness ya implementa este patrón — descompone la respuesta en statements y verifica cada uno contra el contexto. La §4.5 lo generaliza como **guardrail de producción**: correr el check ANTES de entregar la respuesta al usuario, no solo como evaluación offline.
+
+**🔧 Herramientas que lo implementan:**
+
+| Herramienta | Approach | Integración |
+|---|---|---|
+| **RAGAS** (faithfulness metric) | Decompose → NLI per statement | Python; evaluación batch o real-time |
+| **DeepEval** | LLM-as-judge con rúbrica de groundedness | Python; integra con pytest |
+| **TruLens** | Modular: groundedness, relevance, harmfulness | Dashboard + Python; tracing integrado |
+| **Custom prompts** | Un prompt que pregunta "¿esta afirmación está soportada por el contexto?" | Cualquier LLM; máximo control, mínima abstracción |
+
+**🔧 Como guardrail de producción (real-time):**
+
+- Si el groundedness score < umbral (ej: < 0.7), **no entregar la respuesta** — en su lugar, responder con un fallback: *"No tengo suficiente información en mis fuentes para responder esto con confianza."*
+- Trade-off: agregar el check añade latencia (1-3s) y costo (una llamada extra al LLM). Solución: correrlo async y hacer streaming con retractación si falla, o aplicarlo solo a respuestas de alto riesgo (dominios regulados).
+- Detalle de guardrails completos en [[Guia-Maestra-RAG_10-RAG-en-Produccion|Tomo 10 §5]].
+
+### 4.6 Sesgos y limitaciones de LLM-as-judge
+
+Audiencia: 🔧
+
+> [!warning] ⚠️ No es un evaluador perfecto — conocer sus sesgos es obligatorio antes de confiarle decisiones
+
+| Sesgo | Descripción | Mitigación |
+|---|---|---|
+| **Verbosity bias** | Prefiere respuestas largas sobre cortas, independientemente de la calidad | Incluir en la rúbrica: "la brevedad es una virtud si responde la pregunta" |
+| **Position bias** | En pairwise, tiende a preferir la respuesta que aparece primero (o segunda, según modelo) | Evaluar en ambos órdenes y promediar; descartar si son inconsistentes |
+| **Self-preference** | Si el judge es el mismo modelo que generó la respuesta, se puntúa más alto a sí mismo | Usar un modelo diferente como judge; o al menos una familia distinta |
+| **Sycophancy** | El judge tiende a estar de acuerdo con la respuesta si se le presenta como "correcta" | Presentar sin marco; pedir que busque errores activamente |
+| **Formato bias** | Markdown, bullet points y estructuras bien formateadas reciben scores más altos | Evaluar contenido separado de formato; o normalizar formato antes |
+
+**🔧 El patrón recomendado para producción:**
+
+1. **LLM-as-judge para el 95% del tráfico** — monitoreo continuo con alertas.
+2. **Evaluación humana mensual sobre una muestra** (~100-200 respuestas) — para calibrar el judge.
+3. Si la correlación judge-humano cae por debajo de 0.75: **recalibrar** la rúbrica o cambiar de modelo judge.
+4. **Ensemble de judges** para decisiones críticas: dos modelos distintos evalúan; si discrepan, escala a humano.
+
+**📚 Referencias de las secciones 4.4–4.6:**
+
+- (Liu et al., 2023) — *G-Eval: NLG Evaluation using GPT-4 with Better Human Alignment*. arXiv 2303.16634.
+- (Zheng et al., 2023) — *Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena*. NeurIPS 2023.
 
 ---
 

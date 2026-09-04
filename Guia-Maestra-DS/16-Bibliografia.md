@@ -3,7 +3,7 @@ title: "Tomo 16 — Bibliografía"
 tags: [data-science, machine-learning, bibliografia, referencias]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 16
-version: 6.5
+version: 6.6
 updated: 2026-07-29
 ---
 
@@ -18,11 +18,11 @@ Audiencia: 🔧
 > [!info] 📌 Sobre esta bibliografía
 > Todas las obras citadas en los tomos 01–15 y en la extensión aplicada (tomos 17–21) con sus datos de publicación completos. Solo referencias **reales, publicadas y verificables**. Las citas en el texto usan el formato `(Autor, Año)`; los dos trabajos de Breiman de 2001 se distinguen como **2001a** (Random Forests) y **2001b** (Two Cultures).
 >
-> ✅ **116/116 entradas de esta bibliografía (secciones 1–12 y 14–18) verificadas vía búsqueda web (2026-07-27)** — cada una con evidencia textual y URL/DOI, auditoría descrita en `Instrucciones-Guia-Maestra-DS.md` §5. Un error sustantivo corregido (Box & Cox 1964, rango de páginas); el resto, correcto o con diferencias triviales de formato ya documentadas en su propia entrada.
+> ✅ **128/128 entradas de esta bibliografía (secciones 1–12 y 14–18) verificadas vía búsqueda web (2026-07-27 y 2026-07-29)** — cada una con evidencia textual y URL/DOI, auditoría descrita en `Instrucciones-Guia-Maestra-DS.md` §5. Un error sustantivo corregido (Box & Cox 1964, rango de páginas); el resto, correcto o con diferencias triviales de formato ya documentadas en su propia entrada.
 > 
-> La inmensa mayoría son papers o libros académicos revisados por pares. **3 son de otro tipo**, etiquetadas como tales en su propia entrada para no hacerlas pasar por algo que no son: Radcliffe (2007, revista de un gremio de marketing directo, no indexada), Hong, Troynikov & Huber (2025, reporte técnico de Chroma) y Anthropic (2024, anuncio corporativo del Model Context Protocol). Diez de las 116 se incorporaron en la revisión de vigencia del 2026-07-27 (Tomos 12, 13, 19 y 20 — ver bitácora en `Instrucciones-Guia-Maestra-DS.md` §5 para el detalle de cuál desarrollo motivó cada una).
+> La inmensa mayoría son papers o libros académicos revisados por pares. **3 son de otro tipo**, etiquetadas como tales en su propia entrada para no hacerlas pasar por algo que no son: Radcliffe (2007, revista de un gremio de marketing directo, no indexada), Hong, Troynikov & Huber (2025, reporte técnico de Chroma) y Anthropic (2024, anuncio corporativo del Model Context Protocol). Diez de las 116 originales se incorporaron en la revisión de vigencia del 2026-07-27 (Tomos 12, 13, 19 y 20 — ver bitácora en `Instrucciones-Guia-Maestra-DS.md` §5 para el detalle de cuál desarrollo motivó cada una). **12 fuentes adicionales se incorporaron el 2026-07-29** en la revisión de Series de Tiempo (Tomos 17, 08, 10 y 12): regresión espuria, cointegración, causalidad de Granger, heterocedasticidad condicional (ARCH), el test de Ljung-Box, los criterios de información AIC/BIC, las estrategias de pronóstico multi-step y la validación cruzada para series de tiempo, entre otras.
 >
-> Más los **5 enlaces de documentación oficial** de la Sección 13, verificados por separado (resuelven a la documentación vigente de cada proyecto). **121 fuentes verificadas en total.**
+> Más los **5 enlaces de documentación oficial** de la Sección 13, verificados por separado (resuelven a la documentación vigente de cada proyecto). **133 fuentes verificadas en total.**
 
 ## 1. Libros de referencia
 
@@ -72,10 +72,12 @@ Audiencia: 🔧
 
 ## 6. Papers — métricas de evaluación
 
+- Akaike, H. (1974). "A New Look at the Statistical Model Identification". *IEEE Transactions on Automatic Control*, 19(6), 716–723. ✅ *Verificada 2026-07-29 vía búsqueda web (Crossref, DOI 10.1109/TAC.1974.1100705; el DOI resuelve a la ficha del artículo en IEEE Xplore, ieeexplore.ieee.org/document/1100705/). Nota: Crossref registra el título en minúsculas de oración; la capitalización Title Case usada aquí es solo convención tipográfica del tomo.*
 - Brier, G. W. (1950). "Verification of Forecasts Expressed in Terms of Probability". *Monthly Weather Review*, 78(1), 1–3. ✅ *Verificada 2026-07-27 vía búsqueda web (Crossref, DOI 10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2).*
 - Cohen, J. (1960). "A Coefficient of Agreement for Nominal Scales". *Educational and Psychological Measurement*, 20(1), 37–46. ✅ *Verificada 2026-07-27 vía búsqueda web (Crossref, DOI 10.1177/001316446002000104).*
 - Davis, J., & Goadrich, M. (2006). "The Relationship Between Precision-Recall and ROC Curves". *Proceedings of the International Conference on Machine Learning (ICML)*. ✅ *Verificada 2026-07-27 vía búsqueda web (Crossref, DOI 10.1145/1143844.1143874).*
 - Matthews, B. W. (1975). "Comparison of the Predicted and Observed Secondary Structure of T4 Phage Lysozyme". *Biochimica et Biophysica Acta — Protein Structure*, 405(2), 442–451. ✅ *Verificada 2026-07-27 vía búsqueda web (Crossref, DOI 10.1016/0005-2795(75)90109-9).*
+- Schwarz, G. (1978). "Estimating the Dimension of a Model". *The Annals of Statistics*, 6(2), 461–464. ✅ *Verificada 2026-07-29 vía búsqueda web (Project Euclid, sitio oficial de la revista / Institute of Mathematical Statistics, DOI 10.1214/aos/1176344136).*
 - Youden, W. J. (1950). "Index for Rating Diagnostic Tests". *Cancer*, 3(1), 32–35. ✅ *Verificada 2026-07-27 vía búsqueda web (Crossref, DOI 10.1002/1097-0142(1950)3:1<32::AID-CNCR2820030106>3.0.CO;2-3).*
 
 ## 7. Papers — reglas de asociación
@@ -126,7 +128,7 @@ Audiencia: 🔧
 
 ## 12. Perspectiva ejecutiva
 
-- Davenport, T. H., & Patil, D. J. (2012). "Data Scientist: The Sexiest Job of the 21st Century". *Harvard Business Review*, 90(10), 70–76.
+- Davenport, T. H., & Patil, D. J. (2012). "Data Scientist: The Sexiest Job of the 21st Century". *Harvard Business Review*, 90(10), 70–76. ✅ *Verificada 2026-07-19 (Tomo 01).*
 
 ## 13. Documentación oficial de librerías
 
@@ -140,12 +142,22 @@ Enlazada solo donde agrega valor a lo largo de la guía. ✅ *Los 5 enlaces veri
 
 ## 14. Extensión aplicada — series de tiempo (Tomo 17)
 
+- Ben Taieb, S., Bontempi, G., Atiya, A. F., & Sorjamaa, A. (2012). "A Review and Comparison of Strategies for Multi-step Ahead Time Series Forecasting Based on the NN5 Forecasting Competition". *Expert Systems with Applications*, 39(8), 7067–7083. ✅ *Verificada 2026-07-29 vía búsqueda web (Crossref/Elsevier, DOI 10.1016/j.eswa.2012.01.039). Corrección: el tercer autor es Amir F. Atiya, no "Atkeson" como se citó inicialmente por error de transcripción — título, año, venue, volumen y páginas confirmados correctos por Crossref.*
+- Bergmeir, C., & Benítez, J. M. (2012). "On the Use of Cross-Validation for Time Series Predictor Evaluation". *Information Sciences*, 191, 192–213. ✅ *Verificada 2026-07-29 vía búsqueda web (Crossref/Elsevier, DOI 10.1016/j.ins.2011.12.028). Nota: el volumen no tiene número de fascículo asignado (Crossref: numeración especial "C"), por lo que la ausencia de número en esta cita es correcta.*
 - Box, G. E. P., & Jenkins, G. M. (1970). *Time Series Analysis: Forecasting and Control*. Holden-Day. (Ediciones posteriores con Reinsel y Ljung, Wiley.) ✅ *Verificada 2026-07-27 vía búsqueda web (archive.org; editorial Holden-Day y año confirmados).*
 - Cleveland, R. B., Cleveland, W. S., McRae, J. E., & Terpenning, I. (1990). "STL: A Seasonal-Trend Decomposition Procedure Based on Loess". *Journal of Official Statistics*, 6(1), 3–73. ✅ *Verificada 2026-07-27 vía búsqueda web (bibliografía oficial de Hyndman & Athanasopoulos, FPP3; robjhyndman.com/papers/wp13-15.pdf). Nota: una fuente secundaria de baja calidad (scirp.org) cita el rango de páginas como "3–33" — el valor confirmado por fuentes primarias del campo (Hyndman) es 3–73 (artículo publicado con discusión); no propagar el error.*
-- Hyndman, R. J., & Koehler, A. B. (2006). "Another Look at Measures of Forecast Accuracy". *International Journal of Forecasting*, 22(4), 679–688. ✅ *Verificada 2026-07-27 vía búsqueda web (sciencedirect.com, DOI 10.1016/j.ijforecast.2006.03.001).*
+- Engle, R. F. (1982). "Autoregressive Conditional Heteroscedasticity with Estimates of the Variance of United Kingdom Inflation". *Econometrica*, 50(4), 987–1007. ✅ *Verificada 2026-07-29 vía búsqueda web (JSTOR, DOI 10.2307/1912773; corroborado por Crossref). Nota: econometricsociety.org lista el rango como "987–1008" por convención de su web (extiende hasta la página previa al siguiente artículo); JSTOR, con las páginas escaneadas, da 987–1007, el valor usado aquí.*
+- Engle, R. F., & Granger, C. W. J. (1987). "Co-integration and Error Correction: Representation, Estimation, and Testing". *Econometrica*, 55(2), 251–276. ✅ *Verificada 2026-07-29 vía búsqueda web (JSTOR, DOI 10.2307/1913236; corroborado por Crossref y por el archivo RePEc de la Econometric Society).*
+- Granger, C. W. J. (1969). "Investigating Causal Relations by Econometric Models and Cross-spectral Methods". *Econometrica*, 37(3), 424–438. ✅ *Verificada 2026-07-29 vía búsqueda web (Econometric Society, econometricsociety.org; DOI 10.2307/1912791, corroborado por Crossref).*
+- Granger, C. W. J., & Newbold, P. (1974). "Spurious Regressions in Econometrics". *Journal of Econometrics*, 2(2), 111–120. ✅ *Verificada 2026-07-29 vía búsqueda web (Crossref, DOI 10.1016/0304-4076(74)90034-7; corroborado por EconPapers/RePEc).*
 - Hyndman, R. J., & Athanasopoulos, G. (2021). *Forecasting: Principles and Practice* (3.ª ed.). OTexts (libro abierto en línea). ✅ *Verificada 2026-07-27 vía búsqueda web (research.monash.edu; otexts.com/fpp3).*
-- Taylor, S. J., & Letham, B. (2018). "Forecasting at Scale". *The American Statistician*, 72(1), 37–45. ✅ *Verificada 2026-07-27 vía búsqueda web (tandfonline.com, DOI 10.1080/00031305.2017.1380080).*
+- Hyndman, R. J., & Koehler, A. B. (2006). "Another Look at Measures of Forecast Accuracy". *International Journal of Forecasting*, 22(4), 679–688. ✅ *Verificada 2026-07-27 vía búsqueda web (sciencedirect.com, DOI 10.1016/j.ijforecast.2006.03.001).*
+- Ljung, G. M., & Box, G. E. P. (1978). "On a Measure of Lack of Fit in Time Series Models". *Biometrika*, 65(2), 297–303. ✅ *Verificada 2026-07-29 vía búsqueda web (Oxford Academic, DOI 10.1093/biomet/65.2.297).*
 - Makridakis, S., Spiliotis, E., & Assimakopoulos, V. (2022). "M5 Accuracy Competition: Results, Findings, and Conclusions". *International Journal of Forecasting*, 38(4), 1346–1364. ✅ *Verificada 2026-07-27 vía búsqueda web (sciencedirect.com, DOI 10.1016/j.ijforecast.2021.11.013).*
+- Shumway, R. H., & Stoffer, D. S. (2017). *Time Series Analysis and Its Applications: With R Examples* (4.ª ed.). Springer. ✅ *Verificada 2026-07-29 vía búsqueda web (SpringerLink/Crossref, DOI 10.1007/978-3-319-52452-8).*
+- Tashman, L. J. (2000). "Out-of-Sample Tests of Forecasting Accuracy: An Analysis and Review". *International Journal of Forecasting*, 16(4), 437–450. ✅ *Verificada 2026-07-29 vía búsqueda web (Crossref, DOI 10.1016/S0169-2070(00)00065-0).*
+- Taylor, S. J., & Letham, B. (2018). "Forecasting at Scale". *The American Statistician*, 72(1), 37–45. ✅ *Verificada 2026-07-27 vía búsqueda web (tandfonline.com, DOI 10.1080/00031305.2017.1380080).*
+- Wang, X., Smith, K., & Hyndman, R. (2006). "Characteristic-Based Clustering for Time Series Data". *Data Mining and Knowledge Discovery*, 13(3), 335–364. ✅ *Verificada 2026-07-29 vía búsqueda web (SpringerLink, DOI 10.1007/s10618-005-0039-x).*
 - Wickramasuriya, S. L., Athanasopoulos, G., & Hyndman, R. J. (2019). "Optimal Forecast Reconciliation for Hierarchical and Grouped Time Series Through Trace Minimization". *Journal of the American Statistical Association*, 114(526), 804–819. ✅ *Verificada 2026-07-19 vía búsqueda web (tandfonline.com / DOI 10.1080/01621459.2018.1448825).*
 
 ## 15. Extensión aplicada — causalidad y uplift (Tomo 18)

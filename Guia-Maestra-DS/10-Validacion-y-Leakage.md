@@ -3,8 +3,8 @@ title: "Tomo 10 — Validación y Data Leakage"
 tags: [data-science, machine-learning, validacion, cross-validation, leakage]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 10
-version: 6.2
-updated: 2026-07-29
+version: 6.4
+updated: 2026-08-28
 ---
 
 # 🛡️ Tomo 10 — Validación y Data Leakage
@@ -41,8 +41,10 @@ Audiencia: 🔧 🧭
 | Repeated K-Fold | K-Fold repetido M veces con splits distintos | Aún menos varianza de la estimación | M×K entrenamientos | Comparaciones finas con presupuesto de cómputo |
 | LOOCV (Leave-One-Out) | K = N: cada muestra es test una vez | Casi sin sesgo; máximo uso de datos | Carísimo (N modelos); alta varianza con ruido | Datasets muy chicos (N < 50), modelos baratos |
 | Leave-P-Out | Todas las combinaciones de P muestras como test | Exhaustivo | Combinatorialmente inviable salvo P pequeño y N chico | Solo casos minúsculos |
-| Time Series Split | El train siempre **precede** temporalmente al test; ventanas crecientes | Respeta la flecha del tiempo; sin leakage temporal | Sin aleatorización; los primeros folds entrenan con poca historia | Cualquier dato con dependencia temporal: ventas, sensores, finanzas |
+| Time Series Split (walk-forward / rolling-origin) | El train siempre **precede** temporalmente al test; variante **expanding** o **sliding** (ver nota) | Respeta la flecha del tiempo; sin leakage temporal | Sin aleatorización; los primeros folds entrenan con poca historia | Cualquier dato con dependencia temporal: ventas, sensores, finanzas |
 | Purged K-Fold | Time series split con **gap** (embargo) entre fin de train e inicio de test | Previene fuga por autocorrelación entre vecinos temporales | Sacrifica datos en el gap | Trading algorítmico, sensores de alta frecuencia (mlfinlab) |
+
+**Expanding vs. sliding window:** el Time Series Split (también llamado *walk-forward* o *rolling-origin*) tiene dos variantes. **Expanding window** — el train acumula toda la historia sin descartar nada — conviene con series **estables** y **poca historia** disponible: cada dato pasado sigue aportando señal. **Sliding window** — el train mantiene un largo fijo y "olvida" lo más antiguo — conviene cuando hay **drift** o cambios de régimen, porque historia muy vieja deja de representar el proceso actual y solo agrega ruido (Hyndman & Athanasopoulos, 2021; Bergmeir & Benítez, 2012). Igual de determinante: **validar al horizonte real de la decisión**, no al horizonte que resulte más cómodo de calcular (Tashman, 2000) — desarrollo completo de horizonte y métricas de forecasting en [[17-Series-de-Tiempo|Tomo 17 §10]].
 
 ```
  K-FOLD (K=5)                             TIME SERIES SPLIT
@@ -55,6 +57,70 @@ Audiencia: 🔧 🧭
 
 > [!warning] ⚠️ Regla temporal inquebrantable
 > Si los datos tienen tiempo, el split lo respeta: **ordenar cronológicamente y separar por fecha**, jamás barajar. Validar un forecast con K-Fold aleatorio es entrenar con el diario de mañana — la métrica será hermosa y falsa.
+
+### 1.1 Nested Cross-Validation — validar Y tunear sin trampas
+
+Audiencia: 🔧 🧭
+
+> [!tip] 💡 Analogía
+> Un examen con dos niveles: el profesor interno (inner CV) elige qué libro de texto es mejor para estudiar (model selection + tuning); el profesor externo (outer CV) evalúa al alumno con un examen que ninguno de los dos vio. Si el profesor interno también pusiera la nota final, estaría evaluando lo que él mismo optimizó — sesgo garantizado.
+
+**🔧 Definición técnica:** dos loops de CV anidados:
+
+- **Outer loop (K folds):** estima el rendimiento **generalizado** del mejor modelo — cada fold es un test set final.
+- **Inner loop (dentro de cada fold del outer):** selecciona el modelo / hiperparámetros óptimos usando solo el train del fold externo.
+
+```
+ Outer fold 1: [=====train_outer=====][test_outer]
+                     │
+                     └─ Inner K-Fold: selecciona mejores hiperparams
+                     └─ Entrena modelo final con TODOS los train_outer
+                     └─ Evalúa en test_outer → score_1
+
+ Outer fold 2: [test_outer][=====train_outer=====]
+                                  │
+                                  └─ Inner K-Fold ...
+                                  └─ score_2
+ ...
+ Resultado final = promedio(score_1, score_2, ..., score_K)
+```
+
+**🔧 Cuándo es obligatorio:**
+
+- Datasets pequeños (< 5K filas) donde un holdout de test pierde demasiados datos.
+- Cuando se van a comparar múltiples familias de modelos Y tunear cada una — sin nested CV, el test set se "gasta" en las decisiones de selección.
+- Papers y publicaciones donde se requiere una estimación insesgada del error.
+
+**🧭 Cuándo puedes saltarlo:** con datasets grandes (> 100K), un train/val/test simple con holdout generoso es suficiente y mucho más barato computacionalmente.
+
+### 1.2 GroupKFold — splits conscientes de entidades
+
+Audiencia: 🔧 🧭
+
+**🔧 Definición técnica:** variante de K-Fold donde todas las observaciones de un mismo **grupo** (paciente, tienda, cliente, sesión) caen en el mismo fold. Evita que el modelo memorice características idiosincráticas de una entidad en train y las reconozca en test.
+
+**🔧 Cuándo es obligatorio:**
+
+- **Medicina:** múltiples registros por paciente (visitas, mediciones). Sin GroupKFold, el modelo aprende "cómo habla el paciente 42" en vez del patrón general.
+- **Retail multi-tienda:** predecir ventas por tienda — si la tienda A está en train Y test, el modelo memoriza la locación en vez de la dinámica.
+- **Imágenes médicas / satelitales:** múltiples crops del mismo scan/imagen — split por imagen original, no por crop.
+- **NLP con múltiples textos del mismo autor:** el modelo aprende estilo, no contenido.
+
+**🔧 Variantes en sklearn:** `GroupKFold`, `StratifiedGroupKFold` (preserva balance de clases dentro de la restricción de grupo), `LeaveOneGroupOut` (el equivalente de LOOCV pero por grupo).
+
+### 1.3 Adversarial Validation — ¿mi train y test son del mismo planeta?
+
+Audiencia: 🔧 🧭
+
+**🔧 Definición técnica:** entrenar un clasificador binario para distinguir "¿esta fila viene de train o de test?". Si el AUC es ~0.5, ambos conjuntos son indistinguibles (bien). Si es >> 0.5, hay un **dataset shift** entre train y test — el modelo va a fallar por distributional mismatch, no por falta de capacidad.
+
+**🔧 Qué hacer si el AUC es alto (> 0.7):**
+
+- Revisar las features con mayor importancia en el clasificador adversarial — suelen ser timestamps, IDs, o variables que cambiaron de definición entre periodos.
+- Considerar remover esas features del modelo principal, o resamplear el train para que se parezca más al test.
+- Si el shift es temporal (train = 2023, test = 2025), puede ser **concept drift** legítimo — y el modelo necesita datos más recientes, no más features.
+
+**🧭 Cuándo usarlo:** siempre que el modelo rinda bien en CV offline pero mal en producción. Es el diagnóstico de primera línea para el síntoma "mis métricas se degradan al deployar".
 
 ---
 
@@ -94,7 +160,7 @@ Audiencia: 🔧 🧭
 |---|---|---|
 | Target leakage | Una feature contiene información del target o solo disponible DESPUÉS del evento | Predecir si el paciente tomará un medicamento usando "tomó medicamento 30 días después"; la feature `dias_hasta_proximo_control` del caso del [[04-EDA|Tomo 04]] |
 | Train-test contamination | Preprocesamiento ajustado ANTES del split: imputar/escalar/seleccionar features con TODO el dataset | `scaler.fit(X)` antes de separar ([[05-Escalado-de-Datos]]); SMOTE aplicado al test ([[03-Preparacion-de-Datos]]); target encoding sin folds |
-| Leakage temporal | Información del futuro para predecir el pasado | Usar el promedio anual para predecir enero (el promedio incluye feb–dic); features rolling mal alineadas |
+| Leakage temporal | Información del futuro para predecir el pasado | Usar el promedio anual para predecir enero (el promedio incluye feb–dic); features rolling mal alineadas; usar los valores REALES futuros de variables exógenas (clima, precio del competidor) al validar — en producción no los tendrás, hay que pronosticarlos o usar solo regresores conocidos de antemano ([[17-Series-de-Tiempo|Tomo 17 §7]]) |
 | Leakage por duplicados | La misma entidad (o casi) presente en train y test | Cliente duplicado con formatos distintos; imágenes aumentadas repartidas entre train y test |
 | Leakage por ID / timestamp | IDs o timestamps que codifican el target indirectamente | IDs correlativos donde los fraudes se cargaron al final; timestamp que delata el proceso de etiquetado |
 
@@ -132,6 +198,9 @@ Audiencia: 🔧 🧭 👔
 - (Nadeau & Bengio, 2003) — la corrección de varianza para comparar modelos con CV.
 - (Kaufman et al., 2012) — taxonomía del leakage en minería de datos.
 - (Hastie et al., 2009), (Géron, 2022) — validación en el flujo completo.
+- (Hyndman & Athanasopoulos, 2021) — *Forecasting: Principles and Practice*, respaldo de la validación walk-forward y sus variantes expanding/sliding.
+- (Bergmeir & Benítez, 2012) — uso correcto de cross-validation en predictores de series de tiempo.
+- (Tashman, 2000) — revisión de pruebas out-of-sample y del efecto del horizonte en la precisión del pronóstico.
 
 Fichas completas con datos de publicación en [[16-Bibliografia]].
 

@@ -3,8 +3,8 @@ title: "Tomo 17 — Series de Tiempo y Forecasting"
 tags: [data-science, machine-learning, time-series, forecasting]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 17
-version: 6.1
-updated: 2026-07-19
+version: 6.2
+updated: 2026-07-29
 ---
 
 # 📈 Tomo 17 — Series de Tiempo y Forecasting
@@ -86,6 +86,20 @@ Audiencia: 🔧 🧭
 
 **👔 En una frase para el negocio:** separa cuánto de tu crecimiento es real (tendencia) y cuánto es diciembre (estacionalidad) — la confusión entre ambos infla metas y bonos.
 
+**🔧 Fuerza de tendencia y estacionalidad.** Con los tres componentes de la STL (T, S, R) se puede resumir, en una escala 0–1, cuánto de la variabilidad de la serie explica cada componente frente al residuo:
+
+```
+ F_T = max(0, 1 − Var(R) / Var(T + R))      fuerza de la tendencia
+ F_S = max(0, 1 − Var(R) / Var(S + R))      fuerza de la estacionalidad
+```
+
+`F_T` cercano a 1 = la tendencia domina y el residuo aporta poco frente a ella; `F_S` cercano a 1 = el patrón estacional es lo que más explica la serie una vez descontada la tendencia. Estas medidas se propusieron originalmente para **clasificar y agrupar catálogos grandes de series por sus características** (Wang, Smith & Hyndman, 2006), y hoy son parte del instrumental estándar de análisis de series a escala (Hyndman & Athanasopoulos, 2021).
+
+**🧭 Cuándo usarlo:** no tanto para leer una sola serie —para eso ya sirve la descomposición a ojo de arriba— sino para **triage de catálogos grandes** (miles de SKUs) antes de asignar modelo: series con `F_S` alto son candidatas naturales a Holt-Winters/SARIMA; series con `F_T` alto y `F_S` bajo casi no justifican un componente estacional; y el perfil agregado del catálogo ayuda a decidir entre segmentar por tipo de serie o entrenar un modelo global (sección 6 y sección 11).
+
+> [!warning] ⚠️ El umbral "F > 0.6 = estacionalidad fuerte" es heurística, no un estándar publicado
+> Es un criterio orientativo que circula en la práctica de clustering y triage de series, útil para ordenar un catálogo de mayor a menor estacionalidad — no un corte validado formalmente en la literatura. Trátalo como punto de partida, no como regla rígida de decisión.
+
 ---
 
 ## 3. Estacionariedad
@@ -109,8 +123,15 @@ Audiencia: 🔧 🧭
 
 **Remedios:** **diferenciación** (`y'ₜ = yₜ − yₜ₋₁`, el parámetro `d` de ARIMA; diferenciación estacional `yₜ − yₜ₋ₘ` para quitar el patrón anual), y transformación log/Box-Cox para estabilizar la varianza ([[05-Escalado-de-Datos]]).
 
+**🔧 Retornos logarítmicos: la diferenciación estándar de precios.** Para series multiplicativas —precios de activos, tipos de cambio, cualquier variable que crece por tasas más que por montos fijos— la transformación de referencia no es la diferencia simple sino el **retorno logarítmico**: `r_t = ln(P_t / P_t₋₁)`. Es a la vez una diferenciación (de `ln(P)`) y una aproximación al retorno porcentual (para cambios pequeños, `r_t ≈ (P_t − P_t₋₁) / P_t₋₁`). Se modela `r_t` — normalmente mucho más cercano a estacionario que el nivel `P_t` — y el nivel se reconstruye acumulando: `P_t = P_0 · exp(Σ r_i)`. Este tomo es mayormente retail-céntrico (demanda, inventario); esta transformación es la puerta de entrada a series financieras, donde raramente se modela el precio en niveles (Hyndman & Athanasopoulos, 2021).
+
 > [!danger] 🚨 Sobre-diferenciar es tan malo como no diferenciar
 > Diferenciar de más **inyecta autocorrelación artificial** y agranda la varianza del pronóstico. Regla práctica: casi ninguna serie de negocio necesita `d > 2`. Si la serie tiene tendencia clara, empieza con `d=1` y verifica con los tests; no diferencies "por si acaso".
+
+> [!danger] 🚨 Regresión espuria entre series con tendencia
+> Dos series que solo comparten tendencia —sin que una cause la otra y sin que exista un confounder— producen una regresión con **r y R² altísimos** si se corren en niveles sin diferenciar (el ejemplo clásico de la literatura: consumo de manteca de maní contra tasas de divorcio). Es un mecanismo distinto de la correlación espuria por confounder ya vista en [[02-Fundamentos-Matematicos]]: aquí no hace falta una tercera variable, basta con que ninguna de las dos series sea estacionaria (Granger & Newbold, 1974). La señal de alerta es un R² alto acompañado de un estadístico **Durbin-Watson bajo** (residuos fuertemente autocorrelacionados) — si ves esa combinación, sospecha regresión espuria antes de creer el resultado. Remedio: diferenciar ambas series (o trabajar en retornos) antes de regresionar, o comprobar si existe **cointegración**.
+>
+> **Cointegración, en dos líneas:** dos series no estacionarias están cointegradas si existe una combinación lineal de ambas que sí es estacionaria — evidencia de una relación de equilibrio de largo plazo genuina, aunque cada serie por separado deambule sin límite. El procedimiento de referencia para probarlo es el de dos pasos de Engle y Granger: regresionar en niveles y testear la estacionariedad de los residuos de esa regresión (Engle & Granger, 1987).
 
 **👔 En una frase para el negocio:** los patrones solo son aprendibles si el terreno de juego es estable — esta verificación evita proyectar como "patrón" lo que era una escalada sin freno.
 
@@ -133,10 +154,17 @@ Audiencia: 🔧
 | ACF decae **muy lento** (casi lineal) | Falta diferenciar | subir `d` |
 | Picos en k = 12, 24, 36… (datos mensuales) | Estacionalidad | componente estacional (SARIMA) |
 
-**🧭 Cuándo usarlo:** diagnóstico previo a ARIMA y **auditoría de residuos**. La prueba de que un modelo capturó toda la estructura: sus residuos NO deben mostrar autocorrelación (test de **Ljung-Box**, `p > 0.05` = residuos parecen ruido blanco = bien). Si los residuos aún tienen memoria, el modelo dejó señal sobre la mesa.
+**🧭 Cuándo usarlo:** diagnóstico previo a ARIMA y **auditoría de residuos**. La prueba de que un modelo capturó toda la estructura: sus residuos NO deben mostrar autocorrelación (test de **Ljung-Box**, `p > 0.05` = residuos parecen ruido blanco = bien). Si los residuos aún tienen memoria, el modelo dejó señal sobre la mesa (la sección 5 amplía este diagnóstico).
+
+**🔧 Cómo descubrir el período estacional cuando no se conoce.** No toda serie trae el período escrito de antemano (un log de sensores IoT, eventos de una app). Dos formas de encontrarlo:
+
+- **ACF:** picos que se repiten a rezagos regulares (k, 2k, 3k…) delatan un período de largo k — la misma tabla de arriba, leída para ubicar el ciclo en vez de el orden del modelo.
+- **Periodograma / densidad espectral:** descompone la serie en frecuencias y muestra cuánta varianza aporta cada una (Shumway & Stoffer, 2017). Un pico dominante en la frecuencia `f` implica un período `T = 1/f` (en número de observaciones); picos secundarios en múltiplos de `f` son **armónicos** — sub-ciclos del mismo patrón, no períodos independientes. Potencia concentrada en frecuencias **muy bajas** (cerca de cero) suele ser tendencia disfrazada de ciclo, no estacionalidad real: la firma típica de este caso es un "ciclo dominante" cuyo largo coincide con el largo total de la muestra, que no es un período sino la tendencia que el periodograma no logra separar.
+
+Conecta con la sección 7: cada pico espectral genuino es, potencialmente, una estacionalidad adicional que un modelo de una sola estación (Holt-Winters, SARIMA) no captura por sí solo.
 
 > [!note] En la práctica: `auto_arima`
-> Leer ACF/PACF a ojo es un arte que conviene entender, pero en producción se usa búsqueda automática de órdenes (`auto_arima` de pmdarima, o el AutoARIMA de las librerías modernas) que optimiza AIC/BIC ([[02-Fundamentos-Matematicos]]). El diagnóstico manual sigue valiendo para **entender** lo que la búsqueda automática eligió y para auditar residuos.
+> Leer ACF/PACF a ojo es un arte que conviene entender, pero en producción se usa búsqueda automática de órdenes (`auto_arima` de pmdarima, o el AutoARIMA de las librerías modernas) que optimiza AIC/BIC ([[08-Metricas-de-Evaluacion]]). El diagnóstico manual sigue valiendo para **entender** lo que la búsqueda automática eligió y para auditar residuos.
 
 ---
 
@@ -155,6 +183,19 @@ Audiencia: 🔧 🧭
 
 > [!note] ETS y ARIMA no son rivales: son dos idiomas para lo mismo
 > **ETS** (Error-Trend-Seasonal) describe la serie por sus **componentes** (¿la tendencia es aditiva o amortiguada?, ¿la estacionalidad crece con el nivel?). **ARIMA** la describe por su **estructura de autocorrelación**. Muchas series se modelan bien con cualquiera de los dos; hay familias de ETS que tienen un ARIMA equivalente exacto. Regla práctica: **ETS si el pensamiento es "componentes", ARIMA si es "memoria y diferencias"**, y deja que la validación (sección 10) decida el ganador.
+
+> [!note] El naive no es solo una vara de comparación: a veces es el modelo generador correcto
+> Si la serie sigue un **random walk** (`yₜ = yₜ₋₁ + εₜ`, con `εₜ` ruido blanco), el naive no es un baseline modesto — es el pronóstico puntual **óptimo**: no hay información en el pasado que reduzca el error esperado del próximo paso, porque no queda estructura que explotar más allá del último valor observado. Si tus tests de estacionariedad y tu ACF/PACF (secciones 3 y 4) apuntan a que tu serie es, en esencia, un random walk, la meta realista deja de ser "vencerle al naive en el punto" —imposible por construcción— y pasa a ser modelar su **distribución y volatilidad** (sección 9). Nota de notación, para quien llegue desde material con otra convención: de aquí en más este tomo usa `φ` (phi) para los coeficientes autorregresivos y `θ` (theta) para los de media móvil.
+
+**🔧 Diagnóstico de residuos: el ciclo completo de Box-Jenkins.** Ajustar un ARIMA (o cualquier modelo clásico) no termina en el fit. El método clásico (Box & Jenkins, 1970) es un **ciclo** — identificar → estimar → diagnosticar → iterar —, y un diagnóstico que falla te devuelve a identificar; no es un paso final que se marca y se olvida.
+
+| Test | H₀ (hipótesis nula) | Qué revela si se rechaza | Consecuencia |
+|---|---|---|---|
+| **Ljung-Box** (autocorrelación) | Los residuos son ruido blanco | Queda señal sin capturar en la mesa | Agregar términos AR/MA o estacionales y volver a identificar (Ljung & Box, 1978) |
+| **Jarque-Bera / Shapiro-Wilk** (normalidad) | Los residuos son normales | Colas más pesadas o asimetría de la asumida | NO invalida el punto pronosticado, pero sí los **intervalos paramétricos** que asumen normalidad → usar bootstrap o conformal prediction (sección 9) |
+| **ARCH test** (heterocedasticidad condicional) | La varianza del residuo es constante en el tiempo | Volatilidad agrupada (tramos tranquilos y turbulentos que se alternan) | Los intervalos de ancho constante mienten; el modelo de referencia para esa varianza es GARCH (Engle, 1982) |
+
+**Checklist visual de una línea** (los cuatro gráficos que acompañan la tabla): residuos vs. tiempo (¿hay patrones o rachas?), histograma de residuos (¿parece campana?), correlograma de residuos —la ACF de la sección 4 aplicada al error— (¿hay barras fuera de la banda de confianza?), y gráfico Q-Q (¿los puntos siguen la diagonal en las colas?).
 
 > [!tip] 🧭 Árbol de decisión rápido: ¿por dónde empiezo?
 > ```
@@ -190,6 +231,16 @@ Audiencia: 🔧 🧭 👔
 
 > [!danger] 🚨 Los árboles NO extrapolan tendencia
 > Un gradient boosting nunca predice un valor **fuera del rango que vio en train** ([[07-Modelos-Supervisados]]). En una serie con tendencia creciente sostenida, un modelo de árboles se "aplana" en el techo histórico y subestima el futuro sistemáticamente. Remedios: **destendenciar** (modelar el residuo de una descomposición), **diferenciar** (predecir el cambio `y(t)−y(t-1)` en vez del nivel), o combinar con un modelo lineal que sí extrapole. Ignorar esto es el error #1 del forecasting con ML.
+
+**🔧 Estrategias para pronosticar múltiples pasos (multi-step).** Cuando el horizonte es `h > 1`, hay que decidir cómo se llega ahí — la elección no es cosmética, cambia el error y el costo de mantenimiento:
+
+| Estrategia | Cómo funciona | Ventaja | Costo |
+|---|---|---|---|
+| **Recursiva** | Un solo modelo one-step; su propia predicción se reinyecta como input del paso siguiente | Un modelo, coherente paso a paso | El error se **acumula**: cada paso hereda el error del anterior |
+| **Directa** | Un modelo distinto entrenado específicamente para cada horizonte (uno para t+1, otro para t+2…) | Sin acumulación de error entre pasos | `h` modelos que entrenar y mantener; sin garantía de coherencia entre pasos consecutivos |
+| **Multi-output** | Un solo modelo que predice el vector completo `(t+1, …, t+h)` de una vez | Un modelo, sin acumulación de error | Exige un algoritmo que soporte salida vectorial; menos flexible paso a paso |
+
+(Ben Taieb, Bontempi, Atiya & Sorjamaa, 2012) compara estas estrategias en competencias de forecasting multi-step y no encuentra una ganadora universal: la elección depende de cuánto ruido tiene el proceso generador y de cuán largo es el horizonte.
 
 **El enfoque global — la idea que cambió el campo:** en lugar de entrenar un modelo por serie (**local**), se entrena **un solo modelo para todas las series a la vez**, con el ID de la serie como feature. Domina cuando hay muchas series relacionadas.
 
@@ -229,6 +280,14 @@ Tres complicaciones del mundo real que el modelo de manual no cubre.
 
 > [!warning] ⚠️ La trampa de las exógenas: también hay que pronosticarlas
 > Si tu modelo usa "temperatura" para predecir demanda, en producción necesitas la **temperatura futura** — que es a su vez un pronóstico con su propio error. Usar el valor real futuro de una exógena en validación es **leakage** ([[10-Validacion-y-Leakage]]): infla la métrica y no se podrá replicar. Distingue exógenas **conocidas de antemano** (feriados, precio planificado) de las que **hay que estimar** (clima, tráfico).
+
+**🔧 Causalidad de Granger: screening de candidatas a exógena.** Antes de meter una variable candidata como exógena, una pregunta útil de filtro: ¿los rezagos de X mejoran la predicción de Y más allá de lo que ya aportan los propios rezagos de Y? Eso es lo que testea la causalidad de Granger (Granger, 1969) — no es un test binario de causa-efecto, es una pregunta de **poder predictivo incremental**. Tres advertencias antes de usarlo como filtro:
+
+1. **"Granger-causa" no es causalidad real.** El nombre es engañoso: es precedencia predictiva, no el mecanismo causal que exploran las herramientas de [[18-Causalidad-y-Uplift]] — dos series pueden Granger-causarse mutuamente por un tercer factor común que mueve a ambas con rezagos distintos.
+2. **Exige estacionariedad** (sección 3): aplicarlo sobre series con tendencia sin diferenciar hereda el mismo riesgo de regresión espuria ya visto arriba.
+3. Que X Granger-cause a Y a través de sus **rezagos** no autoriza, por sí solo, a usar el valor **contemporáneo** de X como exógena — ese es un salto adicional. Esto último es un criterio de rigor razonable, no una regla codificada en la literatura del método: trátalo como tal, no como doctrina cerrada.
+
+**🔧 Regresión armónica dinámica.** Otra forma de atacar estacionalidad múltiple o de período muy largo: en vez de forzar un componente estacional explícito (un SARIMA con `m=365` es, en la práctica, inviable de estimar), se ajusta un ARIMA sobre los residuos de **K pares de términos seno/coseno** por período, usados como variables exógenas — la misma idea que usa Prophet internamente para representar sus estacionalidades (Taylor & Letham, 2018). `K` controla la suavidad de la forma estacional (K bajo = curva suave, K alto = riesgo de sobreajuste) y se elige por AICc o por validación, igual que cualquier otro hiperparámetro ([[08-Metricas-de-Evaluacion]]). Ventaja doble: maneja períodos largos o múltiples donde SARIMA es inviable, y —a diferencia de la trampa de exógenas que acabamos de ver (el clima)— los regresores armónicos futuros se calculan **exactos**, porque el seno y el coseno de una fecha futura no tienen incertidumbre. El límite: la forma estacional queda fija una vez elegido K; si la estacionalidad cambia de forma en el tiempo, MSTL o Prophet (que sí la dejan evolucionar) pueden ajustar mejor (Hyndman & Athanasopoulos, 2021).
 
 **🔧 Forecasting jerárquico.** En retail las series forman un árbol: SKU → categoría → tienda → región → total. El negocio necesita que los niveles **cuadren**: la suma de los pronósticos por SKU debe igualar el pronóstico de la categoría.
 
@@ -326,8 +385,13 @@ Dos variantes: **ventana creciente** (expanding: el train acumula toda la histor
 
 **Lectura del MASE:** `< 1` = le ganas al naive; `> 1` = tu modelo sofisticado **pierde** contra "igual que ayer". Es la vara que desinfla la mayoría de los modelos que "parecían buenos".
 
+> [!danger] 🚨 La ilusión del gráfico desplazado
+> Una predicción que en el gráfico "sigue de cerca" a la serie real casi siempre es, en realidad, la serie **desplazada un rezago**: el modelo no aprendió estructura, solo repite el valor de ayer con un paso de retraso — y visualmente eso se ve casi idéntico a un buen ajuste. La superposición visual **nunca** es evidencia suficiente: valida contra el naive con MASE (Hyndman & Koehler, 2006). Un gráfico que "se ve genial" junto a un MASE cercano a 1 es la señal de que estás mirando un espejismo, no un modelo.
+
 > [!warning] ⚠️ Reglas de oro del forecasting
-> (1) **Baseline naive primero**: si no le ganas al seasonal naive con holgura, no tienes modelo — tienes decoración. (2) **Jamás barajar**: split temporal siempre. (3) **Auditar features**: toda variable debe conocerse ANTES del momento del pronóstico (la promo "planificada" que en los datos históricos aparece corregida a posteriori es leakage clásico, [[10-Validacion-y-Leakage]]). (4) **Pronosticar el intervalo, no solo el punto**: la decisión de inventario vive en el P90, no en la media. (5) **Validar al horizonte real de la decisión**: si compras con 4 semanas de anticipación, valida a 4 semanas, no a 1.
+> (1) **Baseline naive primero**: si no le ganas al seasonal naive con holgura, no tienes modelo — tienes decoración. (2) **Jamás barajar**: split temporal siempre. (3) **Auditar features**: toda variable debe conocerse ANTES del momento del pronóstico (la promo "planificada" que en los datos históricos aparece corregida a posteriori es leakage clásico, [[10-Validacion-y-Leakage]]). (4) **Pronosticar el intervalo, no solo el punto**: la decisión de inventario vive en el P90, no en la media. (5) **Validar al horizonte real de la decisión**: si compras con 4 semanas de anticipación, valida a 4 semanas, no a 1. (6) **Mismo protocolo para todos los modelos comparados**: mismo horizonte, misma información disponible — un naive one-step contra un modelo evaluado a multi-step gana por construcción, no por mérito; mide además cómo se **degrada el error por paso del horizonte**, no solo el promedio agregado (Tashman, 2000).
+
+**👔 En una frase para el negocio:** un modelo no vale por lo bien que su gráfico se superpone a la historia — vale por cuánto le gana al "igual que ayer" en el horizonte real de la decisión, medido con el mismo protocolo que a sus competidores.
 
 ---
 
@@ -362,6 +426,15 @@ Síntesis operativa del tomo — de la situación al punto de partida:
 - (Makridakis et al., 2022) — resultados de la competencia M5 (dominio de los modelos globales).
 - (Wickramasuriya et al., 2019) — reconciliación óptima (MinT) en forecasting jerárquico.
 - (Hyndman & Athanasopoulos, 2021) — *Forecasting: Principles and Practice*, la referencia moderna abierta.
+- (Wang, Smith & Hyndman, 2006) — medidas de fuerza de tendencia y estacionalidad (F_T, F_S) sobre componentes STL.
+- (Shumway & Stoffer, 2017) — análisis espectral / periodograma para detectar el período estacional.
+- (Granger & Newbold, 1974) — regresión espuria entre series con tendencia no estacionaria.
+- (Engle & Granger, 1987) — cointegración y su prueba de dos pasos.
+- (Ljung & Box, 1978) — test de Ljung-Box para autocorrelación de residuos.
+- (Engle, 1982) — heterocedasticidad condicional (ARCH), base de GARCH.
+- (Ben Taieb, Bontempi, Atiya & Sorjamaa, 2012) — comparación de estrategias de pronóstico multi-step.
+- (Granger, 1969) — causalidad de Granger, como screening de variables exógenas.
+- (Tashman, 2000) — protocolo comparable de evaluación out-of-sample en forecasting.
 
 Fichas completas en [[16-Bibliografia]].
 

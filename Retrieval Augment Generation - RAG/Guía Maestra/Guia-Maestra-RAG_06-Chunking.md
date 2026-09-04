@@ -4,6 +4,7 @@ tags: [rag, chunking, fixed-size, overlap, recursive-splitting, semantic-chunkin
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 06
 version: 1.1
+updated: 2026-08-28
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -338,6 +339,37 @@ El curso cierra con un criterio que vale más que la lista de técnicas:
 > *"Como diseñador de sistemas RAG, el objetivo no es implementar la técnica de chunking más vanguardista del mercado. Es entender qué opciones existen, cuán adecuadas son para tus datos, y si los costos y beneficios justifican implementarla."*
 >
 > Y el corolario operativo: **experimenta con un subconjunto pequeño de tus datos** y comprueba si las técnicas avanzadas realmente mejoran la relevancia antes de comprometerte con el costo.
+
+### 4.5 Late chunking y contextual chunking — avances post-curso
+
+Audiencia: 🔧 🧭
+
+**Late chunking (Jina AI, 2024):**
+- El approach estándar: chunking → embedding (cada chunk se embeddea por separado, pierde contexto del documento)
+- Late chunking invierte: se pasa el DOCUMENTO COMPLETO por el modelo de embedding (hasta el context window del encoder), y DESPUÉS se segmenta el pool de token embeddings en chunks. Así cada chunk "sabe" en qué documento estaba.
+- Ventaja: los chunks heredan el contexto semántico del documento sin necesidad de overlap ni prepending de metadata
+- Limitación: requiere modelos de embedding que soporten documentos largos (jina-embeddings-v3 soporta 8192 tokens); no escala a documentos de 100 páginas sin truncar
+- Cuándo usarlo: documentos medianos (< 8K tokens) donde el contexto inter-chunk es crítico
+
+**Contextual chunking (Anthropic, 2024 — "Contextual Retrieval"):**
+- El problema: un chunk como "La empresa facturó $2M en Q3" pierde sentido sin saber QUÉ empresa
+- La solución: antes de embeddear, un LLM (generalmente barato/rápido) genera una frase de contexto corta para cada chunk: "Este chunk proviene del informe financiero anual 2024 de Acme Corp, sección de resultados trimestrales."
+- Esa frase se prepend al chunk antes de embeddear Y antes de pasar al LLM generador
+- Resultado reportado por Anthropic: reducción de ~49% en retrieval failures al combinarlo con hybrid search (BM25 + semantic)
+- Trade-off: costo de la llamada al LLM para generar contexto × N chunks. Mitigación: usar un modelo barato (Haiku, GPT-4o-mini) y cachear
+- Cuándo usarlo: knowledge bases donde los chunks pierden sentido sin el contexto del documento padre (informes financieros, contratos, manuales técnicos largos)
+
+**Tabla comparativa:**
+| Approach | Mecanismo | Costo extra | Mejora típica en retrieval | Mejor para |
+|---|---|---|---|---|
+| Overlap estándar (§3.2) | Compartir tokens entre chunks vecinos | ~0 (solo storage) | Marginal | Baseline, textos narrativos |
+| Metadata prepending (§3.5) | Agregar título/sección al inicio del chunk | ~0 | Moderada | Documentos con estructura clara |
+| Late chunking | Embedding full-doc → segment pool | ~0 (solo inference time) | Significativa en docs medianos | Docs < 8K tokens con alta interdependencia |
+| Contextual chunking | LLM genera contexto por chunk | Alto (1 LLM call / chunk) | ~49% menos retrieval failures | KB heterogénea, docs largos, alto impacto de errores |
+
+> [!quote] 📚 Bibliografía
+> - Günther, M. et al. (2024). *"Late Chunking: Contextual Chunk Representations Using Long-Context Embedding Models"*. Jina AI.
+> - Anthropic (2024). *"Introducing Contextual Retrieval"*. Blog post.
 
 ---
 

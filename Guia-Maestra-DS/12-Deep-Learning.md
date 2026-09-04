@@ -3,8 +3,8 @@ title: "Tomo 12 — Deep Learning: de los Fundamentos a las Arquitecturas Modern
 tags: [data-science, machine-learning, deep-learning, redes-neuronales, transformers]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 12
-version: 6.1
-updated: 2026-07-27
+version: 6.3
+updated: 2026-07-29
 ---
 
 # 🧠 Tomo 12 — Deep Learning: de los Fundamentos a las Arquitecturas Modernas
@@ -153,7 +153,7 @@ Audiencia: 🔧 🧭
 > [!tip] 💡 Analogía
 > Una linterna pequeña que recorre la foto: en cada posición ilumina un parche y pregunta "¿hay un borde aquí? ¿una esquina?". La **misma** linterna (mismos pesos) recorre toda la imagen — por eso detecta el gato esté donde esté. Capas sucesivas usan linternas que buscan patrones cada vez más complejos: bordes → texturas → orejas → gato.
 
-**🔧 Definición técnica:** la **capa convolucional** aplica K filtros F×F sobre el mapa de entrada (parámetros: `out_channels`, `kernel_size`, `stride`, `padding`), produciendo K mapas de características. Tres propiedades fundamentales: **locality** (cada neurona ve solo su receptive field), **weight sharing** (el mismo filtro para toda la imagen → órdenes de magnitud menos parámetros que una densa) y **translation invariance**. **Pooling:** Max (conserva lo prominente), Average (suaviza), **GAP** (Global Average Pooling: H×W×C → vector C; reemplaza densas finales en arquitecturas modernas). **BatchNorm en CNN:** normaliza por canal sobre (N,H,W), típicamente después de la conv y antes de la activación ([[11-Mejora-de-Modelos]]). **Historia esencial:** LeNet (1998, LeCun et al.) → AlexNet (2012, arranca la era DL) → VGG (2014, profundidad con kernels 3×3) → **ResNet** (2015, He et al.) → EfficientNet (2019, scaling balanceado) → ViT (2020, atención en visión, Dosovitskiy et al., 2021). **Skip connections (ResNet):** `h(x) = F(x) + x` — si F tiende a 0 la capa aprende la identidad; resuelve el vanishing gradient y habilita redes de 100+ capas.
+**🔧 Definición técnica:** la **capa convolucional** aplica K filtros F×F sobre el mapa de entrada (parámetros: `out_channels`, `kernel_size`, `stride`, `padding`), produciendo K mapas de características. Tres propiedades fundamentales: **locality** (cada neurona ve solo su receptive field), **weight sharing** (el mismo filtro para toda la imagen → órdenes de magnitud menos parámetros que una densa) y **translation invariance**. **Pooling:** Max (conserva lo prominente), Average (suaviza), **GAP** (Global Average Pooling: H×W×C → vector C; reemplaza densas finales en arquitecturas modernas). **BatchNorm en CNN:** normaliza por canal sobre (N,H,W), típicamente después de la conv y antes de la activación ([[11-Mejora-de-Modelos]]). **Historia esencial:** LeNet (LeCun et al., 1998) → AlexNet (2012, arranca la era DL) → VGG (2014, profundidad con kernels 3×3) → **ResNet** (He et al., 2016) → EfficientNet (2019, scaling balanceado) → ViT (2020, atención en visión, Dosovitskiy et al., 2021). **Skip connections (ResNet):** `h(x) = F(x) + x` — si F tiende a 0 la capa aprende la identidad; resuelve el vanishing gradient y habilita redes de 100+ capas.
 
 **🧭 Cuándo usarla:** imágenes y señales con estructura espacial; en la práctica, casi siempre vía transfer learning (sección 7). **👔 En una frase:** los ojos artificiales del negocio — inspección, conteo, lectura de documentos.
 
@@ -167,6 +167,39 @@ Audiencia: 🔧 🧭
 **🔧 Definición técnica:** RNN: `hₜ = f(W_hh·hₜ₋₁ + W_xh·xₜ + b)` — la misma red aplicada en cada paso temporal. **Vanishing/exploding gradient:** el gradiente se multiplica por W_hh en cada paso: con ‖W‖<1 desaparece, con ‖W‖>1 explota (gradient clipping como parche). **LSTM** (Hochreiter & Schmidhuber, 1997): cell state Cₜ de largo plazo gobernado por **forget gate** (qué olvidar), **input gate + candidato** (qué agregar) y **output gate** (qué exponer como hₜ); los gates usan sigmoid (0–1 = apertura). Maneja dependencias de cientos a ~1000 pasos. **GRU:** 2 gates (reset, update), estado único, menos parámetros, rendimiento comparable, más rápida. **Bidireccionales:** procesan la secuencia en ambos sentidos y concatenan contexto pasado+futuro.
 
 **🧭 Cuándo usarlas:** series de tiempo de tamaño moderado, sensores, secuencias donde un Transformer es sobredimensionado. En NLP, los Transformers las desplazaron. **👔 En una frase:** la memoria artificial para datos que llegan en orden — útil aún donde lo gigante no se justifica.
+
+> [!info] 📌 De la serie al tensor: cómo entra una secuencia a la red
+> Antes del forward pass, la serie cruda se corta en ventanas: una **ventana deslizante** de `lookback` pasos pasados se empareja con el valor que se quiere predecir, y el corte se repite avanzando un paso a la vez sobre toda la historia (Géron, 2022).
+
+```
+serie:        y₁  y₂  y₃  y₄  y₅  y₆  y₇  y₈  y₉  y₁₀ …
+
+ventana 1:   [y₁ y₂ y₃ y₄ y₅] ────► predice y₆
+ventana 2:      [y₂ y₃ y₄ y₅ y₆] ────► predice y₇
+ventana 3:         [y₃ y₄ y₅ y₆ y₇] ────► predice y₈
+                    lookback = 5 pasos        horizonte = t+1
+
+  cada ventana se apila como un ejemplo más de un tensor 3D:
+
+  (muestras, pasos_de_tiempo, canales)
+      │             │            │
+      │             │            └─ features por paso: 1 si la serie es univariada;
+      │             │               >1 si se agregan exógenas (temperatura, día de semana…)
+      │             └─ el lookback: cuánta historia ve la red en cada ejemplo (5 en el diagrama)
+      └─ cuántas ventanas produjo el deslizamiento sobre toda la serie
+```
+
+> El largo de la ventana no se fija a ojo: conviene que lo informe la memoria real de la serie, ya diagnosticada en la ACF/PACF ([[17-Series-de-Tiempo|Tomo 17 §4]]) — un lookback mucho más corto que el rezago donde la ACF sigue siendo significativa deja memoria útil fuera de la ventana; uno mucho más largo solo agrega parámetros y ruido sin señal nueva. Es una heurística de diseño, no una fórmula cerrada.
+
+**Dos reglas de preparación que cambian frente al ML tabular** — con secuencias es más fácil romperlas sin darse cuenta, porque las ventanas se solapan entre sí:
+
+1. **Jamás barajar las ventanas al partir train/val/test.** Un `shuffle` aleatorio antes del split mezcla ventanas de fechas distintas entre los tres conjuntos: el modelo termina validándose con ventanas cuyos vecinos temporales inmediatos ya vio en train. Es la misma regla cronológica inquebrantable de cualquier split con tiempo ([[10-Validacion-y-Leakage]]), solo que aquí el barajado ocurre a nivel de ventana y no de fila cruda, lo que lo hace más fácil de pasar por alto.
+2. **Escalar con fit solo en train.** El scaler se ajusta únicamente con las ventanas del split de entrenamiento y luego se aplica a validación y test — nunca al revés. Fitear con la serie completa antes de ventanear deja que la media y la desviación del futuro informen la escala con la que la red ve el pasado ([[05-Escalado-de-Datos]]).
+
+Para las arquitecturas de forecasting especializadas que se construyen sobre estas piezas (DeepAR, N-BEATS, TFT), ver [[17-Series-de-Tiempo|Tomo 17 §6]].
+
+> [!danger] 🚨 Bidireccional + forecasting = leakage
+> Una capa **bidireccional** procesa la secuencia en los dos sentidos y concatena el contexto pasado **y futuro** en cada paso (Goodfellow et al., 2016) — por diseño necesita conocer los pasos posteriores al que está evaluando. Eso la hace excelente para clasificar o etiquetar una secuencia **ya completa y observada** (sentimiento de una reseña, NER, transcripción de audio), pero **inutilizable para pronosticar**: en producción, el "futuro" de la ventana es exactamente lo que se quiere predecir, no un dato disponible. Si una red bidireccional "predice" t+1, durante el entrenamiento estuvo mirando t+1 (y más allá) para construir esa misma predicción — no aprendió a pronosticar, aprendió a copiar la respuesta.
 
 > [!info] 📌 Nota de vigencia — State Space Models (Mamba)
 > Desde 2023 resurgió, con otro nombre y otras matemáticas, la idea de "un estado que se propaga en el tiempo": los **State Space Models (SSM) selectivos**, popularizados por **Mamba** (Gu & Dao, 2023). A diferencia de la RNN clásica, el SSM se formula como una ecuación de estado continua discretizada, y su versión "selectiva" hace que los parámetros de esa transición se calculen dinámicamente en función de cada entrada (no son fijos como en un SSM lineal simple). La ganancia frente al self-attention: complejidad **lineal** en la longitud de secuencia (`O(n)` en vez de `O(n²)`), lo que abarata drásticamente el manejo de contextos de cientos de miles o millones de tokens. En 2025–2026 el patrón que se ve en producción no es "Mamba puro" sino **arquitecturas híbridas**: intercalar aproximadamente 1 capa de self-attention cada 8–10 capas SSM, combinando la eficiencia lineal del SSM con la capacidad de recuperación exacta de la atención (patrón reportado en desarrollos de NVIDIA, Kimi y Tencent Hunyuan, entre otros). **Es una práctica emergente que vale la pena monitorear, no un reemplazo consolidado del Transformer** — la inmensa mayoría de los LLMs de referencia en 2026 siguen siendo Transformer puro o híbridos con atención dominante.
@@ -263,6 +296,7 @@ Audiencia: 🔧 🧭
 ## 📖 Referencias de este tomo
 
 - (Goodfellow et al., 2016) — el texto de referencia del campo.
+- (Géron, 2022) — guía práctica de referencia (Scikit-Learn, Keras, TensorFlow).
 - (Vaswani et al., 2017) — "Attention Is All You Need": el Transformer.
 - (Hochreiter & Schmidhuber, 1997) — LSTM. · (LeCun et al., 1998) — LeNet. · (He et al., 2016) — ResNet. · (Dosovitskiy et al., 2021) — ViT.
 - (Kingma & Ba, 2015) — Adam. · (Ioffe & Szegedy, 2015) — BatchNorm. · (Srivastava et al., 2014) — Dropout.

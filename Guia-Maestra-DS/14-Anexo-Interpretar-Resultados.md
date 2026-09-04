@@ -3,7 +3,8 @@ title: "Tomo 14 — Anexo: Cómo Interpretar Resultados (para no técnicos)"
 tags: [data-science, machine-learning, ejecutivo, interpretacion, anexo]
 audiencias: [ejecutivo, puente]
 tomo: 14
-version: 6.0
+version: 6.1
+updated: 2026-08-28
 ---
 
 # 👓 Tomo 14 — Anexo: Cómo Interpretar Resultados (para no técnicos)
@@ -133,6 +134,63 @@ Audiencia: 👔 🧭
 - **Drift NO significa automáticamente modelo malo:** significa que el modelo está opinando sobre un mundo que ya no es el suyo. La respuesta va de "vigilar" a "reentrenar" a "apagar" ([[13-MLOps-XAI-Etica]]).
 
 **Preguntas de ejecutivo ante un dashboard de drift:** ¿quién recibe la alerta cuando algo se pone rojo, y qué hace? · ¿cuándo fue el último reentrenamiento y cuál es el criterio para el próximo? · ¿tenemos forma de saber la métrica real en producción (aunque llegue con retraso)?
+
+### 4.1 Data drift vs concept drift — la diferencia que importa
+
+Audiencia: 👔 🧭
+
+| Tipo de drift | Qué cambió | Ejemplo | ¿El modelo se equivoca? |
+|---|---|---|---|
+| **Data drift** (covariate shift) | La distribución de las features de entrada cambió, pero la relación feature→target sigue igual | Antes el 20% de tus clientes eran jóvenes; ahora el 50% son jóvenes (por una campaña). La relación edad→churn no cambió. | Puede equivocarse más en los segmentos nuevos que no vio suficiente en train |
+| **Concept drift** | La relación feature→target cambió — el mismo input ahora produce un output distinto | Antes, un saldo bajo predecía fuga. Post-pandemia, los saldos bajos son por cambio de hábitos, no por fuga. La relación se rompió. | **Sí, sistemáticamente** — y el drift de features puede no disparar alarma |
+| **Prediction drift** (output drift) | Las predicciones del modelo cambiaron de distribución | El modelo empezó a marcar el doble de clientes como "riesgo alto" | Es **síntoma**, no diagnóstico: puede ser data drift, concept drift, o un bug de datos |
+
+**👔 La pregunta clave:** "¿cambió el mundo o cambiaron mis datos?" Si cambió el mundo (concept drift), reentrenar es obligatorio. Si solo cambiaron los datos de entrada (data drift), a veces basta con verificar que el modelo sigue performando en los nuevos segmentos.
+
+### 4.2 Qué pedir cuando te muestran un dashboard de drift
+
+Audiencia: 👔
+
+1. **"¿Tenemos la métrica real?"** — el drift de features es un proxy; lo que importa es si la **precisión real** del modelo cayó. Si tienes labels retrasados (churn se confirma a 30 días, fraude a la investigación), combinar drift + métrica real retrasada.
+
+2. **"¿Cuál es el SLA de reentrenamiento?"** — ¿cada cuánto se reentrena el modelo? ¿Hay un trigger automático si el drift cruza un umbral? ¿O depende de que alguien mire el dashboard?
+
+3. **"¿Qué feature driftó y por qué?"** — si `canal_de_compra` driftó, puede ser que lanzaron la app nueva (esperado, no peligroso) o que el pipeline de datos dejó de poblar ese campo (bug, peligroso).
+
+4. **"¿Hay un plan B?"** — si el modelo se degrada, ¿qué se usa mientras se reentrena? ¿Reglas de negocio? ¿Un modelo anterior? ¿Nada?
+
+---
+
+## 4B. Cómo leer una confusion matrix multiclase — sin fórmulas
+
+Audiencia: 👔 🧭
+
+Cuando el modelo clasifica en **más de dos categorías** (no solo "sí/no"), la matriz crece. Ejemplo: un modelo que clasifica tickets de soporte en 4 categorías:
+
+```
+                PREDICHO →
+              Factura  Envío  Técnico  Otro
+ REAL ↓
+ Factura      [ 85 ]    5      3       7     ← 100 tickets reales de Factura
+ Envío           8    [ 72 ]   10      10    ← 100 tickets reales de Envío
+ Técnico         2      5    [ 88 ]    5     ← 100 tickets reales de Técnico
+ Otro           12     15      8     [ 65 ]  ← 100 tickets reales de Otro
+```
+
+**Lectura rápida para el no técnico:**
+
+- **Diagonal = aciertos por categoría.** Factura: 85%, Envío: 72%, Técnico: 88%, Otro: 65%. "Otro" es la categoría peor clasificada — probablemente porque es un "cajón de sastre".
+
+- **Fuera de la diagonal = confusiones.** Las celdas grandes off-diagonal te dicen **con qué se confunde**. "Otro" se confunde mucho con "Envío" (15 tickets). Pregunta: ¿hay tickets de envío que deberían ser "Otro"? ¿O la definición de "Otro" es ambigua?
+
+- **Lectura por fila** → "de los 100 tickets reales de Envío, ¿cuántos clasificó bien?" (72 de 100 = 72% de recall para Envío).
+
+- **Lectura por columna** → "de todos los que el modelo DIJO que eran de Factura, ¿cuántos realmente lo eran?" (85 de 107 = precision de Factura).
+
+**Preguntas de ejecutivo ante una matrix multiclase:**
+- ¿Qué categoría tiene el recall más bajo? → ahí se están "perdiendo" casos.
+- ¿Cuál confusión es la más cara? (confundir "Técnico" con "Otro" retrasa la resolución más que al revés).
+- ¿La categoría "Otro" es legítima o es un escape del equipo de etiquetado?
 
 ---
 

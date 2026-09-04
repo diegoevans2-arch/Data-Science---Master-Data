@@ -3,8 +3,8 @@ title: "Tomo 19 — NLP y LLMs Aplicados"
 tags: [data-science, machine-learning, nlp, llm, rag]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 19
-version: 6.2
-updated: 2026-07-27
+version: 6.3
+updated: 2026-07-29
 ---
 
 # 💬 Tomo 19 — NLP y LLMs Aplicados
@@ -109,6 +109,9 @@ Audiencia: 🔧 🧭
 ## 4. Topic Modeling: los temas que nadie etiquetó
 
 Audiencia: 🔧 🧭
+
+> [!tip] 💡 Analogía
+> Como vaciar sobre la mesa miles de recortes de prensa sin categorías y armar montones por tema: nadie te dijo de antemano "política", "deportes" o "economía" — vas agrupando los recortes que comparten vocabulario, y solo al final le pones nombre a cada montón mirando qué palabras predominan en él. Eso hacen LDA y BERTopic con miles de documentos: agrupan primero, etiquetan (tú) después.
 
 **🔧 Definición técnica:** descubrir de qué hablan miles de textos **sin etiquetas previas**. Dos enfoques:
 
@@ -227,6 +230,8 @@ Audiencia: 🔧 🧭 👔
 > La calidad de un RAG está **dominada por la calidad del retrieval**. Si el retriever no trae el pasaje correcto, ningún LLM lo va a adivinar — y como igual responde con fluidez, el fallo es silencioso. Por eso el retrieval se **mide** (recall@k: ¿está el documento correcto entre los k recuperados?) antes de culpar al modelo generador. Un RAG que "alucina" casi siempre tiene un problema de retrieval, no de generación.
 
 **🧭 Cuándo NO usar RAG:** si el conocimiento es general y estable (el modelo ya lo sabe), si el corpus es minúsculo y cabe entero en el prompt, o si el problema era en realidad de clasificación (vuelve a la sección 1).
+
+**👔 En una frase para el negocio:** darle al modelo los documentos correctos en el momento de responder es lo que convierte una alucinación elocuente en una respuesta citable — la inversión real no es en el LLM, es en que el retriever encuentre el pasaje correcto.
 
 ---
 

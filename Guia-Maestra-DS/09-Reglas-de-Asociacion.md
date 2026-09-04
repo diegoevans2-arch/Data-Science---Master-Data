@@ -3,8 +3,8 @@ title: "Tomo 09 — Reglas de Asociación"
 tags: [data-science, machine-learning, association-rules, market-basket]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 09
-version: 6.1
-updated: 2026-07-29
+version: 6.2
+updated: 2026-08-28
 ---
 
 # 🛒 Tomo 09 — Reglas de Asociación
@@ -128,11 +128,50 @@ Audiencia: 🔧 🧭 👔
 
 ---
 
+## 5. Sequential Pattern Mining — el orden importa
+
+Audiencia: 🔧 🧭
+
+> [!tip] 💡 Analogía
+> Las reglas de asociación dicen "pan y mantequilla se compran juntos"; los patrones secuenciales dicen "primero compró pañales, Y DESPUÉS compró cerveza — en ese orden". La diferencia es la **flecha del tiempo**: no es lo mismo co-ocurrencia que secuencia.
+
+**🔧 Definición técnica:** descubrir sub-secuencias frecuentes en colecciones de secuencias ordenadas de eventos. La estructura base no es un set (cesta) sino una **lista ordenada** de itemsets.
+
+| Algoritmo | Mecanismo | Escala | Caso de uso |
+|---|---|---|---|
+| **GSP** (Generalized Sequential Patterns, Srikant & Agrawal, 1996) | Extensión de Apriori al dominio secuencial; genera candidatos nivel a nivel con restricciones de orden | Mediano | Clickstream corto, secuencias de diagnósticos |
+| **PrefixSpan** (Pei et al., 2001) | Crecimiento basado en proyección de prefijos; no genera candidatos explícitos | Grande | El estándar actual: logs de sistemas, customer journeys largos |
+| **SPADE** (Zaki, 2001) | Representación vertical (como Eclat) + intersecc. temporal de ID-lists | Mediano-grande denso | Secuencias de eventos con timestamps |
+
+**🔧 Aplicaciones donde el orden es clave:**
+
+- **Customer journey / clickstream:** "buscar → comparar → agregar al carro → abandonar" es un patrón secuencial accionable (¿en qué paso se pierden?).
+- **Logs de sistemas / IoT:** la secuencia "warning_disk → error_memory → crash" anticipa fallas con minutos de ventaja. El evento suelto no dice nada; la **secuencia** sí.
+- **Diagnósticos médicos:** secuencias de síntomas que preceden a un diagnóstico — detección temprana basada en trayectoria del paciente.
+- **Rutas de navegación educativa:** ¿en qué orden los estudiantes consumen contenido antes de aprobar/reprobar?
+
+**🔧 Diferencia con reglas de asociación clásicas:**
+
+| Aspecto | Reglas de asociación | Sequential patterns |
+|---|---|---|
+| Estructura de la transacción | Set (sin orden) | Lista ordenada de itemsets |
+| Métrica base | Support de co-ocurrencia | Support de sub-secuencia |
+| Pregunta que responde | "¿Qué va CON qué?" | "¿Qué va DESPUÉS de qué?" |
+| Algoritmo referencia | FP-Growth | PrefixSpan |
+
+**🧭 Cuándo usarlo:** cuando la **secuencia temporal de eventos** contiene información que la co-ocurrencia pierde. Si el orden no importa para tu problema (market basket puro), quédate con FP-Growth.
+
+**👔 En una frase para el negocio:** no solo "qué se compra junto" sino "qué se compra después de qué" — la diferencia entre armar una góndola y diseñar un funnel.
+
+---
+
 ## 📖 Referencias de este tomo
 
 - (Agrawal & Srikant, 1994) — Apriori.
 - (Han et al., 2000) — FP-Growth.
 - (Zaki, 2000) — Eclat.
+- (Srikant & Agrawal, 1996) — *Mining Sequential Patterns: Generalizations and Performance Improvements*. EDBT.
+- (Pei et al., 2001) — *PrefixSpan: Mining Sequential Patterns Efficiently by Prefix-Projected Pattern Growth*. ICDE.
 
 Fichas completas con datos de publicación en [[16-Bibliografia]].
 

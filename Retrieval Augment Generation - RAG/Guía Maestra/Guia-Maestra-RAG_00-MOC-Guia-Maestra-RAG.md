@@ -90,6 +90,11 @@ Plan realineado al temario real de los 5 módulos del curso. Los tomos 01–11 s
 | 15  | [[Guia-Maestra-RAG_15-Glosario-Ejecutivo\|Glosario ejecutivo]]                                                                                           | Transversal |   ✅    |
 | 16  | [[Guia-Maestra-RAG_16-Bibliografia\|Bibliografía]]                                                                                                       | Transversal |   ✅    |
 
+> [!tip] 🗺️ El plano visual de la guía completa
+> [[Guia-Maestra-RAG_Diagrama-Flujo-ASCII|Diagrama ASCII · Flujo completo de procesos RAG]] — los 15 tomos puestos en **un solo flujo**, de arriba abajo: las 6 fases (0 decidir · 1 indexar · 2 responder · 3 evaluar · 4 producir · 5 optimizar), los 7 gates de decisión en el orden correcto (Zoom D), y una etiqueta `T##` en cada paso para saltar al tomo que lo desarrolla. Incluye zooms del retriever completo, de agentic RAG y del ciclo de producción, más un mapa de cobertura tomo por tomo.
+>
+> Sirve para lo que la tabla de arriba no puede: **ubicar dónde cae un problema concreto** antes de entrar al tomo que lo trata. Trae su propia guía de lectura por perfil (👔 solo las fases y los gates · 🧭 fases + los `[!]` de trade-off · 🔧 el diagrama completo con los zooms).
+
 > [!note] El plano detallado por módulo
 > - **Módulo 1 — RAG Overview** → Tomos 01–02 (intro a RAG, aplicaciones, arquitectura, LLMs, information retrieval, labs de llm calls + augmented prompts).
 > - **Módulo 2 — Information Retrieval & Search Foundations** → Tomos 03–04 (retriever architecture, metadata filtering, TF-IDF, BM25, semantic search, embedding deepdive, hybrid search + RRF). ⚠️ **Excepción de ruteo:** la lección de *retriever evaluation* del M2 (precision@k, recall@k, MAP@K, MRR) y el Ungraded Lab 2 **no van al Tomo 04**: se consolidan en el **Tomo 09**, junto con la evaluación de la generación, para no partir el tratamiento de métricas en dos tomos distantes.

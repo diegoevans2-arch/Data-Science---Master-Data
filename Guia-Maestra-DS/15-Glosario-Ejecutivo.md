@@ -3,7 +3,8 @@ title: "Tomo 15 — Glosario Ejecutivo"
 tags: [data-science, machine-learning, glosario, ejecutivo]
 audiencias: [ejecutivo, puente]
 tomo: 15
-version: 6.0
+version: 6.1
+updated: 2026-07-29
 ---
 
 # 📖 Tomo 15 — Glosario Ejecutivo
@@ -51,12 +52,12 @@ Audiencia: 👔 🧭
 | Embedding | Traducir cosas (palabras, clientes, productos) a coordenadas donde "parecido" significa "cerca" — así la máquina puede comparar lo incomparable ([[12-Deep-Learning]]) |
 | Ensemble | Jurado de varios modelos votando juntos: casi siempre le gana al mejor juez solitario ([[11-Mejora-de-Modelos]]) |
 | Estacionalidad | El patrón que se repite con calendario fijo: diciembre siempre se parece a diciembre ([[17-Series-de-Tiempo]]) |
+| Fairness | Que el modelo no trate sistemáticamente peor a un grupo protegido — se audita con métricas, no se asume ([[13-MLOps-XAI-Etica]]) |
 | Feature | Cada variable que el modelo usa para decidir (edad, monto, días desde la última compra) |
-| Forecasting | Pronosticar los valores futuros de una serie respetando el orden del tiempo — con intervalo, no solo el punto ([[17-Series-de-Tiempo]]) |
 | Feature engineering | Cocinar variables nuevas con conocimiento del negocio — históricamente, la palanca de mejora más rentable ([[03-Preparacion-de-Datos]]) |
 | Feature importance | El ranking de qué variables pesan más en las decisiones del modelo ([[14-Anexo-Interpretar-Resultados]]) |
 | Fine-tuning | Tomar un modelo gigante ya educado y darle el curso de especialización en tu negocio ([[12-Deep-Learning]]) |
-| Fairness | Que el modelo no trate sistemáticamente peor a un grupo protegido — se audita con métricas, no se asume ([[13-MLOps-XAI-Etica]]) |
+| Forecasting | Pronosticar los valores futuros de una serie respetando el orden del tiempo — con intervalo, no solo el punto ([[17-Series-de-Tiempo]]) |
 
 ## G–O
 
@@ -83,8 +84,8 @@ Audiencia: 👔 🧭
 | Propensity score | La probabilidad de haber recibido el tratamiento: permite comparar comparables cuando no hubo experimento ([[18-Causalidad-y-Uplift]]) |
 | RAG | Darle al LLM tus documentos como apuntes abiertos antes de responder, para que cite en vez de inventar ([[19-NLP-y-LLMs]]) |
 | Recall | De todos los culpables que había, ¿a cuántos atrapó? — la métrica de los casos que no se pueden escapar ([[08-Metricas-de-Evaluacion]]) |
-| Regularización | El freno anti-memorización: sacrifica un poco de ajuste al pasado a cambio de mucha más confiabilidad en el futuro ([[11-Mejora-de-Modelos]]) |
 | Reentrenamiento | Volver a educar el modelo con datos frescos porque el mundo cambió ([[13-MLOps-XAI-Etica]]) |
+| Regularización | El freno anti-memorización: sacrifica un poco de ajuste al pasado a cambio de mucha más confiabilidad en el futuro ([[11-Mejora-de-Modelos]]) |
 | ROC | El menú de todos los balances posibles entre detectar más y equivocarse más ([[14-Anexo-Interpretar-Resultados]]) |
 | Scoring | Ponerle nota de riesgo/propensión a cada cliente o caso, para priorizar con datos y no con intuición |
 | SHAP | El desglose de "por qué el modelo decidió esto" para cada caso individual — la boleta detallada de cada predicción ([[13-MLOps-XAI-Etica]]) |

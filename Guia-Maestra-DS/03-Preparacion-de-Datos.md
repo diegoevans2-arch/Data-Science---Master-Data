@@ -3,7 +3,7 @@ title: "Tomo 03 — Preparación y Calidad de Datos"
 tags: [data-science, machine-learning, data-quality, preprocessing, feature-engineering]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 03
-version: 6.1
+version: 6.2
 updated: 2026-07-29
 ---
 
@@ -348,18 +348,18 @@ Audiencia: 🔧 🧭 👔
 > [!tip] 💡 Analogía: el chef que revisa la mesa
 > Tu dataset es una mesa llena de ingredientes. El chef (feature selection) los revisa y dictamina: "esto no aporta sabor" (Variance Threshold), "esto combina con el plato principal" (correlación con el target), "voy a probar quitando ingredientes uno a uno para ver cuál hace falta de verdad" (RFE). La receta final usa menos ingredientes — y el plato sale igual de bueno o mejor.
 
-| Método | Cómo funciona | Pros | Contras | Ejemplo en Python |
+| Método | Cómo funciona | Pros | Contras | Cuándo conviene |
 |---|---|---|---|---|
-| Variance Threshold | Elimina features con varianza < umbral. No mira el target | Muy rápido, sin modelo | Solo detecta constantes o casi constantes | `VarianceThreshold(threshold=0.01)` |
-| Correlación con target | Pearson/Spearman de cada feature vs target | Rápido e interpretable | Solo relaciones lineales/monotónicas ([[02-Fundamentos-Matematicos]]) | `df.corr()['target'].abs().sort_values()` |
-| Chi-cuadrado (χ²) | Test de independencia feature categórica vs target categórico | Sin supuesto de linealidad | Solo features no negativas | `SelectKBest(chi2, k=10)` |
-| Mutual Information | Información compartida entre feature y target | Captura dependencias **no lineales** | Más lento que correlación | `mutual_info_classif` / `mutual_info_regression` |
-| RFE (Recursive Feature Elimination) | Entrena el modelo, elimina la feature menos importante, repite hasta quedar con K | Usa el modelo real para decidir | Costoso, puede ser inestable | `RFE(estimator, n_features_to_select=10)` |
-| RFECV | RFE + cross-validation para elegir K automáticamente | K óptimo sin adivinar | Muy costoso | `RFECV(estimator, cv=5)` |
-| Lasso (L1) | La regularización lleva coeficientes exactamente a 0 | Selección y regularización juntas ([[11-Mejora-de-Modelos]]) | Solo relaciones lineales; α controla la agresividad | `SelectFromModel(Lasso(alpha=0.01))` |
-| Importancia RF / XGBoost | Reducción promedio de impureza (MDI) o ganancia por feature | Captura no linealidades, rápido | MDI sesgado hacia alta cardinalidad y continuas | `SelectFromModel(RandomForestClassifier())` |
-| Permutation Importance | Mide la caída de la métrica al permutar aleatoriamente cada feature en validación | Model-agnostic, menos sesgada | Lento; features correlacionadas se reparten el crédito | `permutation_importance(model, X_val, y_val)` |
-| SHAP-based | Importancia global a partir de valores SHAP ([[13-MLOps-XAI-Etica]]) | Muy precisa, model-agnostic, con dirección del efecto | Costosa de calcular en modelos grandes | `shap.summary_plot()` + umbral manual |
+| Variance Threshold | Elimina features con varianza < umbral. No mira el target | Muy rápido, sin modelo | Solo detecta constantes o casi constantes | Primer descarte barato en datasets anchos, antes de mirar el target |
+| Correlación con target | Pearson/Spearman de cada feature vs target | Rápido e interpretable | Solo relaciones lineales/monotónicas ([[02-Fundamentos-Matematicos]]) | Screening univariado rápido cuando basta detectar relación lineal/monotónica simple |
+| Chi-cuadrado (χ²) | Test de independencia feature categórica vs target categórico | Sin supuesto de linealidad | Solo features no negativas | Screening univariado rápido antes del modelo, con features categóricas |
+| Mutual Information | Información compartida entre feature y target | Captura dependencias **no lineales** | Más lento que correlación | Screening univariado rápido antes del modelo, cuando la relación puede ser no lineal |
+| RFE (Recursive Feature Elimination) | Entrena el modelo, elimina la feature menos importante, repite hasta quedar con K | Usa el modelo real para decidir | Costoso, puede ser inestable | Cuando el modelo final es lineal/árbol y n_features es moderado |
+| RFECV | RFE + cross-validation para elegir K automáticamente | K óptimo sin adivinar | Muy costoso | Como RFE, pero cuando el presupuesto de cómputo permite que K se elija solo |
+| Lasso (L1) | La regularización lleva coeficientes exactamente a 0 | Selección y regularización juntas ([[11-Mejora-de-Modelos]]) | Solo relaciones lineales; α controla la agresividad | Cuando quieres selección y modelo en un solo paso |
+| Importancia RF / XGBoost | Reducción promedio de impureza (MDI) o ganancia por feature | Captura no linealidades, rápido | MDI sesgado hacia alta cardinalidad y continuas | Screening rápido con no linealidades, como filtro previo antes de afinar con permutation importance |
+| Permutation Importance | Mide la caída de la métrica al permutar aleatoriamente cada feature en validación | Model-agnostic, menos sesgada | Lento; features correlacionadas se reparten el crédito | Cuando importa la relevancia REAL en validación, no in-sample |
+| SHAP-based | Importancia global a partir de valores SHAP ([[13-MLOps-XAI-Etica]]) | Muy precisa, model-agnostic, con dirección del efecto | Costosa de calcular en modelos grandes | Cuando además de la relevancia necesitas explicar la dirección del efecto ante negocio/reguladores |
 
 **🧭 Estrategia práctica:** filtra lo obvio primero (varianza ~0, duplicadas, >95% nulos), corre un método rápido (mutual information o importancia de un RF baseline), y refina con permutation importance sobre validación. RFECV solo si el presupuesto de cómputo lo permite. Y todo **dentro** del pipeline: seleccionar features mirando el dataset completo es otra puerta de leakage ([[10-Validacion-y-Leakage]]).
 

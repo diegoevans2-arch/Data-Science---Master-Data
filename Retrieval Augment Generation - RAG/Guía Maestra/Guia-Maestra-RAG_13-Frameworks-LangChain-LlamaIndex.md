@@ -3,7 +3,8 @@ title: "Tomo 13 — ⭐ Frameworks de orquestación: LangChain, LlamaIndex, DSPy
 tags: [rag, complemento, vanguardia, frameworks, langchain, langgraph, llamaindex, dspy, haystack, ragflow, abstraccion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 13
-version: 1.0
+version: 1.1
+updated: 2026-08-28
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -227,6 +228,13 @@ Audiencia: 🔧 🧭
 
 Audiencia: 🔧
 
+> [!note] 📌 Nota de actualización (2026-08-28)
+> El análisis de §6 fue verificado originalmente en julio de 2026 y **sigue siendo correcto a agosto de 2026**. Dos adiciones:
+>
+> **① LCEL se estabilizó como plomería interna.** El `Runnable` y el operador `|` no fueron deprecados y no van a desaparecer — son el sustrato de `langchain-core`. Si tienes código LCEL que funciona, **no hay urgencia de migrarlo**. Pero todo el *nuevo* desarrollo del ecosistema apunta a LangGraph y `create_agent`.
+>
+> **② LangGraph es la evolución para workflows agentic.** Si LCEL era para pipelines lineales (retrieve → format → generate), LangGraph es para **grafos con estado, ciclos, human-in-the-loop y durabilidad**. Conceptualmente es la respuesta de LangChain a la misma pregunta que resuelven los *workflow engines* de LlamaIndex y los pipelines de Haystack 3.0: orquestación no-lineal con persistencia.
+
 **🔧 La estructura del ecosistema** (julio de 2026):
 
 ```
@@ -322,6 +330,11 @@ Se conoce como *"el data framework"*, especializado en ingesta e indexación fre
 
 **🔧 Nota estructural:** `llama-index` es un **meta-paquete**, no el framework. El framework real es `llama-index-core` más **300+ paquetes de integración** publicados por separado.
 
+> [!note] 📌 Nota de actualización (2026-08-28) — Workflows
+> Desde 2024-2025, LlamaIndex introdujo **Workflows** como abstracción principal de orquestación, reemplazando progresivamente el approach anterior donde la *query engine* era la unidad central. Un Workflow es un **grafo dirigido de pasos asíncronos** conectados por eventos tipados — conceptualmente análogo a LangGraph (graph-based orchestration con estado).
+>
+> La implicación práctica: si buscas tutoriales de LlamaIndex y encuentras `QueryEngine` + `RetrieverQueryEngine` como patrón principal, estás mirando documentación legacy. El patrón actual es definir un `Workflow` con `@step` decorators y flujo de eventos. El código del tomo (§7.1) describe correctamente el *posicionamiento* y el modelo de negocio; lo que cambió es la **API de orquestación interna**.
+
 ### 7.2 DSPy: el único que propone otra cosa
 
 Audiencia: 🔧 🧭
@@ -358,11 +371,135 @@ Audiencia: 🔧 🧭
 
 **🧭 Cuándo tiene sentido:** cuando tienes una **métrica automatizable** y un conjunto de ejemplos, y el problema es de *calidad de prompt* más que de plomería. **Cuándo no:** cuando no puedes definir la métrica — sin ella el compilador no tiene qué optimizar. Y recuerda el costo medido: **cientos de llamadas y más de 30 minutos** por compilación.
 
+#### 7.2.1 DSPy 2.x — el estado actual del framework (actualización 2026-08-28)
+
+> [!warning] ⚠️ SECCIÓN PERECEDERA — verificada agosto de 2026
+> DSPy evoluciona rápido y la documentación va por detrás del código. Verifica contra `dspy.ai` y el repositorio antes de implementar.
+
+Lo descrito arriba viene del paper (2023) y DSPy 1.x. **DSPy 2.x** (la serie actual, comenzada en 2024 y estabilizada como 2.5+ en 2025) trajo cambios significativos de API y madurez:
+
+**🔧 Cambios de API y modelo mental en DSPy 2.x:**
+
+| Concepto | DSPy 1.x (paper) | DSPy 2.x+ (actual) |
+|---|---|---|
+| **Signatures** | Cadenas tipo `"question -> answer"` | Clases Python con `dspy.InputField()` / `dspy.OutputField()` y docstrings como instrucciones. Más expresivo, tipado, con validadores opcionales |
+| **Módulos** | Herencia de `dspy.Module` obligatoria con `__init__` + `forward` | Se simplificó: `dspy.Module` sigue existiendo pero los ejemplos canónicos usan funciones decoradas o módulos inline más ligeros |
+| **Teleprompters** | Nombre original del paper | Renombrados a **Optimizers** (`dspy.BootstrapFewShot`, `dspy.MIPROv2`, `dspy.COPRO`) — el término "teleprompter" está deprecado |
+| **Compilación** | `teleprompter.compile(program, trainset=...)` | `optimizer.compile(program, trainset=..., metric=...)` — misma lógica, nueva nomenclatura |
+
+**🔧 Taxonomía actual de módulos (predictors):**
+
+```python
+# Los tres módulos base que cubren el 90 % de los casos:
+dspy.Predict       # Llamada directa: signature → respuesta
+dspy.ChainOfThought  # Igual que Predict pero inyecta reasoning step
+dspy.ReAct         # Loop de razonamiento + acción (tool use)
+
+# Composición:
+dspy.Module        # Clase base para pipelines multi-paso
+```
+
+- **`dspy.Predict(signature)`** — la unidad atómica. Envía la signature al LM y parsea la salida.
+- **`dspy.ChainOfThought(signature)`** — extiende Predict añadiendo un campo `reasoning` antes de la respuesta. Es el módulo que explica el hallazgo de §7.2: *buena parte del beneficio viene de forzar el razonamiento explícito*.
+- **`dspy.ReAct(signature, tools=[...])`** — loop de razonamiento con herramientas. Es el equivalente DSPy de un agente con tool-use, pero **el prompt se optimiza automáticamente** en vez de escribirlo a mano.
+
+**🔧 Optimizers actuales (lo que antes eran teleprompters):**
+
+| Optimizer | Qué hace | Cuándo usarlo |
+|---|---|---|
+| **`BootstrapFewShot`** | Genera ejemplos few-shot a partir del trainset usando el propio LM | **El default**. Rápido, robusto, pocas llamadas |
+| **`BootstrapFewShotWithRandomSearch`** | Lo anterior + búsqueda estocástica sobre conjuntos de ejemplos | Cuando BootstrapFewShot satura y tienes presupuesto de API |
+| **`MIPROv2`** | Mixed-Integer Programming para co-optimizar instrucciones + ejemplos | **El más potente publicado** (EMNLP 2024). Costoso: muchas llamadas LM para explorar el espacio |
+| **`COPRO`** | Optimización cooperativa de prompts por secciones | Para signatures complejas con múltiples campos |
+| **`GEPA`** | Evolución reflexiva de prompts (ICLR 2026) | Investigación; supera MIPRO en benchmarks pero la implementación estable está reciente |
+
+**🔧 Assertions y Suggest — guardrails declarativos:**
+
+DSPy 2.x introdujo un sistema de constraints en el pipeline:
+
+```python
+dspy.Assert(condition, message)    # Hard constraint: si falla, el pipeline
+                                   # reintenta con el mensaje de error como feedback
+dspy.Suggest(condition, message)   # Soft constraint: si falla, avisa al LM
+                                   # pero no fuerza reintento
+```
+
+**La idea:** en vez de escribir lógica de validación *después* de la generación y reintentar manualmente, declaras las restricciones *dentro* del módulo y DSPy maneja el backtracking. Es el equivalente de *guardrails* pero integrado en el paradigma de optimización — las assertions también informan al optimizer sobre qué restricciones importan.
+
+**🧭 El pitch actualizado (2026):** *"Programa tu pipeline LLM como código Python normal — define qué entra, qué sale y qué restricciones tiene. DSPy optimiza los prompts, ejemplos e instrucciones automáticamente contra tu métrica."*
+
+**🧭 Estado de madurez:**
+
+| Aspecto | Evaluación |
+|---|---|
+| **Validación académica** | **Excelente** — ICLR + EMNLP + ICLR Oral. El más validado de todos los frameworks |
+| **Adopción** | Creciente pero **todavía nicho** comparado con LangChain/LlamaIndex. 36k ★ vs 142k |
+| **Documentación** | **Sigue siendo el punto más débil.** Los docs oficiales van por detrás del código; muchos ejemplos son de 1.x; la mejor fuente suele ser el repositorio de examples y los notebooks de los autores |
+| **Estabilidad de API** | Mejorada en 2.5+, pero hubo rupturas significativas en el salto 1.x → 2.x sin guía de migración clara |
+| **Debugging** | Mejor que antes — `dspy.inspect_history(n=1)` muestra las últimas llamadas. Pero el compilador sigue siendo opaco: cientos de llamadas cuyo resultado es difícil de interpretar |
+
+> [!important] 🎯 Lo que cambió y lo que no respecto a la evaluación original del tomo
+> **Sigue siendo cierto:**
+> - Es categorialmente distinto (compilador, no orquestador)
+> - Sin métrica automatizable, no sirve
+> - El costo de compilación es real y alto
+> - Las ganancias sobre modelos frontera son menores que las del paper original
+>
+> **Lo nuevo:**
+> - La API es más madura y Pythonic (signatures como clases, optimizers con nombres claros)
+> - `dspy.Assert`/`dspy.Suggest` añaden guardrails declarativos — un diferenciador real
+> - Ya no es solo académico: hay equipos usándolo en producción, especialmente para tareas de clasificación y extracción donde la métrica es natural
+> - La documentación sigue siendo el talón de Aquiles — el delta entre lo que DSPy *puede* hacer y lo que puedes *descubrir cómo* hacer sin leer el código fuente sigue siendo grande
+
 ### 7.3 Los demás, en breve
 
 - **Haystack** — el más veterano y el de mejor disciplina de ingeniería. Su versión 3.0 (julio de 2026) mueve el centro a los agentes, y su ángulo declarado es la **soberanía**: *"a loop you can read, context you can keep, and a model you can replace"*. Buena opción si te pesan el control y la trazabilidad.
 - **RAGFlow** — otra categoría: un **motor desplegable**, no una librería. Si la pregunta es "quiero un RAG funcionando sin construirlo", es una respuesta seria.
 - **Semantic Kernel** — la opción natural en ecosistemas .NET y Microsoft.
+
+### 7.4 📌 Nota de vigencia (2026-08-28)
+
+> [!note] Revisión de actualidad — ¿qué cambió desde la versión 1.0 del tomo?
+> Esta nota consolida el estado del contenido del tomo un mes después de la redacción original (julio → agosto 2026).
+
+**✅ Lo que sigue siendo válido sin cambios:**
+- §1–§4 (lo durable): la tesis de "empieza sin framework", las cuatro capas, el overhead medido, el historial de rupturas — todo vigente.
+- §6 LangChain: la estructura del ecosistema, LCEL como plomería interna, el ejemplo de RAG con f-string — sin cambios.
+- §7.1 LlamaIndex: el pivot a OCR/parsing, el modelo de negocio, el pre-1.0 — sin cambios.
+- §7.2 DSPy: la tesis central (compilador vs orquestador) y las advertencias sobre las cifras del paper — sin cambios.
+- §9 Guía de decisión: sigue siendo el framework correcto para elegir.
+
+**🔄 Lo que se actualizó en esta revisión (v1.1):**
+- **§6:** Nota sobre la estabilización de LCEL y el rol de LangGraph como evolución para workflows no-lineales.
+- **§7.1:** Nota sobre el refactor a Workflows (graph-based orchestration) que reemplaza query engines como unidad principal.
+- **§7.2:** Subsección nueva (§7.2.1) con la API de DSPy 2.x — signatures como clases, taxonomía Predict/ChainOfThought/ReAct, optimizers renombrados, y el sistema Assert/Suggest para guardrails declarativos.
+
+**🧭 Recomendación para quien llega nuevo (agosto 2026):**
+
+```
+   RUTA SUGERIDA DE ADOPCIÓN
+
+   1. Empieza SIN framework.
+      → Construye retrieve + generate con clientes directos
+        (como hace todo el curso de esta guía).
+      → Entiende qué hace cada pieza.
+
+   2. Añade LangChain o LlamaIndex SOLO si la complejidad lo justifica:
+      → Muchas integraciones (capa ①) que no quieres mantener
+      → Necesitas LangGraph para workflows con estado y ciclos
+      → Necesitas LlamaParse/Workflows para parsing documental complejo
+
+   3. Considera DSPy si quieres optimización automática de prompts:
+      → TIENES una métrica automatizable (accuracy, F1, etc.)
+      → TIENES un trainset de ejemplos
+      → Tu cuello de botella es la calidad del prompt, no la plomería
+      → Estás dispuesto a invertir en entender un framework
+        con documentación todavía irregular
+
+   4. Nunca elijas por las estrellas de GitHub.
+      → Elige por: cuánto control necesitas × cuánto cuesta salir
+        × qué capas realmente te ahorran trabajo.
+```
 
 ---
 

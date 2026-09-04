@@ -3,7 +3,8 @@ title: "Tomo 11 — Técnicas de Mejora de Modelos"
 tags: [data-science, machine-learning, hiperparametros, ensembles, regularizacion, calibracion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 11
-version: 6.0
+version: 6.2
+updated: 2026-08-27
 ---
 
 # 🚀 Tomo 11 — Técnicas de Mejora de Modelos
@@ -38,6 +39,10 @@ Audiencia: 🔧 🧭 👔
 - **Descomposición:** `Error total = Bias² + Varianza + Ruido irreducible` (el ruido irreducible — Bayes error — es el piso teórico que ningún modelo puede perforar).
 - **Learning curves:** error de train y validación vs **tamaño del dataset**. Underfitting: ambas convergen alto (más datos no ayuda). Overfitting: gap persistente (más datos sí ayuda). Sano: convergen bajo.
 - **Validation curves:** error de train y val vs **un hiperparámetro** (ej. max_depth): visualizan dónde empieza el overfitting.
+- **Curvas de pérdida por época (train vs validation):** una tercera lectura, distinta de las dos anteriores — aquí el eje X **no** es el tamaño del dataset (learning curves) ni un hiperparámetro (validation curves), sino la **época** de entrenamiento. Aplica a modelos que se ajustan de forma iterativa (redes neuronales, boosting con muchas rondas). Tres formas típicas y su lectura (Goodfellow et al., 2016; Géron, 2022):
+    - Ambas curvas bajan y convergen → el modelo generaliza.
+    - Train sigue bajando y validación empieza a subir (divergen) → overfitting; tratamiento en Early Stopping (sección 3) y/o más regularización.
+    - Ambas altas y planas, sin bajar → underfitting: capacidad insuficiente o learning rate mal elegido.
 
 ```
  LEARNING CURVES
@@ -48,6 +53,18 @@ Audiencia: 🔧 🧭 👔
       └────── N               └────── N   gap!         └────── N
  → más datos NO ayuda    → más datos SÍ ayuda     → estás bien
 ```
+
+```
+ LOSS POR ÉPOCA (train vs validation)
+ sano                    overfitting              underfitting
+ loss│ ╲                 loss│ ╲                  loss│ ══════ val
+     │  ╲__ val               │  ╲___ train            │ ══════ train
+     │  ╲__ train              │      ╲___╱ val↗         │ (juntas, ALTAS y planas)
+     └────── época             └────── época             └────── época
+ → converge, generaliza   → Early Stopping (§3)     → más capacidad o LR
+```
+
+Detalle de arquitecturas, optimizadores y scheduling de learning rate en [[12-Deep-Learning]].
 
 **👔 En una frase para el negocio:** este diagnóstico de 10 minutos decide si el próximo millón se invierte en **más datos** o en **mejor modelo** — equivocar la receta duplica el gasto sin mover la métrica.
 
@@ -77,6 +94,45 @@ Audiencia: 🔧 🧭
 
 ---
 
+### 2.1 AutoML — cuando la máquina tunea a la máquina
+
+Audiencia: 🔧 🧭 👔
+
+> [!tip] 💡 Analogía
+> Si Optuna es el cerrajero que busca la combinación, AutoML es el servicio que **elige la cerradura, la instala y la calibra** — tú le entregas el dataset y te devuelve un modelo listo. No elimina al Data Scientist; pero automatiza la parte donde el humano menos agrega valor: probar 20 modelos × 100 configuraciones cada uno.
+
+**🔧 Definición técnica:** un sistema AutoML automatiza una o más etapas del pipeline: selección de modelo, feature engineering, tuning de hiperparámetros y ensemble. El valor está en que prueba combinaciones que un humano no exploraría por falta de tiempo.
+
+| Framework | Mecanismo clave | Fortaleza | Limitación | Cuándo elegirlo |
+|---|---|---|---|---|
+| **AutoGluon** (AWS, 2020) | Multi-layer stacking de muchos modelos (KNN, LightGBM, XGBoost, CatBoost, RF, NN, TabPFN); selección y ensemble automáticos; presets (`best_quality`, `medium_quality`, `fast`) | El mejor out-of-the-box sin tunear nada; reproduce la estrategia ganadora de Kaggle (Erickson et al., 2020) | Caja negra pesada; requiere más RAM/CPU que un modelo solo; tiempo de entrenamiento alto en `best_quality` | Baseline fuerte rápida; comparar contra tu modelo manual; datasets tabulares medianos-grandes |
+| **FLAML** (Microsoft, 2021) | Búsqueda económica (cost-frugal): elige modelos baratos primero, escala a caros solo si hay presupuesto; soporta presupuesto de tiempo | Extremadamente rápido para presupuestos bajos (1-5 min); ligero; buen trade-off velocidad/rendimiento | Menos potente que AutoGluon con presupuesto ilimitado | Prototipado rápido; recursos limitados; iteración veloz |
+| **TabPFN** (Hollmann et al., 2023; v3 2026) | Transformer pre-entrenado sobre datos tabulares sintéticos; in-context learning — no entrena, solo infiere | Inference en <1 segundo; resultados competitivos con AutoGluon en datasets ≤ 10K filas (TabPFN-3 supera tuned ensembles en TabArena, 2026) | Limitado a datasets pequeños/medianos; no escala a millones de filas; caja negra total | Datasets pequeños donde entrenar es caro o hay muchos datasets distintos que evaluar |
+| **H2O AutoML** | Búsqueda exhaustiva con stacking; interfaz web (Flow) y Python | Maduro, escalable, enterprise-ready | Más pesado de instalar; menos innovación reciente | Entornos enterprise con infraestructura H2O |
+
+**🔧 Cuándo NO usar AutoML:**
+
+- Cuando el cuello de botella es la **calidad de los datos**, no el modelo — AutoML no repara features malas ni corrige leakage ([[10-Validacion-y-Leakage]]).
+- Cuando necesitas **interpretabilidad** total — un ensemble de 20 modelos stacked no se explica con SHAP fácilmente ([[13-MLOps-XAI-Etica]]).
+- Cuando el **deployment** tiene restricciones de latencia/tamaño — el modelo de AutoGluon `best_quality` puede pesar GBs.
+
+**🧭 El patrón recomendado:**
+
+```
+ AutoGluon (best_quality, 1h)
+        │
+        ▼
+ Benchmark: ¿supera a mi modelo manual?
+  ├── SÍ → estudiar qué modelos/features usó → informar mi trabajo
+  └── NO → mi pipeline manual ya es competitivo; seguir con Optuna
+```
+
+AutoML no es el reemplazo del Data Scientist; es su **benchmark de cordura**: si AutoGluon con presets default supera tu modelo tuneado a mano, el problema está en tu pipeline, no en el tuning.
+
+**👔 En una frase para el negocio:** AutoML democratiza el acceso a modelos competitivos en minutos — pero el Data Scientist sigue siendo quien diagnostica si el problema es de datos, de modelo, o de negocio.
+
+---
+
 ## 3. Regularización
 
 Audiencia: 🔧 🧭
@@ -95,6 +151,33 @@ Audiencia: 🔧 🧭
 | Layer Normalization | Normaliza sobre las features, no sobre el batch | Transformers, RNN | No depende del batch size ([[12-Deep-Learning]]) |
 | Data Augmentation | Transformaciones que preservan el label: flips/rotaciones/crops (imagen), sinónimos/back-translation (texto), mixup/cutmix | Deep learning; SMOTE es su pariente tabular ([[03-Preparacion-de-Datos]]) | Equivale a regalarle datos nuevos al modelo |
 
+### 3.1 Early Stopping en profundidad
+
+Audiencia: 🔧
+
+Early Stopping merece tratamiento aparte porque cumple **tres funciones** a la vez: regulariza (evita overfitting), fija automáticamente el número óptimo de iteraciones/épocas, y ahorra cómputo.
+
+**🔧 Mecanismo:** monitorea una métrica de validación (val_loss o la métrica objetivo) tras cada época/ronda. Si no mejora en `patience` evaluaciones consecutivas, detiene el entrenamiento y restaura los pesos del mejor checkpoint.
+
+**🔧 Parámetros clave:**
+
+| Parámetro | Qué controla | Valores típicos | Riesgo de mal ajuste |
+|---|---|---|---|
+| `patience` | Épocas sin mejora antes de parar | 5–20 (redes), 20–50 (boosting) | Muy bajo → para prematuramente; muy alto → pierde el beneficio |
+| `min_delta` | Mejora mínima para contar como progreso | 1e-4 a 1e-3 | Si es 0, ruido aleatorio puede extender innecesariamente |
+| `restore_best_weights` | Si restaura el checkpoint óptimo o deja los últimos | Siempre True | Si es False, el modelo final puede ser PEOR que el mejor intermedio |
+| `monitor` | Métrica a vigilar | `val_loss` (genérico), `val_auc` (clasificación) | Monitorear train_loss es inútil (siempre baja) |
+
+**🔧 Dónde aplica:**
+
+- **Gradient Boosting:** `early_stopping_rounds` en XGBoost/LightGBM/CatBoost. Fija n_estimators óptimo automáticamente — nunca lo fijes a mano si puedes usar early stopping.
+- **Redes neuronales:** `EarlyStopping` callback en Keras/PyTorch Lightning. Combinar con learning rate scheduling (ReduceLROnPlateau): primero reducir LR, luego parar si la reducción tampoco ayuda.
+- **Relación con el diagrama de §1:** Early stopping es la respuesta directa al patrón "train sigue bajando, validación sube" en la curva de loss por época.
+
+**🔧 Anti-patrón común:** fijar `n_estimators=1000` o `epochs=100` sin early stopping y luego preguntarse por qué el modelo sobreajusta. Early stopping es **gratis** en cómputo (lo ahorra) y en rendimiento (nunca perjudica si `restore_best_weights=True`).
+
+**🧭 Cuándo usarlo:** **siempre** que el modelo se entrene iterativamente — no hay razón para no usarlo. La única excepción: entrenamiento de una sola pasada (modelos lineales con solver cerrado, KNN).
+
 ---
 
 ## 4. Métodos Ensemble
@@ -104,17 +187,48 @@ Audiencia: 🔧 🧭 👔
 > [!tip] 💡 Analogía
 > Un jurado le gana a un juez solitario cuando sus miembros son **competentes y diversos**: los errores individuales se cancelan. Bagging recluta jurados que vieron evidencias distintas; Boosting entrena cada jurado en los casos que el anterior falló; Stacking contrata a un juez presidente que aprendió **a quién creerle según el tipo de caso**.
 
-| Técnica | Mecanismo detallado | Qué reduce | Ejemplos | Notas clave |
-|---|---|---|---|---|
-| Bagging | B modelos independientes sobre B muestras bootstrap (con reemplazo); voto mayoritario o promedio | Varianza | Random Forest, BaggingClassifier ([[07-Modelos-Supervisados]]) | Los modelos base deben ser de ALTA varianza (árboles profundos); la independencia maximiza el beneficio |
-| Pasting | Como bagging pero muestreo **sin** reemplazo | Varianza | BaggingClassifier(bootstrap=False) | Útil con datasets enormes donde el bootstrap no aporta |
-| Boosting | Modelos secuenciales; cada uno corrige los errores del conjunto anterior (residuos en Gradient Boosting; pesos de muestras en AdaBoost) | Bias y varianza | XGBoost, LightGBM, CatBoost, AdaBoost | Potente pero sobreajustable: regular con learning_rate + early stopping |
-| Stacking | Nivel 0: K modelos base; nivel 1: un meta-modelo aprende a combinar sus predicciones. **CRÍTICO: el meta-modelo se entrena con OOF (out-of-fold) predictions** para no filtrar el target (Wolpert, 1992) | Bias y varianza | RF + XGBoost + LightGBM combinados por una logística | El arma clásica de Kaggle; sin OOF, es leakage disfrazado ([[10-Validacion-y-Leakage]]) |
-| Blending | Stacking simplificado: el meta-modelo se entrena sobre un holdout en lugar de OOF | Bias y varianza | Igual que stacking, más rápido | Usa menos datos para el meta-modelo; menos riesgo operativo |
-| Voting | Hard: mayoría de votos de clase. Soft: promedio de probabilidades (mejor si están calibradas) | Varianza | VotingClassifier/VotingRegressor | Soft > hard casi siempre — si las probabilidades son honestas (sección 5) |
-| Snapshot Ensembles | Guarda los pesos de la red en varios mínimos del ciclo de learning rate (cosine annealing con restarts) y los ensembla | Varianza | Deep learning con entrenamiento caro | Ensemble "gratis": un solo entrenamiento, varios modelos |
+| Técnica | Mecanismo detallado | Qué reduce | Ejemplos | Notas clave | Cuándo conviene |
+|---|---|---|---|---|---|
+| Bagging | B modelos independientes sobre B muestras bootstrap (con reemplazo); voto mayoritario o promedio | Varianza | Random Forest, BaggingClassifier ([[07-Modelos-Supervisados]]) | Los modelos base deben ser de ALTA varianza (árboles profundos); la independencia maximiza el beneficio | Alta varianza con un modelo base propenso a sobreajustar y se quiere robustez con poco esfuerzo de tuning |
+| Pasting | Como bagging pero muestreo **sin** reemplazo | Varianza | BaggingClassifier(bootstrap=False) | Útil con datasets enormes donde el bootstrap no aporta | Dataset ya tan grande que el bootstrap no agrega diversidad real |
+| Boosting | Modelos secuenciales; cada uno corrige los errores del conjunto anterior (residuos en Gradient Boosting; pesos de muestras en AdaBoost) | Bias y varianza | XGBoost, LightGBM, CatBoost, AdaBoost | Potente pero sobreajustable: regular con learning_rate + early stopping | Datos tabulares con señal fina por explotar, hay tolerancia para tunear, y las etiquetas son confiables (el ruido de etiquetas lo daña más que a bagging) |
+| Stacking | Nivel 0: K modelos base; nivel 1: un meta-modelo aprende a combinar sus predicciones. **CRÍTICO: el meta-modelo se entrena con OOF (out-of-fold) predictions** para no filtrar el target (Wolpert, 1992) | Bias y varianza | RF + XGBoost + LightGBM combinados por una logística | El arma clásica de Kaggle; sin OOF, es leakage disfrazado ([[10-Validacion-y-Leakage]]) | Varios modelos fuertes y diversos ya entrenados, y hay presupuesto de cómputo/validación para entrenar el meta-modelo con OOF |
+| Blending | Stacking simplificado: el meta-modelo se entrena sobre un holdout en lugar de OOF | Bias y varianza | Igual que stacking, más rápido | Usa menos datos para el meta-modelo; menos riesgo operativo | Mismo escenario que stacking pero se prefiere un holdout simple por tiempo o simplicidad operativa |
+| Voting | Hard: mayoría de votos de clase. Soft: promedio de probabilidades (mejor si están calibradas) | Varianza | VotingClassifier/VotingRegressor | Soft > hard casi siempre — si las probabilidades son honestas (sección 5) | Pocos modelos que ya rinden bien por separado y no hay tiempo ni interés en tunear un meta-modelo |
+| Snapshot Ensembles | Guarda los pesos de la red en varios mínimos del ciclo de learning rate (cosine annealing con restarts) y los ensembla | Varianza | Deep learning con entrenamiento caro | Ensemble "gratis": un solo entrenamiento, varios modelos | Redes neuronales donde entrenar varias veces desde cero es prohibitivo en tiempo o cómputo |
 
 **👔 En una frase para el negocio:** los ensembles compran los últimos puntos de rendimiento al precio de más complejidad operativa — la pregunta correcta es si esos puntos pagan el mantenimiento extra ([[13-MLOps-XAI-Etica]]).
+
+### 4.1 Feature importance como herramienta de mejora
+
+Audiencia: 🔧 🧭
+
+> [!tip] 💡 Analogía
+> El coach que analiza el video post-partido: no entrena otra vez desde cero — mira qué jugadores rindieron, cuáles estorbaron y cuáles ni tocaron la pelota. Feature importance hace lo mismo con las variables: después de entrenar, revela cuáles aportaron y cuáles puedes eliminar para simplificar sin perder.
+
+**🔧 Definición técnica:** medir la contribución de cada feature al rendimiento del modelo, para decidir si eliminarla (simplificar/regularizar) o si crearla mejor (feature engineering).
+
+| Método | Mecanismo | Ventajas | Limitaciones |
+|---|---|---|---|
+| **Permutation Importance** | Permuta aleatoriamente una feature en el test set y mide cuánto cae la métrica; la caída = importancia (Breiman, 2001a) | Model-agnostic; mide impacto REAL en la métrica; detecta features que el modelo ignora | Lento con muchas features; subestima features correlacionadas (al permutar una, la otra compensa) |
+| **SHAP values** | Descompone cada predicción en contribuciones aditivas por feature basándose en valores de Shapley (Lundberg & Lee, 2017) | Importancia global Y local; detecta interacciones; teóricamente fundado en teoría de juegos | Costoso computacionalmente para datasets grandes; requiere interpretación cuidadosa |
+| **Gini / split importance** (tree-based) | Cuenta cuánta reducción de impureza (o ganancia) aporta cada feature en los splits del árbol | Gratis (viene con el modelo entrenado); rápido | Sesgada a favor de features con alta cardinalidad; no refleja impacto real en la métrica final |
+| **Drop-column importance** | Reentrena sin la feature y compara; la pérdida = importancia | La más honesta conceptualmente | Carísima: N features × reentrenamiento completo; solo viable con pocas features o modelos rápidos |
+
+**🔧 El ciclo de mejora basado en importancia:**
+
+1. Entrenar modelo baseline.
+2. Calcular permutation importance (o SHAP global).
+3. **Eliminar features con importancia ≈ 0** → simplifica el modelo, puede mejorar generalización.
+4. **Investigar las top-5 features** → ¿se pueden derivar más features de ellas? (interacciones, ratios, lags). Eso es feature engineering informado por el modelo.
+5. Reentrenar y comparar.
+
+**🔧 Conexiones:**
+- Interpretabilidad completa (SHAP, LIME, PDP) → [[13-MLOps-XAI-Etica]]
+- Feature selection y engineering → [[03-Preparacion-de-Datos]]
+- Detección de leakage: una feature con importancia desproporcionada (>50% del total) es sospechosa → auditar disponibilidad temporal ([[10-Validacion-y-Leakage]])
+
+**🧭 Cuándo usarlo:** después del primer modelo entrenado, **antes** de tunear hiperparámetros. Eliminar features inútiles y crear features derivadas de las importantes suele mover más la métrica que semanas de tuning.
 
 ---
 
@@ -158,16 +272,20 @@ Audiencia: 🧭
 ```
  1. DIAGNÓSTICO  (learning/validation curves: ¿bias o varianza?)
         │
- 2. DATOS Y FEATURES  (la palanca más rentable: [[03-Preparacion-de-Datos]])
+ 2. DATOS Y FEATURES  (la palanca más rentable; usar feature importance §4.1)
         │
- 3. MODELO ADECUADO  (baseline → RF → boosting: [[07-Modelos-Supervisados]])
+ 3. MODELO ADECUADO  (baseline → RF → boosting: Modelos Supervisados)
         │
  4. REGULARIZACIÓN + EARLY STOPPING  (que no memorice)
         │
- 5. TUNING (Optuna) ──► 6. ENSEMBLE (si los puntos extra pagan su costo)
+ 5. TUNING (Optuna / AutoML §2.1 como benchmark)
+        │
+ 6. ENSEMBLE (si los puntos extra pagan su costo)
         │
  7. CALIBRACIÓN ──► 8. UMBRAL POR UTILIDAD  (los pasos que tocan la caja)
 ```
+
+Detalle de cada etapa: [[03-Preparacion-de-Datos]] · [[07-Modelos-Supervisados]]
 
 ---
 
@@ -177,6 +295,9 @@ Audiencia: 🧭
 - (Akiba et al., 2019) — Optuna. · (Wolpert, 1992) — stacked generalization.
 - (Srivastava et al., 2014) — Dropout. · (Ioffe & Szegedy, 2015) — Batch Normalization.
 - (Platt, 1999) — Platt scaling. · (Guo et al., 2017) — calibración de redes modernas.
+- (Erickson et al., 2020) — *AutoGluon-Tabular: Robust and Accurate AutoML for Structured Data*. arXiv 2003.06505.
+- (Hollmann et al., 2023) — *TabPFN: A Transformer That Solves Small Tabular Classification Problems in a Second*. ICLR.
+- (Lundberg & Lee, 2017) — *A Unified Approach to Interpreting Model Predictions* (SHAP). NeurIPS.
 - (Hastie et al., 2009), (Géron, 2022) — ensembles y regularización en contexto.
 
 Fichas completas con datos de publicación en [[16-Bibliografia]].

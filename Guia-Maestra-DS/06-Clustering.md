@@ -3,7 +3,8 @@ title: "Tomo 06 — Clustering: Aprendizaje No Supervisado"
 tags: [data-science, machine-learning, clustering, unsupervised, segmentacion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 06
-version: 6.0
+version: 6.1
+updated: 2026-07-29
 ---
 
 # 🧩 Tomo 06 — Clustering: Aprendizaje No Supervisado
@@ -114,7 +115,7 @@ Audiencia: 🔧 🧭 👔
 > [!tip] 💡 Analogía
 > Es DBSCAN con un dron: en vez de mirar el parque desde una sola altura (un solo eps), el dron sube lentamente y observa cómo los grupos se forman, fusionan y separan **a cada altitud**, quedándose con los grupos que se mantienen estables en un rango amplio. Ve la estructura completa, no una foto a una sola escala.
 
-**🔧 Definición técnica:** (Campello et al., 2013) extiende DBSCAN construyendo la jerarquía de densidad completa: (1) distancias de alcanzabilidad mutua; (2) Minimum Spanning Tree; (3) dendrograma de clusters; (4) extracción de los clusters **estables** (los que persisten en un rango amplio de densidades) desde el árbol condensado. Parámetro principal: `min_cluster_size` — mucho más intuitivo que eps. Salidas extra: `probabilities_` (confianza de asignación por punto), `outlier_scores_` (grado de anomalía), `condensed_tree_` (visualización de la jerarquía). Instalación: `pip install hdbscan` (también en scikit-learn-contrib; desde sklearn 1.3 existe `HDBSCAN` nativo).
+**🔧 Definición técnica:** (Campello et al., 2013) extiende DBSCAN construyendo la jerarquía de densidad completa: (1) distancias de alcanzabilidad mutua; (2) Minimum Spanning Tree; (3) dendrograma de clusters; (4) extracción de los clusters **estables** (los que persisten en un rango amplio de densidades) desde el árbol condensado. Parámetro principal: `min_cluster_size` — mucho más intuitivo que eps. Salidas extra: `probabilities_` (confianza de asignación por punto), `outlier_scores_` (grado de anomalía), `condensed_tree_` (visualización de la jerarquía). Disponible en scikit-learn-contrib y, desde sklearn 1.3, como `HDBSCAN` nativo.
 
 **Ventajas sobre DBSCAN:** sin eps que tunear, maneja **densidad variable**, soft clustering vía probabilidades, selección automática del número de clusters, más estable en datos reales.
 

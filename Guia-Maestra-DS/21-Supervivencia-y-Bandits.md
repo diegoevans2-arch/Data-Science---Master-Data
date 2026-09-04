@@ -54,6 +54,8 @@ Audiencia: 🔧 👔
 > [!danger] 🚨 El pecado del churn binario
 > "¿Se fugará en 30 días: sí/no?" desecha la dimensión temporal (fugarse el día 2 ≠ el día 29), fuerza una ventana arbitraria y maneja mal a los clientes con menos de 30 días de observación. Peor aún: si **borras** los censurados o les imputas el tiempo observado como si fuera el final, sesgas sistemáticamente la supervivencia **hacia abajo** — subestimas la vida del cliente y tomas decisiones sobre una foto pesimista y falsa. Si la pregunta de negocio contiene un "cuándo", el marco correcto es supervivencia; el clasificador binario es la aproximación pobre.
 
+**👔 En una frase para el negocio:** un cliente que sigue activo hoy no es un dato faltante, es información valiosa — botarlo o tratarlo como fuga temprana sesga cualquier número de retención que reportes.
+
 ## A.2 Kaplan-Meier y log-rank
 
 Audiencia: 🔧 🧭 👔
@@ -82,6 +84,9 @@ Audiencia: 🔧 🧭 👔
 
 Audiencia: 🔧 🧭
 
+> [!tip] 💡 Analogía
+> El modelo de Cox asume que todos los clientes envejecen según la misma curva de riesgo base — cada factor (un reclamo, un plan caro) no le cambia la forma a esa curva, solo la multiplica por una constante: el que tuvo un reclamo no envejece distinto, envejece **más rápido**, con el mismo perfil de fondo. Los modelos AFT cambian la metáfora: en vez de multiplicar el riesgo, aceleran o frenan el reloj mismo — un factor no sube el peligro en cada instante, hace correr el tiempo hasta el evento al doble (o a la mitad) de velocidad.
+
 **🔧 El modelo de Cox** (riesgos proporcionales) (Cox, 1972): `h(t│x) = h₀(t) · exp(β₁x₁ + … + βₚxₚ)`. Es **semi-paramétrico**: no asume la forma del riesgo base `h₀(t)`, solo cómo las features lo **multiplican**. Su gran ventaja es la interpretabilidad ejecutiva vía **hazard ratios**:
 
 ```
@@ -103,6 +108,9 @@ Audiencia: 🔧 🧭
 ## A.4 ML de supervivencia y sus métricas
 
 Audiencia: 🔧 🧭 👔
+
+> [!tip] 💡 Analogía
+> El C-index es la pregunta de una carrera: si tomas dos corredores al azar, ¿el modelo acierta cuál llega primero a la meta (el evento), sin necesidad de saber el tiempo exacto de cada uno? Acertar el orden en todos los pares posibles da C-index = 1; acertar la mitad —lo mismo que tirar una moneda— da 0.5. Es el primo temporal del AUC: no evalúa si la probabilidad predicha es exacta, evalúa si el ranking de urgencia es correcto.
 
 **🔧 Definición técnica:** cuando hay no-linealidades e interacciones, los modelos de árboles se adaptan al marco de supervivencia: **Random Survival Forests** (Ishwaran et al., 2008) y **gradient boosting de supervivencia** (scikit-survival, XGBoost con objetivo AFT) — capturan estructura compleja respetando la censura.
 

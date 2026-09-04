@@ -3,7 +3,8 @@ title: "Tomo 04 — Semantic search, embeddings y hybrid search"
 tags: [rag, semantic-search, embeddings, vector-space, cosine-similarity, contrastive-training, hybrid-search, rrf, dense-retrieval]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 04
-version: 1.3
+version: 1.4
+updated: 2026-08-28
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -439,7 +440,76 @@ np.array_equal(emb_completo, emb_recortado)          # True
 >
 > Esta es exactamente la razón por la que existe el **chunking**, y por qué es un tomo entero: [[Guia-Maestra-RAG_06-Chunking|Tomo 06]]. **Verifica siempre el límite de tokens de tu embedding model antes de indexar nada.**
 
-### 5.5 Visualizar el espacio: PCA
+### 5.5 Matryoshka embeddings — dimensionalidad flexible sin re-embeddear
+
+Audiencia: 🔧 🧭
+
+> [!tip] 💡 Analogía
+> Una muñeca rusa (matryoshka): la muñeca grande contiene toda la información, pero puedes abrir solo las primeras capas y ya tienes una representación más pequeña pero útil. Matryoshka embeddings funcionan igual: las primeras N dimensiones del vector **ya son un embedding funcional** — no necesitas las 768 o 1024 completas para obtener resultados razonables.
+
+**🔧 Definición técnica:** los Matryoshka Representation Learning embeddings (Kusupati et al., 2022) se entrenan con una loss que **optimiza simultáneamente** para múltiples truncamientos del vector. El resultado: puedes truncar el embedding a 256, 128, o incluso 64 dimensiones simplemente tomando las primeras N posiciones, y el embedding truncado sigue siendo un buen retriever — con degradación gradual y controlada.
+
+**🔧 Por qué importa para RAG:**
+
+| Dimensiones | Tamaño por vector (float32) | Impacto en storage y latencia | Calidad típica (retrieval) |
+|---|---|---|---|
+| 1024 (full) | 4 KB | Baseline — caro en millones de docs | 100% (referencia) |
+| 512 (truncado) | 2 KB | 50% storage, ~30% más rápido en ANN | ~98–99% de la calidad |
+| 256 (truncado) | 1 KB | 75% ahorro | ~95–97% |
+| 128 (truncado) | 0.5 KB | 87% ahorro | ~90–93% |
+| 64 (truncado) | 0.25 KB | 94% ahorro | ~85–88% (aún útil para pre-filtering) |
+
+**🔧 Modelos que soportan Matryoshka:**
+- `nomic-embed-text-v1.5` (Nomic, 2024) — entrenado con Matryoshka loss nativo
+- `jina-embeddings-v3` (Jina, 2024) — Matryoshka + late chunking
+- `text-embedding-3-small/large` (OpenAI, 2024) — soporta parámetro `dimensions` para truncar en la API
+- `mxbai-embed-large` (Mixedbread, 2024) — Matryoshka + binary quantization
+
+**🔧 El patrón de uso en producción — búsqueda en dos fases:**
+
+```
+ Fase 1: PRE-FILTER rápido (embeddings truncados a 128 dims)
+         → top-500 candidatos en milisegundos
+                    │
+                    ▼
+ Fase 2: RE-RANK preciso (embeddings completos a 1024 dims)
+         → solo los 500 candidatos, no todo el corpus
+         → top-10 finales con calidad completa
+```
+
+Este patrón **reduce la latencia del retriever sin sacrificar calidad final**: la primera fase es barata (vectores chicos, búsqueda ANN rápida), la segunda es cara pero solo sobre un subset pequeño.
+
+**🧭 Cuándo usarlo:** cuando tu corpus supera los ~500K documentos y la latencia o el costo de storage son restricción. Con menos documentos, el ahorro es marginal.
+
+### 5.5b Binary y scalar quantization — compresión radical de vectores
+
+Audiencia: 🔧
+
+**🔧 Definición técnica:** en vez de almacenar cada dimensión como un float32 (4 bytes), se reduce la precisión:
+
+| Tipo | Bits por dimensión | Factor de compresión vs float32 | Pérdida típica de calidad |
+|---|---|---|---|
+| **float32** (baseline) | 32 | 1× | 0% |
+| **float16** | 16 | 2× | <0.1% (despreciable) |
+| **int8** (scalar quantization) | 8 | 4× | 1–3% |
+| **binary** (1 bit = signo) | 1 | 32× | 5–10% sin rescoring; ~2% con rescoring |
+
+**🔧 Binary quantization — el caso extremo:**
+- Cada dimensión se convierte en 1 bit: positivo → 1, negativo → 0
+- La similitud se calcula con **Hamming distance** (XOR + popcount) — operación de hardware extremadamente rápida
+- Un vector de 1024 dims pasa de 4 KB a **128 bytes**
+- Con rescoring (guardar los float32 originales solo de los top-K candidatos), la pérdida de calidad es mínima
+
+**🔧 Combinación ganadora — Matryoshka + binary quantization:**
+
+Truncar a 256 dims (Matryoshka) + quantizar a 1 bit (binary) = vector final de **32 bytes** por documento (vs 4 KB original). Factor de compresión: **128×**. Esto permite mantener **todo el índice en RAM** para corpus de millones de documentos — algo impensable con float32 completos.
+
+> [!warning] ⚠️ Cuidado con la quantization sin rescoring
+> Binary quantization **sola** degrada calidad significativamente (5–10%). Es una técnica de **primera fase** (pre-filter), no de ranking final. Siempre combinar con rescoring usando los vectores originales sobre un subset reducido — el mismo patrón de dos fases de §5.5.
+
+**🧭 Cuándo usarlo:** corpus grandes (>1M docs) donde el vector store completo no cabe en RAM, o escenarios de latencia ultra-baja (<10ms para retrieval). La mayoría de proyectos RAG medianos (<100K docs) no necesitan quantization — el ahorro no justifica la complejidad extra.
+
+### 5.6 Visualizar el espacio: PCA
 
 Audiencia: 🔧
 
@@ -777,6 +847,8 @@ Audiencia: 🔧 🧭 👔
 - Schroff, F., Kalenichenko, D. & Philbin, J. (2015). *FaceNet: A Unified Embedding for Face Recognition and Clustering*. CVPR. — Origen del esquema anchor / positive / negative (triplet loss) descrito en la sección 4.3.
 - Mikolov, T. et al. (2013). *Efficient Estimation of Word Representations in Vector Space*. ICLR Workshop. — word2vec: el trabajo que popularizó la idea de significado como posición en un espacio vectorial.
 - Documentación oficial: model card de `BAAI/bge-base-en-v1.5` (Hugging Face) — dimensiones y límite de tokens citados en este tomo.
+- Kusupati, A. et al. (2022). *Matryoshka Representation Learning*. NeurIPS. — Entrenamiento multi-resolución que permite truncar embeddings sin re-embeddear (sección 5.5).
+- Yamada, I. et al. (2024). *Scalar and Binary Quantization for Approximate Nearest Neighbor Search*. — Fundamento de la compresión radical de vectores (sección 5.5b). Nota: este approach está implementado nativamente en Weaviate, Qdrant y FAISS desde 2024.
 
 > [!note] Sobre el código y los números de este tomo
 > - **Del curso (fuente primaria):** los ejemplos con `sentence-transformers` y los valores de similitud de las secciones 5.1 y 5.3 provienen del **Ungraded Lab 1**; los rankings y la fusión de la sección 6.5 provienen del **assignment graded C1M2**, y fueron **re-ejecutados por mí para confirmar que reproducen la salida esperada del assignment** (`[673, 752, 626, 743, 289]`). La fórmula de RRF y el valor `K=60` están tomados del enunciado del propio assignment.
