@@ -3,8 +3,8 @@ title: "Tomo 05 — Escalado de Datos"
 tags: [data-science, machine-learning, scaling, preprocessing, transformaciones]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 05
-version: 6.2
-updated: 2026-08-28
+version: 6.3
+updated: 2026-09-06
 ---
 
 # ⚖️ Tomo 05 — Escalado de Datos
@@ -70,7 +70,7 @@ Audiencia: 🔧 🧭
 | QuantileTransformer (uniform) | Percentiles → distribución uniforme | [0, 1] | Robusto a outliers extremos | Pierde la forma original de la distribución | Cuando se necesita distribución uniforme estricta | Convertir cada valor en su ranking percentil |
 | QuantileTransformer (normal) | Percentiles → distribución normal | (−∞, +∞) | Fuerza normalidad real | Distorsiona distancias relativas | Algoritmos que asumen normalidad estricta | Rehacer la fila por estatura hasta formar campana |
 | PowerTransformer (Box-Cox) | `(xᶺλ − 1)/λ` si λ≠0; `log(x)` si λ=0 | Varía | Estabiliza varianza, normaliza (Box & Cox, 1964) | **Solo datos estrictamente positivos** | Skew positivo: ingresos, precios, áreas | Planchar la cola larga de la distribución |
-| PowerTransformer (Yeo-Johnson) | Extensión de Box-Cox | Varía | Acepta negativos y cero | Más compleja que Box-Cox | Como Box-Cox pero sin restricción de signo | El planchado que también acepta números rojos |
+| PowerTransformer (Yeo-Johnson) | Extensión de Box-Cox a toda la recta real (Yeo & Johnson, 2000) | Varía | Acepta negativos y cero | Más compleja que Box-Cox | Como Box-Cox pero sin restricción de signo | El planchado que también acepta números rojos |
 | Log transform (manual) | `log(x + 1)` = `log1p(x)` | Varía | Simple, muy efectiva contra skew | Solo no-negativos; cambia la interpretación | Ingresos, conteos, precios, tasas | Mirar los montos en "órdenes de magnitud" |
 | Normalizer L2 | `x / ‖x‖₂` **por fila** | Norma 1 por muestra | Ideal para similitud coseno | Normaliza muestras, no features | TF-IDF, K-Means sobre texto, similitud de documentos | Comparar recetas por proporciones, no por tamaño de olla |
 | Transformación cíclica | `sin(2π·x/max)`, `cos(2π·x/max)` | [−1, 1] ×2 columnas | Respeta la circularidad del tiempo | Duplica columnas; requiere conocer el período | Hora, día de semana, mes, ángulos | El reloj redondo: las 23:00 y la 01:00 son vecinas |
@@ -111,6 +111,8 @@ Audiencia: 🔧
 | λ = −1 | Inversa (1/x) |
 
 En sklearn: `PowerTransformer(method='box-cox')` (exige positivos estrictos) o `method='yeo-johnson'` (acepta ceros y negativos); ambos con `standardize=True` dejan además media 0 y varianza 1.
+
+La variante **Yeo-Johnson** (Yeo & Johnson, 2000) extiende la familia Box-Cox a toda la recta real: para valores no negativos aplica la potencia sobre `x + 1`; para negativos, una potencia espejo con parámetro `2 − λ`, de modo que la transformación queda continua y monótona al cruzar el cero. Es la opción natural cuando la variable admite ceros o valores negativos (márgenes, variaciones interanuales, saldos netos), donde Box-Cox directamente no está definida. El λ se estima igual que en Box-Cox, maximizando la verosimilitud de normalidad.
 
 ### 2.3 Transformación cíclica (sin/cos)
 
@@ -197,11 +199,11 @@ Audiencia: 🔧 🧭
 | Orden | Qué pasa | Problema |
 |---|---|---|
 | Imputar → Escalar ✅ | El scaler ve datos completos; sus estadísticos (μ, σ, min, max) son estables | Ninguno — es el correcto |
-| Escalar → Imputar ❌ | El scaler calcula μ/σ ignorando NaNs (o falla); la imputación posterior inserta valores en escala original que ya no matchea | Los imputados quedan en escala distinta al resto; sesgo silencioso |
+| Escalar → Imputar ⚠️ | El scaler de scikit-learn **ignora los NaN al ajustar y los deja pasar en transform**; un imputador colocado después dentro del Pipeline aprende sobre datos ya escalados | Sin desajuste de escala si el imputador vive en el Pipeline. Riesgos reales: imputar a mano con constantes en unidades originales, o que μ y σ se estimen solo con las filas completas (sesgo si la ausencia no es aleatoria, [[03-Preparacion-de-Datos]]). *(Corregido el 2026-09-06: la fila describía un desajuste de escala que scikit-learn no produce.)* |
 
 **🔧 Caveats adicionales:**
 
-- **KNNImputer** opera con distancias → necesita features en la misma escala para funcionar. Pero si escalas antes, los NaNs no tienen escala. Solución: usar un IterativeImputer (que es model-based y tolera NaN) o una imputación por mediana primero, escalar, y luego refinar con KNN.
+- **KNNImputer** busca vecinos por distancia, así que las features deben estar en la misma escala **antes** de imputar: escalar → KNNImputer es el orden correcto, y un NaN no necesita escala porque el scaler lo deja pasar intacto. Con SimpleImputer (media/mediana) el orden no altera la coherencia de escala; se mantiene imputar → escalar por claridad y porque así el scaler estima μ y σ con todas las filas. *(Corregido el 2026-09-06: el caveat recomendaba lo contrario.)*
 - **Imputación con constante (-999, 0)**: si se imputa con un valor fuera de rango y luego se aplica Min-Max, ese valor extremo colapsa el rango útil. Preferir mediana/media para imputar antes de scalers sensibles a extremos.
 - **ColumnTransformer** cuando distintas columnas necesitan distinto tratamiento: numéricas → impute + scale; categóricas → impute + encode. Cada rama con su orden propio ([[03-Preparacion-de-Datos]]).
 
@@ -244,10 +246,10 @@ Audiencia: 🧭
 
 ## 📖 Referencias de este tomo
 
-- (Box & Cox, 1964) — la transformación de potencia original.
+- (Box & Cox, 1964) — la transformación de potencia original. · (Yeo & Johnson, 2000) — la extensión a ceros y negativos.
 - (Géron, 2022) — pipelines de preprocesamiento y escalado en la práctica.
 - (Kuhn & Johnson, 2019) — transformaciones de features y sus efectos en los modelos.
-- Documentación oficial: [scikit-learn.org — Preprocessing](https://scikit-learn.org/stable/modules/preprocessing.html).
+- Documentación oficial: [scikit-learn.org — Preprocessing](https://scikit-learn.org/stable/modules/preprocessing.html). Los scalers «treat NaNs as missing values: disregarded in fit, and maintained in transform» (referencia de `StandardScaler`, consultada el 2026-09-06; [[16-Bibliografia]] §13).
 
 Fichas completas con datos de publicación en [[16-Bibliografia]].
 

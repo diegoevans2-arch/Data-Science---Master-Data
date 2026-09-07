@@ -3,7 +3,8 @@ title: "Tomo 02 — Fundamentos: LLMs y el pipeline RAG"
 tags: [rag, llm, tokens, autoregressive, hallucination, context-window, retriever, grounding, information-retrieval]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 02
-version: 1.0
+version: 1.1
+updated: 2026-09-05
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -431,7 +432,7 @@ La única diferencia estructural entre usar un LLM directo y un sistema RAG es *
 
 Audiencia: 🔧
 
-El [[Guia-Maestra-RAG_01-Introduccion-a-RAG#4. El pipeline mínimo en código|Tomo 01]] mostró las dos primeras piezas (`get_relevant_data` y `format_relevant_data`). Aquí se cierra el circuito con las dos que faltaban, del assignment C1M1.
+El [[Guia-Maestra-RAG_01-Introduccion-a-RAG#5. 💻 El pipeline mínimo en código|Tomo 01]] mostró las dos primeras piezas (`get_relevant_data` y `format_relevant_data`). Aquí se cierra el circuito con las dos que faltaban, del assignment C1M1.
 
 > [!note] Contexto del ejercicio
 > Dataset: *News Headlines 2024* (Kaggle) — titulares de BBC News, The Guardian y WSJ. Modelo: `llama-3-1-8b-instruct-turbo` vía **Together AI** (el curso usa modelos open-source justamente para poder mirar bajo el capó). Campos relevantes de cada documento: `title`, `description`, `published_at`, `url`.

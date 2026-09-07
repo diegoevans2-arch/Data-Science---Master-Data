@@ -3,8 +3,8 @@ title: "Tomo 09 — Hallucinations, evaluación y agentic RAG"
 tags: [rag, evaluacion, metricas, precision, recall, map, mrr, ragas, faithfulness, hallucinations, agentic-rag, fine-tuning]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 09
-version: 1.1
-updated: 2026-08-28
+version: 1.2
+updated: 2026-09-05
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -609,8 +609,8 @@ Audiencia: 🔧
 
 **📚 Referencias de las secciones 4.4–4.6:**
 
-- (Liu et al., 2023) — *G-Eval: NLG Evaluation using GPT-4 with Better Human Alignment*. arXiv 2303.16634.
-- (Zheng et al., 2023) — *Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena*. NeurIPS 2023.
+- (Liu et al., 2023) — Liu, Y., Iter, D., Xu, Y., Wang, S., Xu, R., & Zhu, C. *G-Eval: NLG Evaluation using GPT-4 with Better Human Alignment*. EMNLP 2023, 2511–2522 (arXiv 2303.16634).
+- (Zheng et al., 2023) — Zheng, L., Chiang, W.-L., Sheng, Y., et al. *Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena*. NeurIPS 2023, Datasets and Benchmarks Track, 46595–46623.
 
 ---
 

@@ -3,8 +3,8 @@ title: "Tomo 13 — ⭐ Frameworks de orquestación: LangChain, LlamaIndex, DSPy
 tags: [rag, complemento, vanguardia, frameworks, langchain, langgraph, llamaindex, dspy, haystack, ragflow, abstraccion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 13
-version: 1.1
-updated: 2026-08-28
+version: 1.2
+updated: 2026-09-05
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -14,7 +14,7 @@ author: El Egypcio
 # Tomo 13 — ⭐ Frameworks de orquestación: LangChain, LlamaIndex, DSPy y la opción de no usar ninguno
 
 > [!info] Navegación
-> [[Guia-Maestra-RAG_00-MOC-Guia-Maestra-RAG|🗺️ Volver al índice]] · Anterior → [[Guia-Maestra-RAG_12-Query-Decomposition-Multi-Query-y-GraphRAG|Tomo 12 · ⭐ Técnicas avanzadas de query]] · Siguiente → [[Guia-Maestra-RAG_15-Glosario-Ejecutivo|Tomo 15 · Glosario ejecutivo]]
+> [[Guia-Maestra-RAG_00-MOC-Guia-Maestra-RAG|🗺️ Volver al índice]] · Anterior → [[Guia-Maestra-RAG_12-Query-Decomposition-Multi-Query-y-GraphRAG|Tomo 12 · ⭐ Técnicas avanzadas de query]] · Siguiente → [[Guia-Maestra-RAG_14-Structured-Data-RAG|Tomo 14 · ⭐ Structured Data RAG]]
 
 ---
 
@@ -682,6 +682,6 @@ Por transparencia, y porque son justo las cosas que suelen afirmarse sin base:
 ---
 
 > [!info] Navegación
-> [[Guia-Maestra-RAG_00-MOC-Guia-Maestra-RAG|🗺️ Volver al índice]] · Anterior → [[Guia-Maestra-RAG_12-Query-Decomposition-Multi-Query-y-GraphRAG|Tomo 12 · ⭐ Técnicas avanzadas de query]] · Siguiente → [[Guia-Maestra-RAG_15-Glosario-Ejecutivo|Tomo 15 · Glosario ejecutivo]]
+> [[Guia-Maestra-RAG_00-MOC-Guia-Maestra-RAG|🗺️ Volver al índice]] · Anterior → [[Guia-Maestra-RAG_12-Query-Decomposition-Multi-Query-y-GraphRAG|Tomo 12 · ⭐ Técnicas avanzadas de query]] · Siguiente → [[Guia-Maestra-RAG_14-Structured-Data-RAG|Tomo 14 · ⭐ Structured Data RAG]]
 
 > 🏁 **Fin de los complementos de vanguardia.** Con este tomo se cierra el cuerpo de la guía: once tomos sobre el curso (01–11) y dos complementos externos (12–13). Lo que sigue son los transversales: el [[Guia-Maestra-RAG_15-Glosario-Ejecutivo|glosario ejecutivo]] y la [[Guia-Maestra-RAG_16-Bibliografia|bibliografía]].

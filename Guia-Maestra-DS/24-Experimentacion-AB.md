@@ -11,26 +11,28 @@ audiencias:
   - puente
   - ejecutivo
 tomo: 24
-version: 1.0
-updated: 2026-08-28
+version: 1.2
+updated: 2026-09-06
 ---
 
-# Tomo 24 — Experimentación A/B y Diseño de Experimentos
+# 🧪 Tomo 24 — Experimentación A/B y Diseño de Experimentos
 
-> [!abstract] Resumen ejecutivo
+> [!abstract] 👔 Resumen ejecutivo
 > Un A/B test es el gold standard para establecer causalidad en productos digitales: aleatorizamos usuarios entre variantes y medimos el efecto. Este tomo cubre desde el pre-requisito fundamental (¿puedo aleatorizar?) hasta diseños avanzados (sequential testing, interleaving, switchback), pasando por el dimensionamiento correcto del experimento y las trampas que invalidan conclusiones.
 
-**Navegación:** ← [[23-Tabular-DL-vs-Boosting]] · Siguiente tomo pendiente
+**Navegación:** [[00-MOC-Guia-Maestra|⬅ Volver al índice]] · Anterior: [[23-Tabular-DL-vs-Boosting|23 · Tabular DL vs Boosting]] · Siguiente: [[25-Privacidad-y-Datos-Sinteticos|25 · Privacidad y Datos Sintéticos ➡]]
 
 ---
 
 ## 1. ¿Cuándo se puede aleatorizar?
 
+Audiencia: 🔧 🧭 👔
+
 👔 [Ejecutivo] El A/B test solo funciona cuando podemos asignar aleatoriamente a los usuarios entre tratamiento y control **sin restricciones éticas, legales o técnicas** que lo impidan.
 
-🔧 [Técnico] El supuesto clave es la **exchangeability**: dado que la asignación es aleatoria, los grupos son comparables en expectativa sobre todas las variables — observadas y no observadas. Si no puedes aleatorizar, necesitas métodos quasi-experimentales (ver [[18-Causalidad-Inferencia-Causal]]).
+🔧 [Técnico] El supuesto clave es la **exchangeability**: dado que la asignación es aleatoria, los grupos son comparables en expectativa sobre todas las variables — observadas y no observadas. Si no puedes aleatorizar, necesitas métodos quasi-experimentales (ver [[18-Causalidad-y-Uplift|18 · Causalidad y Uplift]]).
 
-> [!question] Pregunta de filtro antes de diseñar
+> [!info] 📌 Pregunta de filtro antes de diseñar
 > 1. ¿Puedo asignar aleatoriamente la intervención?
 > 2. ¿Hay riesgo ético o legal en negar el tratamiento al control?
 > 3. ¿Hay interferencia inevitable entre unidades (e.g., precios en un marketplace)?
@@ -45,7 +47,11 @@ updated: 2026-08-28
 
 ## 2. Diseño del experimento: dimensionamiento
 
+Audiencia: 🔧 🧭
+
 ### 2.1 Los cuatro parámetros fundamentales
+
+Audiencia: 🔧
 
 🔧 [Técnico]
 
@@ -76,6 +82,8 @@ Ejemplo numérico:
 
 ### 2.2 Duración del experimento
 
+Audiencia: 🧭
+
 🧭 [Puente] La duración no es solo "hasta juntar la n". Hay que cubrir:
 
 - **Ciclos completos**: al menos 1–2 semanas para capturar patrones día-de-semana.
@@ -86,6 +94,8 @@ Ejemplo numérico:
 > Calcular sample size, dividir por tráfico diario, y correr exactamente esos días. Esto ignora la dependencia temporal y puede coincidir con eventos atípicos (holidays, campañas). Siempre redondear a semanas completas.
 
 ### 2.3 El MDE como decisión de negocio
+
+Audiencia: 👔
 
 👔 [Ejecutivo] El MDE responde a: "¿Cuál es el efecto mínimo que justifica el costo de implementar el cambio?" Si el cambio es barato de implementar, puedes buscar efectos pequeños (pero necesitarás más muestra). Si es costoso, un MDE grande reduce la duración del test.
 
@@ -102,7 +112,11 @@ Trade-off del MDE:
 
 ## 3. Randomización
 
+Audiencia: 🔧 🧭
+
 ### 3.1 Unidad de randomización
+
+Audiencia: 🔧
 
 🔧 [Técnico]
 
@@ -117,6 +131,8 @@ Trade-off del MDE:
 > La unidad de randomización debe ser la unidad más pequeña en la que la intervención es **estable** y donde la **interferencia** entre unidades es despreciable.
 
 ### 3.2 Stratified randomization
+
+Audiencia: 🔧
 
 🔧 [Técnico] Si hay covariables de alto impacto (plataforma, país, segmento de usuario), estratificar la asignación garantiza balance exacto en esas dimensiones:
 
@@ -140,6 +156,8 @@ Reduce varianza residual sin sesgo. Especialmente útil cuando los estratos tien
 
 ### 3.3 CUPED / CUPAC — Variance reduction
 
+Audiencia: 🔧 🧭
+
 🔧 [Técnico] **CUPED** (Controlled-experiment Using Pre-Experiment Data) usa datos pre-experimentales como covariable para reducir la varianza del estimador:
 
 ```
@@ -161,14 +179,20 @@ Reducción de varianza:
 
 **CUPAC** (Controlled-experiment Using Predictions As Covariates) generaliza CUPED: en lugar de usar solo la métrica pre-periodo, usa un modelo predictivo (e.g., expected revenue por usuario basado en features históricas) como covariable. Mayor reducción de varianza cuando la métrica tiene baja autocorrelación temporal.
 
-> [!cite] Referencia
+🔧 [Técnico] CUPED es un caso particular de **regression adjustment**: regresar la métrica sobre el indicador de tratamiento y covariables pre-experimento. Lin (2013) cerró la vieja objeción de Freedman: con muestras grandes, el ajuste OLS con interacciones tratamiento × covariable nunca empeora la precisión asintótica frente al difference-in-means y admite errores estándar robustos; CUPED lo implementa con una sola covariable. La versión con modelos de ML también está arbitrada: **MLRATE** (Guo et al., 2021) usa las predicciones de un learner (gradient boosting u otro) como covariable, con **cross-fitting** para que el sobreajuste no sesgue el estimador, y reporta reducciones de varianza superiores al 70 % en 48 métricas de Meta. El nombre «CUPAC» viene de la práctica industrial y no tiene fuente revisada por pares; en documentos formales descríbelo como *ML-based regression adjustment* y cita a Lin (2013) y Guo et al. (2021). Requisito común a todas las variantes: las covariables deben ser pre-tratamiento; si la asignación puede afectarlas, el ajuste introduce sesgo.
+
+> [!note] 📚 Referencia
 > Deng, A., Xu, Y., Kohavi, R., & Walker, T. (2013). "Improving the Sensitivity of Online Controlled Experiments by Utilizing Pre-Experiment Data." *Proceedings of WSDM 2013*, pp. 123–132.
 
 ---
 
 ## 4. Sequential testing vs fixed-horizon
 
+Audiencia: 🔧 🧭
+
 ### 4.1 El problema del peeking
+
+Audiencia: 🧭 👔
 
 🧭 [Puente] En un test fixed-horizon, calculas sample size, corres el experimento, y analizas **una sola vez** al final. Pero en la práctica, los equipos miran resultados diariamente. Cada "peek" es un test de hipótesis implícito que infla el false positive rate:
 
@@ -180,12 +204,14 @@ Número de peeks    α efectivo (si α nominal = 0.05)
      50                    ~0.30
     100                    ~0.37
 
-Fuente: simulaciones con z-tests repetidos sobre H₀ verdadera
+Fuente: cálculo clásico de Armitage, McPherson & Rowe (1969) para un test al 5 % repetido sobre datos acumulados; cifras aproximadas. Con miradas ilimitadas, la probabilidad de un falso positivo tiende a 1.
 ```
 
 👔 [Ejecutivo] Si tu equipo mira resultados antes de tiempo y para el test cuando "se ve significativo", está tomando decisiones con una tasa de falsos positivos mucho mayor que el 5% acordado.
 
 ### 4.2 Sequential testing — siempre válido
+
+Audiencia: 🔧
 
 🔧 [Técnico] Los métodos de sequential testing permiten monitorear resultados continuamente mientras controlan el α global:
 
@@ -217,7 +243,14 @@ Always-valid:
   confidence sequence excluye 0 (o por futility)
 ```
 
+> [!info] 📌 Estado del arte 2023–2026: safe anytime-valid inference en producción
+> Los always-valid p-values de Johari et al. (2017; versión de revista, 2022) son hoy un caso particular de la *safe anytime-valid inference* de Ramdas, Grünwald, Vovk & Shafer (2023): un e-value es una apuesta contra H₀ cuyo producto acumulado sigue siendo válido en cualquier stopping time, y la confidence sequence es su dual. Ya está en plataformas: Adobe documenta un servicio comercial de A/B testing construido sobre confidence sequences (Maharaj et al., 2023) y Netflix publicó modelos lineales anytime-valid que combinan monitoreo continuo con regression adjustment — CUPED incluido — sin perder la garantía de error tipo I (Lindon, Ham, Tingley & Bojinov, 2022; versión de revista en prensa, 2026). Consecuencia: «sequential testing» ya no es solo Lan-DeMets con interim analyses fijos; si tu plataforma reporta en continuo, exige saber qué garantía time-uniform implementa.
+
+---
+
 ### 4.3 ¿Cuándo usar cada approach?
+
+Audiencia: 🔧 🧭
 
 | Escenario | Recomendación |
 |-----------|--------------|
@@ -226,14 +259,18 @@ Always-valid:
 | Riesgo alto de degradación (e.g., checkout flow) | Sequential con futility boundary |
 | Muchos tests en paralelo, sin urgencia | Fixed-horizon (más simple) |
 
-> [!cite] Referencia
-> Johari, R., Pekelis, L., & Walsh, D. (2017). "Peeking at A/B Tests: Why It Matters, and What to Do About It." *Proceedings of KDD 2017*, pp. 1517–1525.
+> [!note] 📚 Referencia
+> Johari, R., Koomen, P., Pekelis, L., & Walsh, D. (2017). "Peeking at A/B Tests: Why It Matters, and What to Do About It." *Proceedings of KDD 2017*, pp. 1517–1525.
 
 ---
 
 ## 5. Interleaving y switchback designs
 
+Audiencia: 🔧 🧭
+
 ### 5.1 Interleaving (ranking & recommendations)
+
+Audiencia: 🔧 🧭
 
 🔧 [Técnico] En sistemas de ranking (search, recommendations), el interleaving mezcla resultados de dos algoritmos en una sola lista y mide preferencia del usuario por clicks/engagement:
 
@@ -251,9 +288,11 @@ Interleaved list (Team Draft):
 Métrica: proporción de clicks atribuidos a A vs B
 ```
 
-🧭 [Puente] La ventaja del interleaving es **sensibilidad**: como cada usuario ve ambos algoritmos simultáneamente, actúa como su propio control. Detecta diferencias con 10–100x menos muestra que un A/B test tradicional entre usuarios. La desventaja: solo mide preferencia relativa en engagement, no efectos en métricas downstream (revenue, retention).
+🧭 [Puente] La ventaja del interleaving es **sensibilidad**: como cada usuario ve ambos algoritmos simultáneamente, actúa como su propio control. Detecta diferencias con 10–100x menos muestra que un A/B test tradicional entre usuarios — entre uno y dos órdenes de magnitud menos datos, según la validación a gran escala de Chapelle et al. (2012). La desventaja: solo mide preferencia relativa en engagement, no efectos en métricas downstream (revenue, retention).
 
 ### 5.2 Switchback design (marketplaces, ride-sharing)
+
+Audiencia: 🔧
 
 🔧 [Técnico] Cuando la unidad de interés (e.g., un mercado geográfico) tiene pocos clusters y hay **interferencia** fuerte entre usuarios (e.g., el precio de un ride afecta a todos los riders y drivers en la zona), se usa switchback:
 
@@ -271,13 +310,17 @@ Análisis: difference-in-means con clustering por (ciudad × período)
 ```
 
 > [!warning] Carryover effects
-> Si el tratamiento tiene efectos residuales que persisten al período siguiente (e.g., usuarios que descargaron la app por una promo siguen activos después), el switchback está sesgado. Solución: descartar datos de los primeros minutos/hora de cada período (burn-in) o modelar el carryover explícitamente.
+> Si el tratamiento tiene efectos residuales que persisten al período siguiente (e.g., usuarios que descargaron la app por una promo siguen activos después), el switchback está sesgado. Solución: descartar datos de los primeros minutos/hora de cada período (burn-in) o modelar el carryover explícitamente. Para la interferencia transaccional (compradores y vendedores que comparten un mercado), ver la sección 7.3.
 
 ---
 
 ## 6. Múltiples métricas y corrección
 
+Audiencia: 🔧 🧭
+
 ### 6.1 Decision metrics vs guardrail metrics
+
+Audiencia: 🧭 👔
 
 👔 [Ejecutivo]
 
@@ -314,6 +357,8 @@ Análisis: difference-in-means con clustering por (ciudad × período)
 
 ### 6.2 Corrección por múltiples comparaciones
 
+Audiencia: 🔧
+
 🔧 [Técnico]
 
 | Método | Controla | Cuándo usarlo |
@@ -332,7 +377,11 @@ Análisis: difference-in-means con clustering por (ciudad × período)
 
 ## 7. Trampas comunes
 
+Audiencia: 🔧 🧭
+
 ### 7.1 Novelty effect y primacy effect
+
+Audiencia: 🔧
 
 💡 [Analogía] El novelty effect es como cuando pruebas un restaurante nuevo: las primeras veces prestas más atención, pero luego se normaliza. Si mides engagement solo en la primera semana, sobreestimas el efecto a largo plazo.
 
@@ -341,6 +390,8 @@ Análisis: difference-in-means con clustering por (ciudad × período)
 **Mitigación**: excluir los primeros N días de exposición del análisis, o correr el test lo suficiente para alcanzar estado estable (típicamente 2–4 semanas).
 
 ### 7.2 SRM (Sample Ratio Mismatch)
+
+Audiencia: 🧭
 
 🧭 [Puente] Si diseñaste un split 50/50 pero observas 51.2%/48.8% con un chi-squared test significativo, algo está roto en el pipeline de asignación:
 
@@ -359,7 +410,12 @@ Causas comunes de SRM:
 > [!danger] Regla absoluta
 > Si hay SRM, **no interpretes los resultados**. Primero diagnostica y corrige la causa. Un test con SRM no tiene validez interna.
 
+> [!tip] 💡 SRM y A/A test: las dos pruebas de confianza, con fuente
+> Fabijan et al. (2019) publicaron una **taxonomía de causas de SRM** — asignación, ejecución, logging, análisis e interferencia — con reglas de diagnóstico; úsala como checklist antes de declarar inválido un test. Complemento que este tomo no mencionaba: el **A/A test**, dos grupos con la misma experiencia. Sirve para validar la plataforma completa: la distribución de p-values debe ser uniforme y la proporción de «diferencias significativas» ≈ α; si no, hay un bug de asignación, una varianza mal estimada o una unidad de randomización incorrecta (Kohavi, Tang & Xu, 2020). Y ojo con el propio chequeo de SRM: si lo repites a diario con un chi-cuadrado fijo, también sufre peeking; Netflix usa tests secuenciales para conteos multinomiales que permiten vigilar el ratio en continuo sin inflar las falsas alarmas (Lindon & Malek, 2022).
+
 ### 7.3 Interference / Spillover (network effects)
+
+Audiencia: 🔧
 
 🔧 [Técnico] El supuesto SUTVA (Stable Unit Treatment Value Assumption) requiere que el tratamiento de un usuario no afecte los outcomes de otro. Se viola en:
 
@@ -373,7 +429,11 @@ Causas comunes de SRM:
 - Diseños de dos niveles: randomizar clusters Y dentro del cluster randomizar individuos.
 - Modelar spillover con estimadores de efecto directo + indirecto.
 
+🔧 [Técnico] La literatura reciente formaliza estas mitigaciones. Johari, Li, Liskovich & Weintraub (2022) modelan un marketplace de dos lados y demuestran que la randomización unilateral — por clientes o por listings — produce estimadores sesgados del efecto global, con un sesgo cuya magnitud depende de cuán restringido está el mercado por oferta o por demanda; los diseños de *two-sided randomization* reducen ese sesgo, pero no lo eliminan. Bajari et al. (2023) generalizan el «diseño de dos niveles» a los **multiple randomization designs**: se randomiza simultáneamente sobre compradores y vendedores y se comparan las celdas donde ambos están tratados, uno solo o ninguno, lo que permite estimar efecto directo y spillover bajo supuestos de interferencia explícitos. Regla práctica: si la unidad de exposición es el par (comprador, vendedor), randomiza en ambas dimensiones y pre-registra qué contraste de celdas responde tu pregunta; si la interferencia es temporal más que transaccional, el switchback (Bojinov et al., 2023) sigue siendo el diseño indicado.
+
 ### 7.4 Simpson's paradox en segmentos
+
+Audiencia: 🔧 🧭
 
 🧭 [Puente] El tratamiento puede ser positivo en cada segmento pero **negativo** en el agregado (o viceversa) si el tratamiento cambia la composición de los segmentos:
 
@@ -394,59 +454,73 @@ Ejemplo:
 
 ---
 
+### 7.5 Winner's curse y false positive risk
+
+Audiencia: 🔧 🧭 👔
+
+> [!warning] ⚠️ El efecto que reportas al lanzar está inflado
+> Seleccionar solo los experimentos con p < 0,05 selecciona también los que tuvieron suerte muestral: el lift estimado de los ganadores sobreestima el efecto real, y más cuanto menor es el power (Lee & Shen, 2018, quienes derivan una corrección del sesgo implementada en Airbnb). Kohavi, Deng & Vermeer (2022) agregan el **False Positive Risk**: si históricamente solo una fracción pequeña de las ideas mejora la métrica, la probabilidad de que un resultado «significativo» sea falso es mucho mayor que α, y un efecto inusualmente grande merece la ley de Twyman — lo que parece demasiado bueno suele estar mal — y una replicación antes de celebrarse. Para el caso de la sección 8: reporta el intervalo completo, aplica shrinkage o una corrección de winner's curse al +2,3 pp antes de contabilizarlo en el business case, y trata el p = 0,02 de un experimento único como evidencia, no como certeza.
+
+---
+
 ## 8. Caso de negocio
 
-> [!example] Caso: Optimización de flujo de onboarding en app de finanzas personales
+Audiencia: 🧭 👔
 
-👔 [Ejecutivo] **Contexto**: Una app de finanzas personales quiere simplificar su onboarding de 5 pasos a 3 pasos. Hipótesis: menos fricción → más usuarios completan el registro → más activación a 7 días.
-
-**Diseño**:
-
-```
-Métricas:
-  OEC: Activación a 7 días (usuario hace ≥1 transacción en primera semana)
-  Guardrails: Fraud rate, crash rate, customer support tickets
-  Secondary: Completion rate del onboarding, time-to-first-action
-
-Baseline:
-  Activación 7d actual: 34%
-  MDE deseado: +2 pp (de 34% a 36%) — justificado por LTV analysis
-
-Dimensionamiento:
-  σ² ≈ p(1-p) = 0.34 × 0.66 = 0.2244
-  n ≈ (1.96 + 0.84)² × 2 × 0.2244 / (0.02)²
-    ≈ 7.84 × 0.4488 / 0.0004
-    ≈ 8,797 por grupo → 17,594 total
-
-  Tráfico: ~2,000 nuevos usuarios/día
-  Duración: 17,594 / 2,000 ≈ 9 días → redondear a 14 días (2 semanas completas)
-
-Variance reduction:
-  CUPAC con predicted_activation_probability (de modelo histórico)
-  ρ esperada ≈ 0.5 → reducción ~25% → podría acortar a 11 días
-  Pero mantenemos 14 para capturar ciclo semanal completo
-
-Diseño: sequential testing con O'Brien-Fleming spending function
-  - Interim analysis al día 7
-  - Análisis final al día 14
-  - Futility boundary para parar si efecto < 0.5 pp al día 7
-```
-
-**Resultado simulado**:
-- Día 7: activación +1.8 pp (p = 0.08) → no cruza boundary → continuar.
-- Día 14: activación +2.3 pp (p = 0.02) → significativo → lanzar.
-- Guardrails: fraud rate sin cambio, crash rate sin cambio, tickets −5% (no significativo pero direccionalmente positivo).
-- Decisión: **ship**.
-
-🧭 [Puente] Lecciones del caso:
-1. El MDE se derivó del impacto en negocio (LTV), no de conveniencia estadística.
-2. Se usó sequential testing para poder parar temprano si el efecto era claro.
-3. Las guardrails protegieron contra degradaciones no anticipadas.
-4. Se redondeó a semanas completas para evitar sesgos temporales.
+> [!example] 📊 Caso de negocio — Fintech: optimización del flujo de onboarding
+>
+> 👔 [Ejecutivo] **Contexto**: Una app de finanzas personales quiere simplificar su onboarding de 5 pasos a 3 pasos. Hipótesis: menos fricción → más usuarios completan el registro → más activación a 7 días.
+>
+> **Diseño**:
+>
+> ```
+> Métricas:
+>   OEC: Activación a 7 días (usuario hace ≥1 transacción en primera semana)
+>   Guardrails: Fraud rate, crash rate, customer support tickets
+>   Secondary: Completion rate del onboarding, time-to-first-action
+>
+> Baseline:
+>   Activación 7d actual: 34%
+>   MDE deseado: +2 pp (de 34% a 36%) — justificado por LTV analysis
+>
+> Dimensionamiento:
+>   σ² ≈ p(1-p) = 0.34 × 0.66 = 0.2244
+>   n ≈ (1.96 + 0.84)² × 2 × 0.2244 / (0.02)²
+>     ≈ 7.84 × 0.4488 / 0.0004
+>     ≈ 8,797 por grupo → 17,594 total
+>
+>   Tráfico: ~2,000 nuevos usuarios/día
+>   Duración: 17,594 / 2,000 ≈ 9 días → redondear a 14 días (2 semanas completas)
+>
+> Variance reduction:
+>   CUPAC con predicted_activation_probability (de modelo histórico)
+>   ρ esperada ≈ 0.5 → reducción ~25% → podría acortar a 11 días
+>   Pero mantenemos 14 para capturar ciclo semanal completo
+>
+> Diseño: sequential testing con O'Brien-Fleming spending function
+>   - Interim analysis al día 7
+>   - Análisis final al día 14
+>   - Futility boundary para parar si efecto < 0.5 pp al día 7
+> ```
+>
+> **Resultado simulado**:
+> - Día 7: activación +1.8 pp (p = 0.08) → no cruza boundary → continuar.
+> - Día 14: activación +2.3 pp (p = 0.02) → significativo → lanzar.
+> - Guardrails: fraud rate sin cambio, crash rate sin cambio, tickets −5% (no significativo pero direccionalmente positivo).
+> - Decisión: **ship**.
+>
+> 🧭 [Puente] Lecciones del caso:
+> 1. El MDE se derivó del impacto en negocio (LTV), no de conveniencia estadística.
+> 2. Se usó sequential testing para poder parar temprano si el efecto era claro.
+> 3. Las guardrails protegieron contra degradaciones no anticipadas.
+> 4. Se redondeó a semanas completas para evitar sesgos temporales.
+> 5. El +2,3 pp es un estimador condicionado a haber ganado: para el business case se usa una versión ajustada por winner's curse (sección 7.5).
 
 ---
 
 ## 9. Guía de decisión: ¿A/B, quasi-experiment, o bandit?
+
+Audiencia: 🔧 🧭
 
 ```
                     ¿Puedes aleatorizar?
@@ -457,7 +531,7 @@ Diseño: sequential testing con O'Brien-Fleming spending function
               │                       │
               ▼                       ▼
     ¿Hay interferencia        Quasi-experiment
-    entre unidades?           [[18-Causalidad-Inferencia-Causal]]
+    entre unidades?           → Tomo 18 (Causalidad y Uplift)
               │               (DiD, RDD, IV, synthetic control)
     ┌─────────┴─────────┐
     │                   │
@@ -494,6 +568,8 @@ Diseño: sequential testing con O'Brien-Fleming spending function
 
 ### Resumen comparativo
 
+Audiencia: 🔧 🧭
+
 | Criterio | A/B test | Quasi-experiment | Bandit |
 |----------|----------|-----------------|--------|
 | Aleatorización | Sí | No (natural/instrumental) | Sí (adaptativa) |
@@ -513,7 +589,9 @@ Diseño: sequential testing con O'Brien-Fleming spending function
 
 ## 10. Checklist operativo para un A/B test
 
-> [!success] Pre-lanzamiento
+Audiencia: 🔧 🧭
+
+> [!note] ✅ Pre-lanzamiento
 > - [ ] OEC definida y aprobada por stakeholders
 > - [ ] MDE justificado por impacto en negocio
 > - [ ] Sample size calculado con varianza estimada de datos históricos
@@ -522,14 +600,16 @@ Diseño: sequential testing con O'Brien-Fleming spending function
 > - [ ] Guardrail metrics definidas con umbrales
 > - [ ] Unidad de randomización elegida (sin interferencia)
 > - [ ] Documentado: hipótesis, métricas, criterios de decisión (pre-registration)
+> - [ ] A/A test reciente (o histórico de A/A) que valide plataforma y varianza
 
-> [!success] Durante el test
+> [!note] ✅ Durante el test
 > - [ ] Verificar SRM en las primeras 24–48 horas
+> - [ ] SRM monitoreado con test secuencial si se revisa más de una vez
 > - [ ] Monitorear guardrails con alertas automáticas
 > - [ ] NO tomar decisiones basadas en resultados parciales (a menos que uses sequential testing)
 > - [ ] Verificar que el trigger funciona correctamente (solo usuarios elegibles entran)
 
-> [!success] Post-test
+> [!note] ✅ Post-test
 > - [ ] Análisis con método pre-especificado
 > - [ ] Verificar SRM final
 > - [ ] Reportar CI del efecto, no solo p-value
@@ -543,15 +623,43 @@ Diseño: sequential testing con O'Brien-Fleming spending function
 
 1. **Kohavi, R., Tang, D., & Xu, Y.** (2020). *Trustworthy Online Controlled Experiments: A Practical Guide to A/B Testing*. Cambridge University Press. — El libro de referencia completo sobre experimentación en productos digitales; cubre diseño, análisis, plataformas y cultura de experimentación.
 
-2. **Johari, R., Pekelis, L., & Walsh, D.** (2017). "Peeking at A/B Tests: Why It Matters, and What to Do About It." *Proceedings of the 23rd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD '17)*, pp. 1517–1525. — Formaliza el problema del peeking y propone always-valid inference para A/B tests.
+2. **Johari, R., Koomen, P., Pekelis, L., & Walsh, D.** (2017). "Peeking at A/B Tests: Why It Matters, and What to Do About It." *Proceedings of the 23rd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD '17)*, pp. 1517–1525. — Formaliza el problema del peeking y propone always-valid inference para A/B tests.
 
 3. **Deng, A., Xu, Y., Kohavi, R., & Walker, T.** (2013). "Improving the Sensitivity of Online Controlled Experiments by Utilizing Pre-Experiment Data." *Proceedings of the 6th ACM International Conference on Web Search and Data Mining (WSDM '13)*, pp. 123–132. — Introduce CUPED para variance reduction en experimentos online.
 
 4. **Bojinov, I., Simchi-Levi, D., & Zhao, J.** (2023). "Design and Analysis of Switchback Experiments." *Management Science*, 69(7), pp. 3759–3777. — Formalización del diseño switchback con análisis de carryover effects.
 
-5. **Larsen, N., Stallrich, J., Sengupta, S., Deng, A., Kohavi, R., & Stevens, N.** (2024). "Statistical Challenges in Online Controlled Experiments: A Review of A/B Testing Methodology." *The American Statistician*, 78(2), pp. 135–149. — Survey reciente de desafíos metodológicos en experimentación a escala.
+5. **Larsen, N., Stallrich, J., Sengupta, S., Deng, A., Kohavi, R., & Stevens, N. T.** (2024). "Statistical Challenges in Online Controlled Experiments: A Review of A/B Testing Methodology." *The American Statistician*, 78(2), pp. 135–149. — Survey reciente de desafíos metodológicos en experimentación a escala.
 
 6. **Howard, S. R., Ramdas, A., McAuliffe, J., & Sekhon, J.** (2021). "Time-uniform, Nonparametric, Nonasymptotic Confidence Sequences." *The Annals of Statistics*, 49(2), pp. 1055–1080. — Fundamentos teóricos de confidence sequences para always-valid inference.
+
+7. **Armitage, P., McPherson, C. K., & Rowe, B. C.** (1969). "Repeated Significance Tests on Accumulating Data." *Journal of the Royal Statistical Society: Series A*, 132(2), pp. 235–244. — El cálculo clásico de la inflación del error tipo I por miradas repetidas (tabla de 4.1).
+
+8. **Johari, R., Koomen, P., Pekelis, L., & Walsh, D.** (2022). "Always Valid Inference: Continuous Monitoring of A/B Tests." *Operations Research*, 70(3), pp. 1806–1821. — Versión de revista del paper de KDD 2017.
+
+9. **Ramdas, A., Grünwald, P., Vovk, V., & Shafer, G.** (2023). "Game-Theoretic Statistics and Safe Anytime-Valid Inference." *Statistical Science*, 38(4), pp. 576–601. — El marco que unifica e-values y confidence sequences.
+
+10. **Maharaj, A. V., Sinha, R., Arbour, D., Waudby-Smith, I., Liu, S. Z., Sinha, M., Addanki, R., Ramdas, A., Garg, M., & Swaminathan, V.** (2023). "Anytime-Valid Confidence Sequences in an Enterprise A/B Testing Platform." *Companion Proceedings of the ACM Web Conference 2023 (WWW '23 Companion)*. — Confidence sequences en la plataforma de Adobe.
+
+11. **Lindon, M., Ham, D. W., Tingley, M., & Bojinov, I.** (2022). "Anytime-Valid Linear Models and Regression Adjusted Causal Inference in Randomized Experiments." arXiv:2210.08589 (preprint; versión de revista en *JASA*, en prensa, 2026). — Monitoreo continuo con regression adjustment (Netflix).
+
+12. **Lin, W.** (2013). "Agnostic Notes on Regression Adjustments to Experimental Data: Reexamining Freedman's Critique." *The Annals of Applied Statistics*, 7(1), pp. 295–318. — Por qué ajustar por covariables no sesga el ATE.
+
+13. **Guo, Y., Coey, D., Konutgan, M., Li, W., Schoener, C., & Goldman, M.** (2021). "Machine Learning for Variance Reduction in Online Experiments." *Advances in Neural Information Processing Systems 34 (NeurIPS 2021)*. — MLRATE: regression adjustment con ML y cross-fitting.
+
+14. **Johari, R., Li, H., Liskovich, I., & Weintraub, G. Y.** (2022). "Experimental Design in Two-Sided Platforms: An Analysis of Bias." *Management Science*, 68(10), pp. 7069–7089. — Sesgo de la randomización unilateral en marketplaces.
+
+15. **Bajari, P., Burdick, B., Imbens, G. W., Masoero, L., McQueen, J., Richardson, T. S., & Rosen, I. M.** (2023). "Experimental Design in Marketplaces." *Statistical Science*, 38(3), pp. 458–476. — Multiple randomization designs.
+
+16. **Fabijan, A., Gupchup, J., Gupta, S., Omhover, J., Qin, W., Vermeer, L., & Dmitriev, P.** (2019). "Diagnosing Sample Ratio Mismatch in Online Controlled Experiments: A Taxonomy and Rules of Thumb for Practitioners." *Proceedings of KDD '19*, pp. 2156–2164. — Taxonomía de causas de SRM.
+
+17. **Lindon, M., & Malek, A.** (2022). "Anytime-Valid Inference for Multinomial Count Data." *Advances in Neural Information Processing Systems 35 (NeurIPS 2022)*. — Tests secuenciales para vigilar el SRM en continuo.
+
+18. **Kohavi, R., Deng, A., & Vermeer, L.** (2022). "A/B Testing Intuition Busters: Common Misunderstandings in Online Controlled Experiments." *Proceedings of KDD '22*, pp. 3168–3177. — False Positive Risk, winner's curse y la ley de Twyman.
+
+19. **Lee, M. R., & Shen, M.** (2018). "Winner's Curse: Bias Estimation for Total Effects of Features in Online Controlled Experiments." *Proceedings of KDD '18*, pp. 491–499. — El sesgo de selección de los experimentos ganadores y su corrección.
+
+20. **Chapelle, O., Joachims, T., Radlinski, F., & Yue, Y.** (2012). "Large-Scale Validation and Analysis of Interleaved Search Evaluation." *ACM Transactions on Information Systems*, 30(1), artículo 6. — La validación de que el interleaving necesita uno o dos órdenes de magnitud menos datos.
 
 ---
 
@@ -559,12 +667,12 @@ Diseño: sequential testing con O'Brien-Fleming spending function
 
 | Tomo | Relación |
 |------|----------|
-| [[18-Causalidad-Inferencia-Causal]] | Cuando no puedes aleatorizar: DiD, RDD, IV, synthetic control |
-| [[21-Multi-Armed-Bandits]] | Alternativa al A/B cuando quieres minimizar regret en lugar de maximizar inferencia |
+| [[18-Causalidad-y-Uplift\|18 · Causalidad y Uplift]] | Cuando no puedes aleatorizar: DiD, RDD, IV, synthetic control |
+| [[21-Supervivencia-y-Bandits\|21 · Supervivencia y Bandits]] | Alternativa al A/B cuando quieres minimizar regret en lugar de maximizar inferencia |
 | [[23-Tabular-DL-vs-Boosting]] | Los modelos de CUPAC pueden ser gradient boosting sobre features históricas |
-| [[07-Estadistica-Inferencial]] | Fundamentos de hypothesis testing, p-values, confidence intervals |
-| [[14-Metricas-Evaluacion]] | Definición rigurosa de métricas que se usan como OEC y guardrails |
+| [[02-Fundamentos-Matematicos\|02 · Fundamentos Matemáticos]] | Fundamentos de hypothesis testing, p-values, confidence intervals |
+| [[08-Metricas-de-Evaluacion\|08 · Métricas de Evaluación]] | Definición rigurosa de métricas que se usan como OEC y guardrails |
 
 ---
 
-**Navegación:** ← [[23-Tabular-DL-vs-Boosting]] · Siguiente tomo pendiente
+**Navegación:** [[00-MOC-Guia-Maestra|⬅ Volver al índice]] · Anterior: [[23-Tabular-DL-vs-Boosting|23 · Tabular DL vs Boosting]] · Siguiente: [[25-Privacidad-y-Datos-Sinteticos|25 · Privacidad y Datos Sintéticos ➡]]

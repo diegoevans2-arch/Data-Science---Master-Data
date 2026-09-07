@@ -3,8 +3,8 @@ title: "Tomo 11 — Técnicas de Mejora de Modelos"
 tags: [data-science, machine-learning, hiperparametros, ensembles, regularizacion, calibracion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 11
-version: 6.2
-updated: 2026-08-27
+version: 6.4
+updated: 2026-09-06
 ---
 
 # 🚀 Tomo 11 — Técnicas de Mejora de Modelos
@@ -82,13 +82,18 @@ Audiencia: 🔧 🧭
 | Grid Search (GridSearchCV) | Evalúa TODAS las combinaciones del grid con CV interno | Exhaustivo, reproducible, simple | Explota exponencialmente: 5 params × 5 valores = 3.125 combos | Pocas combinaciones (≤ 100); ajuste fino cerca de un óptimo conocido |
 | Random Search (RandomizedSearchCV) | Muestrea n_iter combinaciones aleatorias; acepta distribuciones (loguniform para learning_rate) | Mucho más eficiente al mismo costo; cubre mejor el espacio | No garantiza el óptimo; varía entre corridas | Primera exploración con muchos hiperparámetros |
 | Bayesian Optimization | Modela métrica vs hiperparámetros con un surrogate (GP/TPE) y elige el próximo punto por mejora esperada | Converge rápido; cada evaluación informa la siguiente | Overhead del surrogate; secuencial por diseño | Cada evaluación cuesta horas (modelos/datasets grandes) |
-| Optuna | Bayesian con TPE + **pruning** (mata trials malos temprano: MedianPruner, SuccessiveHalvingPruner); multi-objetivo Pareto (Akiba et al., 2019) | Espacio de búsqueda como código Python; visualizaciones de importancia de hiperparámetros; integra XGBoost/LightGBM/PyTorch/sklearn | Curva de aprendizaje inicial | **El estándar actual** para tuning serio |
+| Optuna | Bayesian con TPE + **pruning** (mata trials malos temprano: MedianPruner, SuccessiveHalvingPruner, HyperbandPruner — el recomendado con TPE); multi-objetivo Pareto (Akiba et al., 2019) | Espacio de búsqueda como código Python; visualizaciones de importancia de hiperparámetros; integra XGBoost/LightGBM/PyTorch/sklearn | Curva de aprendizaje inicial | **El estándar actual** para tuning serio |
 | Hyperopt | TPE con espacio definido vía hp.choice/hp.uniform/hp.loguniform | Maduro; SparkTrials para paralelizar | API menos ergonómica; desarrollo menos activo | Alternativa sólida, entornos Spark |
 | Ray Tune | Tuning distribuido; integra Lightning/TF/XGBoost; Population Based Training (PBT) | Escala horizontal a clusters; PBT adapta hiperparámetros DURANTE el entrenamiento | Requiere infraestructura; overhead para casos simples | Deep learning multi-GPU; búsquedas de días |
 | Successive Halving (HalvingRandomSearchCV) | Muchos candidatos con pocos recursos; los peores se eliminan y los sobrevivientes reciben más | Muy eficiente en espacios grandes | Sesgo contra candidatos que arrancan lento | sklearn ≥ 0.24; buen trade-off velocidad/calidad |
 
+**🔧 Multi-fidelity: la familia que une Successive Halving con Bayesian Optimization.** El sesgo contra los candidatos que arrancan lento se corrige con **Hyperband** (Li et al., 2018): corre varios Successive Halving con distinto grado de agresividad (*brackets*) y reporta aceleraciones de más de un orden de magnitud frente a Bayesian Optimization y random search. **BOHB** (Falkner, Klein & Hutter, 2018) reemplaza el muestreo aleatorio de Hyperband por TPE, combinando la eficiencia del bandit con el aprendizaje del surrogate; Optuna implementa la misma idea con `TPESampler` + `HyperbandPruner`, y su documentación es explícita: con TPE, el pruner recomendado es Hyperband, no Median (Optuna, 2026). En la práctica: usa fidelidad parcial (menos épocas, menos rondas de boosting, submuestra de filas) para descartar temprano y reserva el presupuesto completo para pocos finalistas. La referencia de cabecera para todo el proceso — espacios en escala log, resampling anidado, cuándo parar — es la revisión de Bischl et al. (2023).
+
 > [!warning] ⚠️ Reglas del tuning honesto
 > El tuning se hace con **validación separada del test final** ([[10-Validacion-y-Leakage]]): el test se toca una sola vez, al final. Y el orden importa: diagnóstico (sección 1) → features → modelo → recién entonces hiperparámetros. El tuning pule; no rescata.
+
+> [!tip] 💡 ¿Cuánto paga el tuning? Lo que dice la evidencia
+> No todos los algoritmos ganan lo mismo al tunearse: Probst, Boulesteix & Bischl (2019) midieron la *tunability* de seis algoritmos sobre 38 datasets y encontraron diferencias grandes entre ellos — para algunos, los defaults ya quedan cerca del óptimo. Holzmüller, Grinsztajn & Steinwart (2024) fueron más lejos: defaults *meta-aprendidos* en 118 datasets, evaluados en otros 90, hacen que el gradient boosting y su MLP (RealMLP) logren excelentes resultados sin tuning. Y TabArena (Erickson et al., 2025) muestra que el rendimiento máximo de un modelo no viene de elegir el mejor trial sino de **ensamblar las configuraciones evaluadas**, ponderadas sobre validación — la técnica de *ensemble selection* de Caruana et al. (2004), que es lo que AutoGluon hace por dentro. Consecuencias: (1) con gradient boosting, parte de defaults fuertes y early stopping bien hecho; (2) si tuneas, no botes los trials: ensamblarlos suele rendir más que el ganador solitario; (3) el «mejor trial» elegido sobre validación es una estimación optimista de su rendimiento real ([[10-Validacion-y-Leakage]]).
 
 **👔 En una frase para el negocio:** el tuning moderno (Optuna) exprime el mismo modelo con una fracción del cómputo del método fuerza-bruta — pero sigue siendo la **última** milla, no la primera.
 
@@ -105,10 +110,12 @@ Audiencia: 🔧 🧭 👔
 
 | Framework | Mecanismo clave | Fortaleza | Limitación | Cuándo elegirlo |
 |---|---|---|---|---|
-| **AutoGluon** (AWS, 2020) | Multi-layer stacking de muchos modelos (KNN, LightGBM, XGBoost, CatBoost, RF, NN, TabPFN); selección y ensemble automáticos; presets (`best_quality`, `medium_quality`, `fast`) | El mejor out-of-the-box sin tunear nada; reproduce la estrategia ganadora de Kaggle (Erickson et al., 2020) | Caja negra pesada; requiere más RAM/CPU que un modelo solo; tiempo de entrenamiento alto en `best_quality` | Baseline fuerte rápida; comparar contra tu modelo manual; datasets tabulares medianos-grandes |
-| **FLAML** (Microsoft, 2021) | Búsqueda económica (cost-frugal): elige modelos baratos primero, escala a caros solo si hay presupuesto; soporta presupuesto de tiempo | Extremadamente rápido para presupuestos bajos (1-5 min); ligero; buen trade-off velocidad/rendimiento | Menos potente que AutoGluon con presupuesto ilimitado | Prototipado rápido; recursos limitados; iteración veloz |
-| **TabPFN** (Hollmann et al., 2023; v3 2026) | Transformer pre-entrenado sobre datos tabulares sintéticos; in-context learning — no entrena, solo infiere | Inference en <1 segundo; resultados competitivos con AutoGluon en datasets ≤ 10K filas (TabPFN-3 supera tuned ensembles en TabArena, 2026) | Limitado a datasets pequeños/medianos; no escala a millones de filas; caja negra total | Datasets pequeños donde entrenar es caro o hay muchos datasets distintos que evaluar |
+| **AutoGluon** (Erickson et al., 2020) | Multi-layer stacking de muchos modelos (KNN, LightGBM, XGBoost, CatBoost, RF, NN, TabPFN); selección y ensemble automáticos; presets (`medium_quality` por defecto, `best_quality` en CPU, `extreme_quality` con GPU) | El mejor out-of-the-box sin tunear nada; reproduce la estrategia ganadora de Kaggle (Erickson et al., 2020) | Caja negra pesada; requiere más RAM/CPU que un modelo solo; tiempo de entrenamiento alto en `best_quality` | Baseline fuerte rápida; comparar contra tu modelo manual; datasets tabulares medianos-grandes |
+| **FLAML** (Wang et al., 2021) | Búsqueda económica (cost-frugal): elige modelos baratos primero, escala a caros solo si hay presupuesto; soporta presupuesto de tiempo | Extremadamente rápido para presupuestos bajos (1-5 min); ligero; buen trade-off velocidad/rendimiento | Menos potente que AutoGluon con presupuesto ilimitado | Prototipado rápido; recursos limitados; iteración veloz |
+| **TabPFN** (Hollmann et al., 2023; Hollmann et al., 2025) | Transformer pre-entrenado sobre datos tabulares sintéticos; in-context learning — no entrena, solo infiere | Inference en segundos; en el benchmark independiente TabArena (Erickson et al., 2025), TabPFN v2 con tuning y ensembling posterior supera a AutoGluon en datasets ≤ 10K filas. Las versiones 2.5/3 (2025–2026) reportan liderar TabArena, pero son afirmaciones del fabricante aún sin evaluación independiente ([[23-Tabular-DL-vs-Boosting]]) | Limitado a datasets pequeños/medianos; no escala a millones de filas; caja negra total | Datasets pequeños donde entrenar es caro o hay muchos datasets distintos que evaluar |
 | **H2O AutoML** | Búsqueda exhaustiva con stacking; interfaz web (Flow) y Python | Maduro, escalable, enterprise-ready | Más pesado de instalar; menos innovación reciente | Entornos enterprise con infraestructura H2O |
+
+**🔧 AutoGluon 1.x (2023–2026): de los árboles a los foundation models.** El paper de referencia (Erickson et al., 2020) describe la arquitectura original; la herramienta cambió de fondo desde la versión 1.0. Desde la 1.4 (julio de 2025) el preset de mayor calidad es `extreme_quality`: además de gradient boosting y redes, ensambla un portafolio de foundation models tabulares (TabPFN v2, TabICL, Mitra, TabM, RealMLP; la 1.6 suma otros) y, según las notas oficiales, gana el 88 % de las comparaciones contra el `best_quality` de la 1.3 en datasets de menos de 10.000 filas. Exige GPU (idealmente 32 GB o más de VRAM) y solo despliega ese portafolio en datasets pequeños y medianos; en CPU, `best_quality` sigue siendo la referencia. Dos piezas más que conviene conocer: `dynamic_stacking`, que detecta y evita el sobreajuste del stacking multinivel, y `validation_structure` (1.6), para que la validación interna respete grupos y tiempo en datos no IID ([[10-Validacion-y-Leakage]]). No existe un preset `fast`: el rápido es `medium_quality`, el valor por defecto (AutoGluon, 2026). Las cifras de win rate son del propio equipo de AutoGluon, que también mantiene TabArena ([[23-Tabular-DL-vs-Boosting]]): práctica reportada por el fabricante, no evaluación independiente.
 
 **🔧 Cuándo NO usar AutoML:**
 
@@ -119,7 +126,7 @@ Audiencia: 🔧 🧭 👔
 **🧭 El patrón recomendado:**
 
 ```
- AutoGluon (best_quality, 1h)
+ AutoGluon (best_quality en CPU / extreme_quality con GPU, 1h)
         │
         ▼
  Benchmark: ¿supera a mi modelo manual?
@@ -248,6 +255,8 @@ Audiencia: 🔧 🧭 👔
 | Temperature Scaling | Divide los logits por T antes del softmax; T se optimiza en validación | Redes neuronales modernas (suelen ser sobreconfiadas) (Guo et al., 2017) |
 | CalibratedClassifierCV | Envuelve cualquier estimador sklearn con Platt ('sigmoid') o isotónica, con CV interno | La vía práctica estándar en sklearn |
 
+**🔧 Más allá de la calibración: conformal prediction.** Calibrar corrige el *significado* de la probabilidad, pero no entrega garantías sobre cada predicción ni sirve, tal cual, en regresión. **Conformal prediction** (Vovk, Gammerman & Shafer, 2005; Angelopoulos & Bates, 2023) cubre ese hueco: con un holdout de calibración y un *score* de no-conformidad (por ejemplo, 1 − probabilidad de la clase verdadera, o el residuo absoluto en regresión), construye **conjuntos o intervalos de predicción** que contienen la respuesta correcta con probabilidad ≥ 1 − α, con garantía de muestra finita y sin supuestos sobre el modelo ni la distribución — solo intercambiabilidad de los datos. El tamaño del conjunto es un indicador honesto de incertidumbre: un conjunto de tres clases dice más que un 0,41. Es model-agnostic y post-hoc, igual que Platt o la isotónica, y complementa (no reemplaza) la calibración: calibras para el umbral de utilidad (sección 6); conformalizas para decidir cuándo el modelo debe abstenerse o escalar el caso a un humano. Límites: la cobertura es marginal (promedio), no por subgrupo, y se rompe bajo drift ([[13-MLOps-XAI-Etica]]); en series de tiempo exige variantes adaptativas ([[17-Series-de-Tiempo]], sección 9).
+
 **👔 En una frase para el negocio:** si las probabilidades del modelo alimentan precios, provisiones o priorización, calibrarlas no es opcional — decidir con probabilidades infladas es presupuestar con moneda falsa.
 
 ---
@@ -260,6 +269,8 @@ Audiencia: 🔧 🧭 👔
 > La sensibilidad de la alarma de tu casa: de fábrica viene "al medio" (0.5), pero si guardas lingotes ajustas la alarma sensible (toleras falsas alarmas), y si solo guardas recuerdos la pones tolerante. El modelo entrega el riesgo; **el umbral decide cuándo actuar — y ese es un dial de negocio**.
 
 **🔧 Definición técnica:** el 0.5 por defecto rara vez es óptimo con clases desbalanceadas o costos asimétricos. Métodos: (1) **threshold optimization** — barrer umbrales de 0 a 1 sobre validación y maximizar la métrica objetivo (F1, F-beta, utilidad); (2) **precision_recall_curve** de sklearn — visualizar el trade-off y elegir el punto; (3) **expected profit framework** — con costos C_FP y C_FN, el umbral óptimo teórico es `P* = C_FP/(C_FP + C_FN)` (requiere probabilidades **calibradas**, sección 5; caso completo en [[08-Metricas-de-Evaluacion]]).
+
+**🔧 El umbral como parte del estimador (scikit-learn ≥ 1.5).** Barrer umbrales «a mano» sobre un holdout es correcto pero frágil: el número queda fuera del pipeline y se pierde al reentrenar. Desde la versión 1.5, scikit-learn incorpora `TunedThresholdClassifierCV`, que **post-ajusta el umbral con validación cruzada interna** maximizando la métrica que le indiques (balanced accuracy por defecto; F-beta, o una función de utilidad con los costos C_FP y C_FN — exactamente el expected profit framework de arriba), y `FixedThresholdClassifier` para fijar un umbral decidido por negocio sin reentrenar. La documentación oficial advierte lo esencial: reutilizar un modelo ya ajustado solo es legítimo si el umbral se ajusta en datos **distintos** de los usados para entrenar; reutilizarlos es overfitting del umbral (scikit-learn, 2026). Orden recomendado: entrenar → calibrar (sección 5) → ajustar umbral, cada paso con su propia porción de datos o con validación cruzada anidada ([[10-Validacion-y-Leakage]]).
 
 **👔 En una frase para el negocio:** mover el umbral es la mejora más barata del catálogo: cero reentrenamiento, impacto inmediato en la cuenta de resultados — siempre que las probabilidades sean honestas.
 
@@ -295,9 +306,17 @@ Detalle de cada etapa: [[03-Preparacion-de-Datos]] · [[07-Modelos-Supervisados]
 - (Akiba et al., 2019) — Optuna. · (Wolpert, 1992) — stacked generalization.
 - (Srivastava et al., 2014) — Dropout. · (Ioffe & Szegedy, 2015) — Batch Normalization.
 - (Platt, 1999) — Platt scaling. · (Guo et al., 2017) — calibración de redes modernas.
-- (Erickson et al., 2020) — *AutoGluon-Tabular: Robust and Accurate AutoML for Structured Data*. arXiv 2003.06505.
-- (Hollmann et al., 2023) — *TabPFN: A Transformer That Solves Small Tabular Classification Problems in a Second*. ICLR.
+- (Erickson et al., 2020) — *AutoGluon-Tabular: Robust and Accurate AutoML for Structured Data*. arXiv 2003.06505 (preprint; spotlight en el ICML Workshop on AutoML 2020).
+- (Wang et al., 2021) — Wang, C., Wu, Q., Weimer, M., & Zhu, E. *FLAML: A Fast and Lightweight AutoML Library*. MLSys 2021, vol. 3, 434–447.
+- (Hollmann et al., 2023) — *TabPFN: A Transformer That Solves Small Tabular Classification Problems in a Second*. ICLR 2023.
+- (Hollmann et al., 2025) — *Accurate predictions on small data with a tabular foundation model* (TabPFN v2). *Nature*, 637, 319–326.
+- (Erickson et al., 2025) — *TabArena: A Living Benchmark for Machine Learning on Tabular Data*. NeurIPS 2025 (Datasets and Benchmarks).
 - (Lundberg & Lee, 2017) — *A Unified Approach to Interpreting Model Predictions* (SHAP). NeurIPS.
+- (Li et al., 2018) — *Hyperband: A Novel Bandit-Based Approach to Hyperparameter Optimization*. JMLR 18(185). · (Falkner, Klein & Hutter, 2018) — *BOHB: Robust and Efficient Hyperparameter Optimization at Scale*. ICML.
+- (Bischl et al., 2023) — *Hyperparameter optimization: Foundations, algorithms, best practices, and open challenges*. WIREs Data Mining and Knowledge Discovery 13(2).
+- (Probst, Boulesteix & Bischl, 2019) — *Tunability: Importance of Hyperparameters of Machine Learning Algorithms*. JMLR 20(53). · (Holzmüller, Grinsztajn & Steinwart, 2024) — *Better by default: Strong pre-tuned MLPs and boosted trees on tabular data*. NeurIPS. · (Caruana et al., 2004) — *Ensemble selection from libraries of models*. ICML.
+- (Vovk, Gammerman & Shafer, 2005) — *Algorithmic Learning in a Random World*. Springer. · (Angelopoulos & Bates, 2023) — *Conformal Prediction: A Gentle Introduction*. Foundations and Trends in Machine Learning 16(4).
+- Documentación oficial consultada el 2026-09-06 (fichas en [[16-Bibliografia]] §13): AutoGluon (referencia de `TabularPredictor.fit` v1.6.1 y notas de release 1.4–1.6), Optuna (tutorial de algoritmos de optimización eficientes), scikit-learn (guía de ajuste del umbral de decisión, v1.9).
 - (Hastie et al., 2009), (Géron, 2022) — ensembles y regularización en contexto.
 
 Fichas completas con datos de publicación en [[16-Bibliografia]].

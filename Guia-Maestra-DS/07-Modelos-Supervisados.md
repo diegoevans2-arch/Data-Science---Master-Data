@@ -3,7 +3,8 @@ title: "Tomo 07 — Modelos Supervisados"
 tags: [data-science, machine-learning, clasificacion, regresion, anomalias]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 07
-version: 6.0
+version: 6.1
+updated: 2026-09-06
 ---
 
 # 🤖 Tomo 07 — Modelos Supervisados
@@ -92,7 +93,7 @@ Audiencia: 🔧 🧭
 
 **🔧 Definición técnica:** maximiza el margen entre clases; los puntos que lo definen son los **vectores de soporte** (Cortes & Vapnik, 1995). Optimización convexa (QP). **Soft margin `C`:** C grande = margen estrecho, pocas violaciones (riesgo de overfitting); C pequeño = margen ancho, más tolerancia (más regularización). **Kernel trick:** proyección implícita a alta dimensión; kernels: lineal, RBF (default de facto), polinomial, sigmoide. **RBF gamma:** `K(x,x′) = exp(−γ‖x−x′‖²)`; γ grande = frontera muy local (overfit); γ pequeño = suave (underfit). Probabilidades vía Platt scaling (no nativas, [[11-Mejora-de-Modelos]]).
 
-**Ventajas:** potente en alta dimensión (texto), fronteras complejas con pocos datos. **Limitaciones:** O(N²)–O(N³): impracticable N > ~10–50K; dos hiperparámetros sensibles (C, γ); poco interpretable. **Requisitos:** escalado **obligatorio**; no maneja nulls.
+**Ventajas:** potente en alta dimensión (texto), fronteras complejas con pocos datos. **Limitaciones:** O(N²)–O(N³) con kernel: impracticable N > ~10–50K — el caso lineal (`LinearSVC`, SGD) escala casi linealmente a millones de filas, y el kernel RBF puede aproximarse (Nyström, random features) cuando N lo exige (documentación oficial de scikit-learn, consultada 2026-09-06); dos hiperparámetros sensibles (C, γ); poco interpretable. **Requisitos:** escalado **obligatorio**; no maneja nulls.
 
 **🧭 Cuándo usarlo:** datasets chicos-medianos de alta dimensión (texto TF-IDF, bioinformática) donde el boosting no domina. Caso de uso: clasificación de documentos, detección de caras clásica.
 
@@ -107,7 +108,7 @@ Audiencia: 🔧 🧭 👔
 
 **🔧 Definición técnica:** divide recursivamente el espacio con reglas binarias `feature > umbral` que maximizan la pureza de los hijos. **Criterios:** Gini `1 − Σpᵢ²` (default, más rápido) vs Entropy `−Σpᵢ·log₂(pᵢ)` (Information Gain) — en la práctica casi idénticos. **Criterios de parada:** `max_depth`, `min_samples_split`, `min_samples_leaf`, `min_impurity_decrease`. **Poda:** cost-complexity pruning post-hoc con `ccp_alpha` (elimina subárboles que no pagan su complejidad).
 
-**Ventajas:** interpretable al 100%, sin escalado, maneja no-linealidades e interacciones, rápido. **Limitaciones:** overfitting salvaje sin restricciones; **inestable** (datos levemente distintos → árbol muy distinto); sesgo hacia features con muchos valores únicos. **Requisitos:** NO requiere escalado; sklearn no acepta nulls (los boosting sí).
+**Ventajas:** interpretable al 100%, sin escalado, maneja no-linealidades e interacciones, rápido. **Limitaciones:** overfitting salvaje sin restricciones; **inestable** (datos levemente distintos → árbol muy distinto); sesgo hacia features con muchos valores únicos. **Requisitos:** NO requiere escalado. Valores faltantes: desde scikit-learn 1.3 (2023) los árboles aceptan NaN de forma nativa con `splitter='best'` — para cada umbral candidato el splitter evalúa enviar los faltantes al hijo izquierdo o al derecho y conserva la mejor opción; si una feature no tuvo faltantes en train, en predicción los NaN van al hijo con más muestras (documentación oficial de scikit-learn, consultada 2026-09-06). Imputar sigue siendo razonable cuando el mecanismo de ausencia importa o se exige trazabilidad ([[03-Preparacion-de-Datos]]). *(Corregido el 2026-09-06: la guía decía «sklearn no acepta nulls».)*
 
 **🧭 Cuándo usarlo:** cuando la regla de decisión debe ser visible (riesgo crediticio ante reguladores, protocolos médicos); como pieza base de ensembles. Solo, rara vez es el mejor.
 
@@ -122,7 +123,7 @@ Audiencia: 🔧 🧭 👔
 
 **🔧 Definición técnica:** ensemble de árboles con **bagging + feature randomness** (Breiman, 2001a): (1) bootstrap: cada árbol entrena con una muestra con reemplazo (~63% de los datos); (2) en cada split solo se considera un subconjunto aleatorio de features (√D clasificación, D/3 regresión). **OOB error:** el ~37% no visto por cada árbol sirve de validación gratis (`oob_score=True`). **Feature importance:** MDI (reducción media de impureza) — sesgada hacia alta cardinalidad/continuas; preferir permutation importance para conclusiones ([[13-MLOps-XAI-Etica]]). **Hiperparámetros:** `n_estimators` (100–500, más mejora con rendimientos decrecientes), `max_depth`, `max_features`, `min_samples_leaf`.
 
-**Ventajas:** robusto out-of-the-box, difícil de sobreajustar gravemente, paraleliza, poca sensibilidad a hiperparámetros. **Limitaciones:** inferencia más lenta con muchos árboles; **no extrapola** fuera del rango de train (regresión); menos interpretable que un árbol. **Requisitos:** NO requiere escalado; nulls no nativos en sklearn.
+**Ventajas:** robusto out-of-the-box, difícil de sobreajustar gravemente, paraleliza, poca sensibilidad a hiperparámetros. **Limitaciones:** inferencia más lenta con muchos árboles; **no extrapola** fuera del rango de train (regresión); menos interpretable que un árbol. **Requisitos:** NO requiere escalado; valores faltantes nativos desde scikit-learn 1.4 (2024) — y en ExtraTrees desde 1.6 — con la misma regla de enrutamiento que el árbol individual.
 
 **🧭 Cuándo usarlo:** el todoterreno tabular: primer modelo serio tras el baseline, base sólida cuando no hay tiempo de tunear boosting. Caso de uso: churn, fraude tabular, scoring rápido.
 
@@ -152,21 +153,27 @@ Audiencia: 🔧 🧭 👔
 |---|---|---|---|
 | Año | 2014 (Chen & Guestrin, 2016) | 2017 (Ke et al., 2017) | 2017 (Prokhorenkova et al., 2018) |
 | Origen | DMLC (academia) | Microsoft | Yandex |
-| Crecimiento del árbol | Level-wise (por nivel) | **Leaf-wise** (por hoja, más rápido y agresivo) | Symmetric trees (simétricos, más estables) |
-| Velocidad de entrenamiento | Rápido | **El más rápido** | Moderado |
+| Crecimiento del árbol | Level-wise por defecto (`grow_policy=depthwise`); leaf-wise opcional (`lossguide`, con `hist`/`approx`) | **Leaf-wise** (por hoja, más rápido y agresivo) | Symmetric trees (simétricos, más estables) |
+| Velocidad de entrenamiento | Rápido | **Muy rápido** (leaf-wise + histogramas) | Moderado |
 | Memoria | Moderada | Baja (formato columnar + histogramas) | Moderada-alta |
-| Categóricas nativas | No (requiere encoding, [[03-Preparacion-de-Datos]]) | Parcial (categorías simples) | **Sí, manejo nativo y robusto** (ordered target statistics) |
+| Categóricas nativas | **Sí** desde 1.5 (`enable_categorical`); particiones óptimas desde 1.6 en `hist`/`approx` (`max_cat_to_onehot`) | **Sí**: split óptimo sobre las categorías codificadas como enteros (Fisher, 1958), que suele rendir mejor que one-hot; regularizar con `min_data_per_group`/`cat_smooth`; la alta cardinalidad es su punto débil | **Sí**, ordered target statistics (Prokhorenkova et al., 2018): el más robusto con muchas categorías |
 | Datos faltantes | Manejo nativo | Manejo nativo | Manejo nativo |
 | Regularización | L1 (alpha), L2 (lambda), gamma | L1, L2, min_child_samples | L2, bagging, random strength |
 | Overfitting en datasets chicos | Puede overfit | **Más propenso** (leaf-wise) | Más robusto (symmetric) |
 | GPU | Sí | Sí | Sí |
 | Cuándo conviene | Referencia madura, ecosistema enorme | Datasets grandes, prioridad velocidad | Muchas categóricas, datasets chicos-medianos |
 
+**Nota de vigencia (2026):** los tres boosters manejan categóricas y faltantes de forma nativa; la diferencia real está en el mecanismo — particiones por histograma en XGBoost/LightGBM frente a ordered target statistics en CatBoost — y en su robustez con alta cardinalidad (documentación oficial de XGBoost y LightGBM, consultada 2026-09-06). El encoding manual sigue siendo necesario para los modelos lineales y útil por trazabilidad ([[03-Preparacion-de-Datos]]). *(Corregido el 2026-09-06: la tabla decía que XGBoost «requiere encoding» y que el soporte de LightGBM era «parcial».)*
+
+**La cuarta implementación: HistGradientBoosting (scikit-learn).** Desde la versión 0.21, scikit-learn incluye `HistGradientBoostingClassifier`/`Regressor`, inspirados en LightGBM: boosting por histogramas «órdenes de magnitud más rápido» que el `GradientBoosting` clásico a partir de decenas de miles de filas, con valores faltantes nativos, categóricas nativas (`categorical_features`, con detección automática desde el dtype del DataFrame desde 1.4) y early stopping activado por defecto sobre 10.000 muestras (documentación oficial de scikit-learn, consultada 2026-09-06). No pretende desplazar a las tres librerías especializadas en el extremo de rendimiento, pero es el boosting «de fábrica» dentro de los pipelines y la validación cruzada de scikit-learn, sin dependencias externas, y un challenger honesto antes de instalar una librería adicional.
+
 **Hiperparámetros críticos comunes:** `n_estimators`/`num_boost_round`, `learning_rate` (eta: menor = mejor pero más árboles), `max_depth`/`num_leaves`, `subsample` (filas por árbol), `colsample_bytree` (columnas por árbol), `min_child_weight`/`min_data_in_leaf`. **Early stopping:** monitorear la métrica de validación y detener tras N rondas sin mejora — previene overfitting y fija `n_estimators` automáticamente ([[11-Mejora-de-Modelos]]).
 
 **Ventajas:** estado del arte en tabular, nulls nativos, robustos. **Limitaciones:** más hiperparámetros que RF, secuencial (menos paralelizable que bagging), riesgo de overfit sin regularización. **Requisitos:** NO requieren escalado.
 
-**🧭 Cuándo usarlo:** el candidato a campeón en casi cualquier problema tabular serio (competencias, scoring, demanda). Regla práctica: baseline logístico → RF → boosting tuneado.
+**🧭 Cuándo usarlo:** el candidato a campeón en casi cualquier problema tabular serio (competencias, scoring, demanda). Regla práctica: baseline logístico → RF → HistGradientBoosting → XGBoost/LightGBM/CatBoost tuneado.
+
+**¿Y las redes neuronales?** La ventaja del boosting en tabular no es folclore de competencias: en benchmarks controlados, los modelos basados en árboles siguen siendo estado del arte en datos de tamaño medio (~10K filas) incluso sin contar su velocidad (Grinsztajn et al., 2022), y la comparación a gran escala de McElfresh et al. (2023) muestra que el margen depende de las propiedades del dataset más que de una superioridad absoluta. Este tomo se queda con la regla operativa — boosting como campeón por defecto en tabular —; el debate completo, incluidos los tabular foundation models y los MLP pre-afinados que hoy le compiten, está en [[23-Tabular-DL-vs-Boosting]].
 
 **👔 En una frase para el negocio:** la tecnología que gana las competencias mundiales de datos tabulares — máxima precisión por peso invertido en cómputo, con la explicabilidad delegada a SHAP ([[13-MLOps-XAI-Etica]]).
 
@@ -238,7 +245,7 @@ Audiencia: 🔧
 > [!tip] 💡 Analogía
 > Un tubo de goma de radio ε alrededor de la tendencia: los puntos **dentro** del tubo no molestan (error tolerado); solo los que se salen del tubo tiran de la función. El modelo se concentra en los casos que de verdad se desvían.
 
-**🔧 Definición técnica:** busca la función que se desvía a lo más ε del target (epsilon-insensitive loss); solo los puntos fuera del tubo son vectores de soporte. Kernel trick para no-linealidad. Parámetros: `C` (regularización), `epsilon` (ancho del tubo), `kernel`. **Requisitos:** escalado obligatorio; mismo problema de escala O(N²) que SVC.
+**🔧 Definición técnica:** busca la función que se desvía a lo más ε del target (epsilon-insensitive loss); solo los puntos fuera del tubo son vectores de soporte. Kernel trick para no-linealidad. Parámetros: `C` (regularización), `epsilon` (ancho del tubo), `kernel`. **Requisitos:** escalado obligatorio; mismo problema de escala O(N²) que el SVC con kernel (y las mismas salidas: `LinearSVR` o aproximación del kernel).
 
 **🧭 Cuándo usarlo:** regresión no lineal en datasets chicos-medianos, cuando errores pequeños dan lo mismo y los grandes importan.
 
@@ -291,14 +298,16 @@ Audiencia: 🧭 👔
 | Regresión Logística / OLS | Sí | No | No (encoding) | ⭐⭐⭐⭐⭐ | Baseline explicable y rápido |
 | KNN | Sí (obligatorio) | No | No | ⭐⭐⭐ | Similitud directa, cero entrenamiento |
 | SVM / SVR | Sí (obligatorio) | No | No | ⭐⭐ | Alta dimensión con pocos datos |
-| Decision Tree | No | No (sklearn) | No | ⭐⭐⭐⭐⭐ | Reglas visibles |
-| Random Forest / ExtraTrees | No | No (sklearn) | No | ⭐⭐⭐ | Robustez sin tuning |
-| XGBoost / LightGBM / CatBoost | No | **Sí** | Parcial / **CatBoost sí** | ⭐⭐⭐ (con SHAP) | Estado del arte tabular |
+| Decision Tree | No | Sí (sklearn ≥ 1.3) | No | ⭐⭐⭐⭐⭐ | Reglas visibles |
+| Random Forest / ExtraTrees | No | Sí (sklearn ≥ 1.4 / ≥ 1.6) | No | ⭐⭐⭐ | Robustez sin tuning |
+| XGBoost / LightGBM / CatBoost | No | **Sí** | **Sí** (los tres; CatBoost el más robusto con alta cardinalidad) | ⭐⭐⭐ (con SHAP) | Estado del arte tabular |
+| HistGradientBoosting (sklearn) | No | Sí | Sí (`categorical_features`) | ⭐⭐⭐ (con SHAP) | Boosting por histogramas sin dependencias externas |
 | Naive Bayes | No | No | CategoricalNB | ⭐⭐⭐⭐ | Velocidad extrema, texto |
 | Ridge / Lasso / ElasticNet | Sí | No | No | ⭐⭐⭐⭐⭐ | Linealidad regularizada + selección |
 
 ```
- ¿Tabular clásico? ──► baseline LogReg/OLS ──► RF ──► XGB/LGBM/CatBoost tuneado
+ ¿Tabular clásico? ──► baseline LogReg/OLS ──► RF ──► HistGradientBoosting ──► XGB/LGBM/CatBoost tuneado
+ ¿Tabular y dudas si DL o foundation models compiten? ──► Tomo 23 (Tabular DL vs Boosting)
  ¿Texto disperso?  ──► Naive Bayes / LogReg + TF-IDF ──► (si no basta) DL [[12-Deep-Learning]]
  ¿Imagen/audio/secuencia? ──► directo a [[12-Deep-Learning]] (CNN/RNN/Transformers)
  ¿Sin etiquetas y buscando lo raro? ──► sección 3 (anomalías)
@@ -311,6 +320,8 @@ Audiencia: 🧭 👔
 
 - (Cover & Hart, 1967) — KNN. · (Cortes & Vapnik, 1995) — SVM. · (Breiman, 2001a) — Random Forests.
 - (Chen & Guestrin, 2016) — XGBoost. · (Ke et al., 2017) — LightGBM. · (Prokhorenkova et al., 2018) — CatBoost.
+- (Fisher, 1958) — el agrupamiento óptimo de categorías en que se apoya LightGBM. · (Grinsztajn et al., 2022) y (McElfresh et al., 2023) — árboles vs. redes en tabular ([[23-Tabular-DL-vs-Boosting]]).
+- Documentación oficial consultada el 2026-09-06 (scikit-learn: valores faltantes en árboles y HistGradientBoosting; XGBoost: categóricas y `grow_policy`; LightGBM: categóricas y faltantes) → [[16-Bibliografia]] §13.
 - (Liu et al., 2008) — Isolation Forest. · (Breunig et al., 2000) — LOF.
 - (Hastie et al., 2009), (James et al., 2021), (Géron, 2022) — tratamiento integral de los modelos supervisados.
 

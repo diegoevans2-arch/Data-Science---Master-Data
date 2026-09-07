@@ -3,8 +3,8 @@ title: "Tomo 04 — Semantic search, embeddings y hybrid search"
 tags: [rag, semantic-search, embeddings, vector-space, cosine-similarity, contrastive-training, hybrid-search, rrf, dense-retrieval]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 04
-version: 1.4
-updated: 2026-08-28
+version: 1.5
+updated: 2026-09-05
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -848,7 +848,12 @@ Audiencia: 🔧 🧭 👔
 - Mikolov, T. et al. (2013). *Efficient Estimation of Word Representations in Vector Space*. ICLR Workshop. — word2vec: el trabajo que popularizó la idea de significado como posición en un espacio vectorial.
 - Documentación oficial: model card de `BAAI/bge-base-en-v1.5` (Hugging Face) — dimensiones y límite de tokens citados en este tomo.
 - Kusupati, A. et al. (2022). *Matryoshka Representation Learning*. NeurIPS. — Entrenamiento multi-resolución que permite truncar embeddings sin re-embeddear (sección 5.5).
-- Yamada, I. et al. (2024). *Scalar and Binary Quantization for Approximate Nearest Neighbor Search*. — Fundamento de la compresión radical de vectores (sección 5.5b). Nota: este approach está implementado nativamente en Weaviate, Qdrant y FAISS desde 2024.
+- Shakir, A., Aarsen, T., & Lee, S. (2024, 22 de marzo). *Binary and Scalar Embedding Quantization for Significantly Faster & Cheaper Retrieval*. Hugging Face Blog. — Fundamento práctico de la compresión radical de vectores (sección 5.5b): scalar y binary quantization con rescoring. Implementado nativamente en Weaviate, Qdrant y FAISS. *(Reemplaza, el 2026-09-05, una referencia inexistente —"Yamada et al. (2024), Scalar and Binary Quantization for ANN Search"— que fusionaba este post con el paper siguiente.)*
+- Yamada, I., Asai, A., & Hajishirzi, H. (2021). *Efficient Passage Retrieval with Hashing for Open-domain Question Answering* (BPR). ACL-IJCNLP 2021, Short Papers, 979–986. — El paper académico detrás del paso de *rescore* que el post de Hugging Face adopta.
+- Nussbaum, Z., Morris, J. X., Duderstadt, B., & Mulyar, A. (2025). *Nomic Embed: Training a Reproducible Long Context Text Embedder*. TMLR (arXiv:2402.01613); y Nomic AI (2024, 14 de febrero), *Unboxing Nomic Embed v1.5: Resizable Production Embeddings with Matryoshka Representation Learning* (blog y model card). — `nomic-embed-text-v1.5` (sección 5.5).
+- Sturua, S. et al. (2024). *jina-embeddings-v3: Multilingual Embeddings With Task LoRA*. arXiv:2409.10173 (versión revisada por pares: ECIR 2025, LNCS, 123–129). — `jina-embeddings-v3` con Matryoshka (sección 5.5).
+- OpenAI (2024, 25 de enero). *New embedding models and API updates*; y la referencia de la API de embeddings (parámetro `dimensions`, solo en `text-embedding-3` y posteriores). — `text-embedding-3-small/large` (sección 5.5).
+- Koenig, D., & Shakir, A. (2024, 12 de abril). *64 bytes per embedding, yee-haw*. Mixedbread Blog; y model card `mixedbread-ai/mxbai-embed-large-v1`. — Matryoshka + binary quantization (sección 5.5).
 
 > [!note] Sobre el código y los números de este tomo
 > - **Del curso (fuente primaria):** los ejemplos con `sentence-transformers` y los valores de similitud de las secciones 5.1 y 5.3 provienen del **Ungraded Lab 1**; los rankings y la fusión de la sección 6.5 provienen del **assignment graded C1M2**, y fueron **re-ejecutados por mí para confirmar que reproducen la salida esperada del assignment** (`[673, 752, 626, 743, 289]`). La fórmula de RRF y el valor `K=60` están tomados del enunciado del propio assignment.

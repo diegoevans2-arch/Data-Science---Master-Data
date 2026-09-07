@@ -3,8 +3,8 @@ title: "Tomo 08 — Métricas de Evaluación"
 tags: [data-science, machine-learning, metricas, evaluacion, roc]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 08
-version: 6.3
-updated: 2026-08-27
+version: 6.5
+updated: 2026-09-06
 ---
 
 # 🌡️ Tomo 08 — Métricas de Evaluación
@@ -61,14 +61,17 @@ Audiencia: 🔧 🧭
 | F1-Score | `2·(Prec·Rec)/(Prec+Rec)` | [0,1] | El promedio exigente: castiga al que descuida uno de los dos | Cualquier clasificador | Ambos errores importan y hay desbalance moderado (texto, NLP) |
 | F-beta | `(1+β²)·(Prec·Rec)/(β²·Prec+Rec)` | [0,1] | El F1 con la balanza inclinada a elección | Cualquier clasificador | β=2: recall manda (fraude); β=0.5: precision manda (spam) |
 | AUC-ROC | Área bajo TPR vs FPR al variar el umbral | [0,1]; 0.5 = azar | ¿Qué tan bien ordena el modelo: positivos arriba, negativos abajo? | Modelos con score/probabilidad | Comparar modelos sin fijar umbral; ranking general |
-| AUC-PR | Área bajo Precision vs Recall | [0,1] | AUC-ROC versión "clase rara": mide el orden donde duele | Modelos con score | Desbalance severo (0.1% positivos) donde ROC es optimista (Davis & Goadrich, 2006) |
+| AUC-PR | Área bajo Precision vs Recall | [0,1] | AUC-ROC versión "clase rara": mide el orden donde duele | Modelos con score | Desbalance severo (0.1% positivos) donde ROC es optimista (Davis & Goadrich, 2006; Saito & Rehmsmeier, 2015) |
 | Log Loss (Cross-Entropy) | `−(1/N)·Σ[y·log(p)+(1−y)·log(1−p)]` | [0,∞) | Multa por sobreconfianza: decir 99% y errar sale carísimo | Modelos probabilísticos | Las probabilidades alimentan decisiones/ranking aguas abajo |
-| Brier Score | `(1/N)·Σ(pᵢ−yᵢ)²` | [0,1] | El MSE de las probabilidades (Brier, 1950) | Modelos probabilísticos | Evaluar calibración ([[11-Mejora-de-Modelos]]) |
-| Cohen's Kappa | `(pₒ−pₑ)/(1−pₑ)` | [−1,1] | Tu nota descontando lo que habrías acertado tirando la moneda (Cohen, 1960) | Cualquier clasificador | Desbalance; comparar contra el azar: κ>0.8 excelente, κ<0.4 pobre |
-| MCC | `(TP·TN−FP·FN)/√[(TP+FP)(TP+FN)(TN+FP)(TN+FN)]` | [−1,1] | La nota más justa: exige acertar en las cuatro casillas a la vez (Matthews, 1975) | Cualquier clasificador binario | El mejor indicador único con desbalance severo |
+| Brier Score | `(1/N)·Σ(pᵢ−yᵢ)²` | [0,1] | El MSE de las probabilidades (Brier, 1950) | Modelos probabilísticos | Calidad global de las probabilidades — es una *proper scoring rule*; su componente *reliability* es la calibración (Murphy, 1973; [[11-Mejora-de-Modelos]]) |
+| Cohen's Kappa | `(pₒ−pₑ)/(1−pₑ)` | [−1,1] | Tu nota descontando lo que habrías acertado tirando la moneda (Cohen, 1960) | Cualquier clasificador | Desbalance; comparar contra el azar. Los cortes habituales (κ>0.8 excelente, κ<0.4 pobre) son la escala convencional de Landis & Koch (1977), no umbrales con respaldo empírico |
+| MCC | `(TP·TN−FP·FN)/√[(TP+FP)(TP+FN)(TN+FP)(TN+FN)]` | [−1,1] | La nota más justa: exige acertar en las cuatro casillas a la vez (Matthews, 1975) | Cualquier clasificador binario | El indicador único más informativo con desbalance (Chicco & Jurman, 2020) — dentro de un mismo dataset: ver el callout siguiente |
 
 > [!warning] ⚠️ La trampa del accuracy
 > Con 1% de fraude, el modelo "todo es legítimo" tiene 99% de accuracy y 0% de utilidad. Con desbalance, el trío honesto es **AUC-PR + MCC + matriz de confusión completa** — y accuracy queda de adorno ([[03-Preparacion-de-Datos]]).
+
+> [!warning] ⚠️ Las métricas «para desbalance» dependen de la prevalencia
+> Precision, F1, AUC-PR y MCC cambian cuando cambia la proporción de positivos **aunque el modelo sea el mismo**, y hasta el orden entre modelos puede invertirse (Brabec et al., 2020); solo TPR, FPR y la curva ROC son invariantes a la tasa base. Consecuencia: un MCC de 0.6 en un segmento con 5% de positivos no es comparable con un 0.6 en otro con 0.5%, ni el AUC-PR de este trimestre con el del anterior si la prevalencia se movió. Compara siempre a prevalencia igual, o reporta la prevalencia al lado de la métrica.
 
 ---
 
@@ -96,8 +99,11 @@ Audiencia: 🔧 🧭
 - **Punto más cercano a la esquina** superior izquierda del ROC.
 - **Máximo F-beta:** con el β que codifica tu asimetría de costos.
 - **Expected profit:** si FP cuesta C_FP y FN cuesta C_FN, el umbral óptimo teórico es `P* = C_FP/(C_FP+C_FN)` — el costo de negocio directamente en la decisión (ver caso de negocio y [[11-Mejora-de-Modelos]]).
+  - *Origen y supuestos:* este umbral es el resultado clásico del aprendizaje sensible al costo (Elkan, 2001): si acertar no cuesta nada, la decisión que minimiza el costo esperado es predecir positivo cuando P(y=1|x) ≥ C_FP/(C_FP+C_FN); si TP y TN también tienen costo o beneficio, la fórmula general usa, para cada clase real, la diferencia de costo entre decidir positivo y decidir negativo. Dos supuestos que conviene dejar escritos: la probabilidad debe estar **calibrada** — si el score no es una probabilidad, el umbral «teórico» cae en el lugar equivocado — y los costos deben venir en la **misma unidad** (pesos, no «importancia»). Cuando los costos varían por cliente o por monto, el umbral deja de ser un número único y pasa a ser una regla por caso.
 
 **🔧 Calibration plot (reliability diagram):** divide las predicciones en deciles de probabilidad y compara probabilidad media predicha vs frecuencia observada real. Modelo calibrado = puntos sobre la diagonal. Correcciones (Platt, Isotonic): [[11-Mejora-de-Modelos]].
+
+**🔧 Tres distinciones sobre calibración.** Primero, Brier score y log loss son *proper scoring rules* (Gneiting & Raftery, 2007): premian declarar la probabilidad verdadera y miden la calidad **global** de las probabilidades, no solo su calibración. El Brier se descompone en *reliability* (calibración), *resolution* (capacidad de separar casos) y *uncertainty* (Murphy, 1973): un modelo que siempre predice la prevalencia está perfectamente calibrado y aun así es inútil. Segundo, el reliability diagram — por bins de igual ancho o por cuantiles — es la lectura visual estándar (Niculescu-Mizil & Caruana, 2005). Tercero, el **Expected Calibration Error (ECE)** resume el diagrama en un número: la brecha media ponderada entre confianza y frecuencia observada por bin (Guo et al., 2017), pero su valor depende del binning elegido (Nixon et al., 2019; preprint): se reporta junto al diagrama y a una proper score, nunca solo.
 
 **👔 En una frase para el negocio:** la curva es el menú de trade-offs disponibles; el umbral es el plato que eliges — y esa elección vale dinero, no es un tecnicismo.
 
@@ -157,7 +163,7 @@ Audiencia: 🔧 🧭
 |---|---|---|---|---|
 | Precision@K | De los top-K recomendados, ¿qué fracción es relevante? | [0,1] | "De las 10 películas que me recomendaste, ¿cuántas me gustaron?" | K fijo por diseño de UI (top-5, top-10) |
 | Recall@K | De todos los relevantes, ¿qué fracción aparece en el top-K? | [0,1] | "De las 20 películas que me gustarían, ¿cuántas están en tu top-10?" | Cobertura del catálogo relevante |
-| MAP@K (Mean Average Precision) | Promedio del AP por query; AP = promedio de precision@k solo en las posiciones donde hay un acierto | [0,1] | La nota promedio del buscador: premia poner los aciertos arriba, no dispersos | Comparar modelos de retrieval/recomendación (Robertson, 2009) |
+| MAP@K (Mean Average Precision) | Promedio del AP por query; AP = promedio de precision@k solo en las posiciones donde hay un acierto | [0,1] | La nota promedio del buscador: premia poner los aciertos arriba, no dispersos | Comparar modelos de retrieval/recomendación (Manning, Raghavan & Schütze, 2008, cap. 8; Voorhees, 1999) |
 | MRR (Mean Reciprocal Rank) | Promedio de 1/rank del primer resultado relevante | [0,1] | "¿Cuánto tuve que scrollear hasta encontrar algo útil?" | Cuando solo importa el PRIMER resultado correcto (Q&A, navigational search) |
 | NDCG@K (Normalized Discounted Cumulative Gain) | Suma de relevancia descontada por log₂(rank), normalizada por el DCG ideal | [0,1] | Premia poner lo MÁS relevante primero, con descuento logarítmico por posición | Relevancia gradual (ratings 1-5, no binaria); el estándar en search y recomendadores (Järvelin & Kekäläinen, 2002) |
 | Hit Rate@K | ¿Al menos un ítem relevante está en el top-K? (1 o 0 por query) | {0,1} | "¿Sí o no encontré algo bueno en la primera página?" | Evaluación rápida de sistemas de recomendación |
@@ -183,7 +189,7 @@ Audiencia: 🔧 🧭 👔
 | **Equalized Odds** | TPR y FPR iguales entre grupos. El modelo se equivoca por igual en ambos. | "Mi detector de fraude falla con la misma frecuencia sin importar quién seas" | El estándar más robusto para corrección de bias — no sacrifica precisión global innecesariamente (Hardt et al., 2016) |
 | **Equal Opportunity** | Solo el TPR es igual entre grupos (caso relajado de Equalized Odds). | "Si estás enfermo, te detecto con la misma probabilidad seas del grupo que seas" | Cuando el FN es el error costoso y diferencial (screening médico, admisiones) |
 | **Predictive Parity** | Precision igual entre grupos: P(y=1 \| ŷ=1, A) = P(y=1 \| ŷ=1, B). | "Si te señalo, la probabilidad de que realmente seas positivo es la misma" | Alertas donde actuar sobre un FP tiene costo diferencial por grupo (intervenciones policiales) |
-| **Disparate Impact Ratio** | Tasa positiva del grupo desfavorecido / tasa del grupo favorecido. Umbral legal (US): ≥ 0.8 ("regla del 80%"). | "¿Apruebo al grupo B al menos al 80% de la tasa del grupo A?" | Auditoría regulatoria; ISO 42001 y EU AI Act lo referencian |
+| **Disparate Impact Ratio** | Tasa positiva del grupo desfavorecido / tasa del grupo favorecido. La «regla del 80%» (≥ 0.8) es un criterio **administrativo** de las agencias federales de EE. UU. para presumir *adverse impact* en selección de personal (Uniform Guidelines on Employee Selection Procedures, 29 CFR §1607.4(D), 1978), no un umbral estatutario ni universal | "¿Apruebo al grupo B al menos al 80% de la tasa del grupo A?" | Auditoría de sesgo; los marcos regulatorios ([[13-MLOps-XAI-Etica]]: EU AI Act, ISO/IEC 42001) exigen gestionar el sesgo pero no fijan este número. *(Corregido el 2026-09-06: decía «umbral legal» y que esos marcos «lo referencian».)* |
 | **Calibration by Group** | El modelo está calibrado dentro de cada grupo: P(y=1 \| score=s, grupo) = s. | "Cuando digo 70% para cualquier grupo, realmente el 70% es positivo" | Modelos probabísticos usados en decisiones de alto impacto (sentencias, créditos) |
 
 > [!warning] ⚠️ El teorema de la imposibilidad de Chouldechova (2017) / Kleinberg et al. (2016)
@@ -205,7 +211,7 @@ Audiencia: 🔧 🧭
 | MSE | `(1/N)·Σ(y−ŷ)²` | Target² (distorsionada) | Muy alta | El profesor que castiga al cuadrado los errores grandes | Función de pérdida de entrenamiento; errores grandes inaceptables |
 | RMSE | `√MSE` | La del target | Alta | Como MAE pero con lupa en los errores grandes | El estándar de reporte en regresión |
 | MAPE | `(1/N)·Σ│y−ŷ│/│y│·100%` | % | No | "¿En qué % me equivoco?" | Errores relativos; ⚠️ indefinida con y=0 y asimétrica: para el mismo error absoluto, el APE crece cuanto más chico es y; el sobre-pronóstico queda sin techo mientras el sub-pronóstico satura en 100% (Hyndman & Koehler, 2006) |
-| SMAPE | `(1/N)·Σ 2│y−ŷ│/(│y│+│ŷ│)·100%` | % | No | El MAPE simétrico que no explota cerca de cero | Alternativa estable a MAPE en demanda con ceros |
+| SMAPE | `(1/N)·Σ 2│y−ŷ│/(│y│+│ŷ│)·100%` | % | No | El MAPE «simétrico» que no lo es tanto: acota el error, pero castiga más el sub-pronóstico que el sobre-pronóstico del mismo tamaño — lo inverso del MAPE (Goodwin & Lawton, 1999) | Solo para comparar contra resultados publicados que lo usan (competencias M3/M4). No explota, pero se satura: con y = 0 vale 200% sea cual sea el pronóstico, y queda indefinido si y = ŷ = 0 (Hyndman & Koehler, 2006). Para demanda con ceros, usar MASE o WAPE ([[17-Series-de-Tiempo]]). *(Corregido el 2026-09-06: la fila lo llamaba «simétrico» y «alternativa estable con ceros».)* |
 | R² | `1 − SS_res/SS_tot` | Sin unidad | Moderada | "¿Qué % de la variabilidad explica mi modelo?" | Comparar contra el baseline "predecir la media" |
 | Adjusted R² | `1 − (1−R²)(N−1)/(N−p−1)` | Sin unidad | Moderada | R² con castigo por acumular variables inútiles | Comparar modelos con distinto nº de features |
 | Huber Loss | Cuadrática si │error│≤δ; lineal si >δ | Varía | Controlada (δ) | El híbrido: exigente en lo normal, tolerante con lo extremo | Robustez a outliers sin perder sensibilidad ([[07-Modelos-Supervisados]]) |
@@ -257,7 +263,7 @@ Audiencia: 🧭 👔
 | Se usan las probabilidades aguas abajo | Log Loss + Brier (y calibrar, [[11-Mejora-de-Modelos]]) |
 | Regresión estándar | RMSE + R² |
 | Regresión robusta a outliers | MAE + Huber |
-| Errores relativos / demanda | SMAPE, o MASE para comparar entre series ([[17-Series-de-Tiempo]]) |
+| Errores relativos / demanda | MAPE si no hay ceros; MASE o WAPE si los hay — SMAPE no es el arreglo ([[17-Series-de-Tiempo]]) |
 | Escenarios asimétricos (stock, capacidad) | Quantile Loss |
 | Ranking / recomendación | **NDCG@K + MAP@K** ([[20-Sistemas-de-Recomendacion]]) |
 | Fairness / equidad entre grupos | Equalized Odds + Disparate Impact Ratio ([[13-MLOps-XAI-Etica]]) |
@@ -271,10 +277,15 @@ Audiencia: 🧭 👔
 - (Brier, 1950), (Youden, 1950), (Cohen, 1960), (Matthews, 1975) — las métricas originales.
 - (Davis & Goadrich, 2006) — la relación entre curvas ROC y PR.
 - (Hastie et al., 2009), (James et al., 2021), (Géron, 2022) — evaluación de modelos en contexto.
-- (Akaike, 1974), (Schwarz, 1978) — AIC y BIC, los criterios de información de la sección 6.
+- (Akaike, 1974), (Schwarz, 1978) — AIC y BIC, los criterios de información de la sección 8.
+- (Goodwin & Lawton, 1999) — la asimetría del SMAPE. · (Elkan, 2001) — el umbral de costos del aprendizaje sensible al costo.
+- (Murphy, 1973) — descomposición del Brier score. · (Gneiting & Raftery, 2007) — proper scoring rules. · (Niculescu-Mizil & Caruana, 2005) — reliability diagram. · (Guo et al., 2017) — ECE. · (Nixon et al., 2019) — **preprint**: las fallas del ECE.
+- (Brabec et al., 2020) — las métricas dependen de la prevalencia. · (Saito & Rehmsmeier, 2015) — PR vs. ROC en desbalance. · (Chicco & Jurman, 2020) — MCC. · (Landis & Koch, 1977) — la escala convencional de kappa.
+- Uniform Guidelines on Employee Selection Procedures (1978), 29 CFR §1607.4(D) — la regla del 80% (ficha en [[16-Bibliografia]] §11).
 - (Hardt et al., 2016) — *Equality of Opportunity in Supervised Learning*. NeurIPS. El paper fundacional de Equalized Odds.
 - (Chouldechova, 2017) — *Fair prediction with disparate impact*. Big Data 5(2). El teorema de imposibilidad.
 - (Järvelin & Kekäläinen, 2002) — *Cumulated Gain-based Evaluation of IR Techniques*. ACM TOIS 20(4). NDCG original.
+- (Manning, Raghavan & Schütze, 2008) — *Introduction to Information Retrieval*, cap. 8 "Evaluation in information retrieval": MAP y la evaluación de ranking. (Voorhees, 1999) — *The TREC-8 Question Answering Track Report*: el origen del MRR. *(Reemplazan, el 2026-09-05, la cita "(Robertson, 2009)" — que remitía a un trabajo sobre BM25 y no respaldaba la fila de MAP/MRR.)*
 - (Hyndman & Koehler, 2006) — la asimetría del MAPE. (Hyndman & Athanasopoulos, 2021) — por qué los criterios de información no son comparables entre transformaciones distintas de los datos.
 
 Fichas completas con datos de publicación en [[16-Bibliografia]].

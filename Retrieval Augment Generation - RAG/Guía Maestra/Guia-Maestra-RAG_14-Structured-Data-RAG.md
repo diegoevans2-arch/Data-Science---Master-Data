@@ -3,7 +3,8 @@ title: "Tomo 14 — Structured Data RAG: Text2SQL, Table QA y consultas sobre da
 tags: [rag, complemento, vanguardia, text2sql, table-qa, structured-data, sql-generation, schema-linking, pandas-qa, hybrid-rag]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 14
-version: 1.0
+version: 1.1
+updated: 2026-09-05
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -86,9 +87,9 @@ Ese pipeline **no aplica** cuando la respuesta vive en una base de datos relacio
 
 ### 1.2 El dato duro
 
-🔧 [Técnico] Los benchmarks de Text2SQL (Spider, BIRD) miden **execution accuracy**: si el SQL generado produce el mismo resultado que el SQL gold. Los mejores sistemas (2024) alcanzan ~87% en Spider y ~65% en BIRD (que es más realista). Eso significa que **1 de cada 3 queries en bases complejas puede ser incorrecta** — y el usuario no tiene forma de saberlo sin inspeccionar el SQL.
+🔧 [Técnico] Los benchmarks de Text2SQL (Spider, BIRD) miden **execution accuracy**: si el SQL generado produce el mismo resultado que el SQL gold. Los mejores sistemas alcanzan ~87% de EX en Spider (DAIL-SQL: 86,6%, Gao et al., 2024). En BIRD, que es más realista, el paper original midió a GPT-4 en 54,89% frente a 92,96% de los humanos (Li et al., 2023); los sistemas posteriores del leaderboard superan el 65%, cifra que conviene releer en el leaderboard vigente antes de citarla. Eso significa que **una fracción grande de las queries en bases complejas puede ser incorrecta** — y el usuario no tiene forma de saberlo sin inspeccionar el SQL.
 
-👔 [Ejecutivo] Traducción: la tecnología funciona bien para el 65–85% de preguntas comunes, pero requiere guardrails serios para el resto. No es "deploy and forget" — es "deploy with review mechanisms".
+👔 [Ejecutivo] Traducción: la tecnología funciona bien para la mayoría de las preguntas comunes —del orden del 55–87% según el benchmark—, pero requiere guardrails serios para el resto. No es "deploy and forget" — es "deploy with review mechanisms".
 
 ---
 
@@ -152,7 +153,6 @@ para la pregunta del usuario.
 """
 from openai import OpenAI
 import numpy as np
-from typing import list
 
 client = OpenAI()
 
@@ -878,7 +878,7 @@ Audiencia: 🔧 🧭
 ```python
 """
 LangChain SQL Agent — ejemplo funcional.
-Referencia: docs.langchain.com/docs/use_cases/sql
+Referencia: docs.langchain.com/oss/python/langchain/sql-agent ("Build a SQL agent")
 """
 from langchain_community.utilities import SQLDatabase
 from langchain_community.agent_toolkits import create_sql_agent
@@ -1115,13 +1115,16 @@ Para quien va a implementar un sistema Text2SQL en producción:
 
 | # | Referencia | Relevancia para este tomo |
 |---|---|---|
-| 1 | Yu, T., Zhang, R., Yang, K., et al. (2018). *Spider: A Large-Scale Human-Labeled Dataset for Complex and Cross-Domain Semantic Parsing and Text-to-SQL Task*. EMNLP 2018. | Benchmark fundacional de Text2SQL — 10,181 queries sobre 200 databases. Define las métricas EX y EM usadas en §5.4 |
-| 2 | Rajkumar, N., Li, R., & Baber, D. (2022). *Evaluating the Text-to-SQL Capabilities of Large Language Models*. arXiv:2204.00498. | Primera evaluación sistemática de LLMs (Codex, GPT-3) en Text2SQL. Establece que los LLMs generalistas alcanzan ~67% EX en Spider sin fine-tuning |
-| 3 | Pourreza, M. & Rafiei, D. (2023). *DIN-SQL: Decomposed In-Context Learning of Text-to-SQL with Self-Correction*. NeurIPS 2023. | Introduce el enfoque de descomposición (schema linking → classification → SQL generation → self-correction) que inspira el pipeline del §2 |
-| 4 | Li, D., Wang, B., et al. (2024). *DAIL-SQL: Efficient Few-Shot Text-to-SQL with Optimized Example Selection*. VLDB 2024. | Demuestra que la selección inteligente de few-shot examples mejora significativamente la accuracy — relevante para el schema linking del §2.2 |
-| 5 | Li, J., Hui, B., et al. (2024). *Can LLM Already Serve as A Database Interface? A BIg Bench for Large-Scale Database Grounded Text-to-SQLs*. NeurIPS 2024 (BIRD benchmark). | Benchmark más realista que Spider: bases reales con dirty data, valores ambiguos y schemas complejos. Los mejores sistemas alcanzan ~65% EX |
-| 6 | LangChain Documentation. *SQL Agent*. docs.langchain.com/docs/use_cases/sql | Documentación oficial del SQL Agent usado en §6.2 |
-| 7 | LlamaIndex Documentation. *NLSQLTableQueryEngine*. docs.llamaindex.ai | Documentación oficial del query engine usado en §6.3 |
+| 1 | Yu, T., Zhang, R., Yang, K., Yasunaga, M., Wang, D., Li, Z., Ma, J., Li, I., Yao, Q., Roman, S., Zhang, Z., & Radev, D. (2018). *Spider: A Large-Scale Human-Labeled Dataset for Complex and Cross-Domain Semantic Parsing and Text-to-SQL Task*. EMNLP 2018, 3911–3921. DOI 10.18653/v1/D18-1425. ✅ | Benchmark fundacional de Text2SQL — 10,181 preguntas (5,693 consultas SQL únicas) sobre 200 databases. Define las métricas EX y EM usadas en §5.4 |
+| 2 | Rajkumar, N., Li, R., & Bahdanau, D. (2022). *Evaluating the Text-to-SQL Capabilities of Large Language Models*. arXiv:2204.00498 (preprint sin venue formal). ✅ *(Autor corregido el 2026-09-05: Bahdanau, no "Baber".)* | Primera evaluación sistemática de LLMs (Codex, GPT-3) en Text2SQL. Establece que los LLMs generalistas alcanzan ~67% EX en Spider sin fine-tuning |
+| 3 | Pourreza, M., & Rafiei, D. (2023). *DIN-SQL: Decomposed In-Context Learning of Text-to-SQL with Self-Correction*. NeurIPS 2023 (Advances in NeurIPS 36), 36339–36348. ✅ | Introduce el enfoque de descomposición (schema linking → classification → SQL generation → self-correction) que inspira el pipeline del §2 |
+| 4 | Gao, D., Wang, H., Li, Y., Sun, X., Qian, Y., Ding, B., & Zhou, J. (2024). *Text-to-SQL Empowered by Large Language Models: A Benchmark Evaluation* (DAIL-SQL). PVLDB 17(5), 1132–1145. DOI 10.14778/3641204.3641221. ✅ *(Título y autores corregidos el 2026-09-05: DAIL-SQL es el nombre del método, no del paper.)* | Demuestra que la selección inteligente de few-shot examples mejora significativamente la accuracy — 86,6% EX en Spider — relevante para el schema linking del §2.2 |
+| 5 | Li, J., Hui, B., Qu, G., Yang, J., et al. (2023). *Can LLM Already Serve as A Database Interface? A BIg Bench for Large-Scale Database Grounded Text-to-SQLs* (BIRD). NeurIPS 2023, Datasets and Benchmarks Track, 42330–42357. ✅ *(Año y venue corregidos el 2026-09-05: 2023, no 2024.)* | Benchmark más realista que Spider: bases reales con dirty data, valores ambiguos y schemas complejos. El paper original mide GPT-4 en 54,89% EX frente a 92,96% humano; el leaderboard posterior supera el 65% |
+| 6 | LangChain Documentation. *Build a SQL agent*. docs.langchain.com/oss/python/langchain/sql-agent ✅ *(URL actualizada el 2026-09-05: la anterior, `docs/use_cases/sql`, devuelve 404.)* | Documentación oficial del SQL Agent usado en §6.2 |
+| 7 | LlamaIndex Documentation. *NL SQL table — `NLSQLTableQueryEngine`*. developers.llamaindex.ai/python/framework-api-reference/query_engine/NL_SQL_table/ ✅ *(Dominio actualizado el 2026-09-05; docs.llamaindex.ai redirige. La clase sigue exportándose desde `llama_index.core.query_engine`.)* | Documentación oficial del query engine usado en §6.3 |
+
+> [!note] 🔎 Verificación bibliográfica (2026-09-05)
+> Las 7 referencias se contrastaron con fuente primaria (ACL Anthology, proceedings de NeurIPS, Crossref/PVLDB, arXiv, documentación oficial). **Cuatro errores corregidos:** el tercer autor de Rajkumar et al. (Bahdanau, no "Baber"); el título y los autores del paper de DAIL-SQL; el año y venue de BIRD (NeurIPS 2023, no 2024) junto con la cifra de EX del §1.2, que no provenía del paper; y la URL de LangChain (404). Dos precisiones menores (cifras de Spider, dominio de LlamaIndex). Fichas completas en el [[Guia-Maestra-RAG_16-Bibliografia|Tomo 16 §17]]. El código de este tomo **no se ejecutó** en esta revisión (requiere credenciales de API y una base PostgreSQL); se corrigió un import inexistente (`from typing import list`) detectado por lectura.
 
 ---
 

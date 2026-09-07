@@ -3,8 +3,8 @@ title: "Tomo 06 — Chunking (básico y avanzado)"
 tags: [rag, chunking, fixed-size, overlap, recursive-splitting, semantic-chunking, contextual-retrieval, indexing]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 06
-version: 1.1
-updated: 2026-08-28
+version: 1.2
+updated: 2026-09-05
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -368,8 +368,8 @@ Audiencia: 🔧 🧭
 | Contextual chunking | LLM genera contexto por chunk | Alto (1 LLM call / chunk) | ~49% menos retrieval failures | KB heterogénea, docs largos, alto impacto de errores |
 
 > [!quote] 📚 Bibliografía
-> - Günther, M. et al. (2024). *"Late Chunking: Contextual Chunk Representations Using Long-Context Embedding Models"*. Jina AI.
-> - Anthropic (2024). *"Introducing Contextual Retrieval"*. Blog post.
+> - Günther, M., Mohr, I., Williams, D. J., Wang, B., & Xiao, H. (2024). *"Late Chunking: Contextual Chunk Embeddings Using Long-Context Embedding Models"*. arXiv:2409.04701 (preprint, Jina AI). *(Título corregido el 2026-09-05: "Embeddings", no "Representations".)*
+> - Anthropic (2024, 19 de septiembre). *"Introducing Contextual Retrieval"*. Blog post.
 
 ---
 
@@ -618,7 +618,8 @@ Audiencia: 🔧 🧭 👔
 - DeepLearning.AI. *Retrieval-Augmented Generation (RAG)* — Módulo 3: lecciones de **chunking** (básico) y **advanced chunking**; **Ungraded Lab 2** (chunking sobre el libro Pro Git), del que provienen todos los conteos, tamaños y comparaciones de la sección 5.
 
 **Fuentes externas (complemento con bibliografía verificable):**
-- Anthropic (2024). *Introducing Contextual Retrieval*. — La técnica que el curso llama *context-aware chunking*, con resultados medidos al combinarla con BM25 y re-ranking.
+- Anthropic (2024, 19 de septiembre). *Introducing Contextual Retrieval*. Anthropic News. — La técnica que el curso llama *context-aware chunking*, con resultados medidos al combinarla con BM25 y re-ranking.
+- Günther, M., Mohr, I., Williams, D. J., Wang, B., & Xiao, H. (2024). *Late Chunking: Contextual Chunk Embeddings Using Long-Context Embedding Models*. arXiv:2409.04701 (preprint). — Late chunking (sección 4), la alternativa de Jina AI al contextual retrieval.
 - Documentación oficial de **LangChain**: `RecursiveCharacterTextSplitter` (la cascada de separadores que el lab no implementa) y `SemanticChunker`.
 - Documentación oficial de **Weaviate**: `Configure.NamedVectors`, `source_properties`, `Tokenization.FIELD`.
 - Corpus del lab: **Pro Git** (Chacon, S. & Straub, B.), repositorio `progit/progit2`, formato AsciiDoc.

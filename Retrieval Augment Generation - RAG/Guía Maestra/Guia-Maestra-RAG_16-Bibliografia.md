@@ -3,7 +3,8 @@ title: "Tomo 16 — Bibliografía"
 tags: [rag, bibliografia, referencias, transversal, verificacion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 16
-version: 1.0
+version: 1.1
+updated: 2026-09-05
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -18,9 +19,11 @@ author: El Egypcio
 ---
 
 > [!info] 📌 Sobre esta bibliografía
-> Todas las obras citadas en los Tomos 01–11, con sus datos de publicación completos. Las citas en el texto usan el formato `(Autor, Año)`.
+> Todas las obras citadas en los Tomos 01–14, con sus datos de publicación completos. Las citas en el texto usan el formato `(Autor, Año)`.
 >
 > ✅ **52/52 obras verificadas contra fuente primaria (2026-07-28)** — cada una con evidencia y DOI/URL. La auditoría corrigió **4 errores** y precisó **6 fichas** más; el detalle está en la sección 14, porque los errores encontrados son didácticos en sí mismos.
+>
+> ➕ **67 fichas incorporadas el 2026-09-05** (§15–§18): las 37 del Tomo 12 y las 12 del Tomo 13 (verificadas al escribirlos, el 2026-07-28/29, pero nunca consolidadas aquí), las 7 del Tomo 14 y las 11 adiciones de la revisión del 2026-08-28 — estas 18 últimas verificadas el 2026-09-05, con **4 errores corregidos en el Tomo 14, una referencia inexistente eliminada del Tomo 04 y un título corregido en el Tomo 06**. **Total: 119 fichas.**
 >
 > El **§5 de las [[Instrucciones|Instrucciones]]** exige que toda afirmación de fuente externa tenga bibliografía verificable. Este tomo es donde eso se comprueba.
 
@@ -286,6 +289,121 @@ Vale registrarlas, porque **la verificación también sirve para no "corregir" l
 Por transparencia: **ACM Digital Library, IEEE Xplore, SpringerLink, CanLII y OpenReview bloquearon el acceso automatizado** (403 o muros anti-bot). En esos casos la verificación se apoyó en **Crossref, DBLP, ACL Anthology y PDFs alojados por los propios autores** — registros autoritativos, pero no el portal del editor. Está señalado en las fichas afectadas.
 
 Además, dos datos concretos quedaron sin confirmar y **no se dan por buenos**: las páginas de Lewis et al. (2020) y las de ContextCite (NeurIPS no las publica). Se omiten en vez de copiarlas de fuentes secundarias.
+
+---
+
+## 15. Complemento — técnicas avanzadas de query (Tomo 12)
+
+> [!note] Verificadas antes de escribir el tomo (2026-07-28), consolidadas aquí el 2026-09-05
+> El Tomo 12 exigía que toda referencia se verificara **antes** de escribir, y así se hizo, con evidencia textual y URL; pero las fichas quedaron solo en su §10.3 y **nunca llegaron a este tomo**. Se consolidan con sus marcas originales (✅ verificada · ⚠️ matiz). Cormack, Clarke & Büttcher (2009) ya figura en §4.
+
+**Antecedente histórico**
+- Rocchio, J. J. (1971). "Relevance feedback in information retrieval". En G. Salton (ed.), *The SMART Retrieval System — Experiments in Automatic Document Processing*, 313–323. Prentice Hall. ⚠️ *Verificada vía fuente secundaria autorizada (bibliografía de Manning, Raghavan & Schütze); el documento primario no tiene edición digital pública. Sin DOI.*
+- Belkin, N. J., Kantor, P., Fox, E. A., & Shaw, J. A. (1995). "Combining the evidence of multiple query representations for information retrieval". *Information Processing & Management*, 31(3), 431–448. DOI 10.1016/0306-4573(94)00057-A. ✅
+
+**Transformación de queries**
+- Ma, X., Gong, Y., He, P., Zhao, H., & Duan, N. (2023). "Query Rewriting for Retrieval-Augmented Large Language Models". *EMNLP 2023*. arXiv:2305.14283. ✅
+- Press, O., Zhang, M., Min, S., Schmidt, L., Smith, N. A., & Lewis, M. (2023). "Measuring and Narrowing the Compositionality Gap in Language Models". *Findings of the ACL: EMNLP 2023*, 5687–5711. DOI 10.18653/v1/2023.findings-emnlp.378. ✅ **(Self-Ask — la canónica para RAG)**
+- Zhou, D., Schärli, N., Hou, L., Wei, J., Scales, N., Wang, X., Schuurmans, D., Cui, C., Bousquet, O., Le, Q., & Chi, E. (2023). "Least-to-Most Prompting Enables Complex Reasoning in Large Language Models". *ICLR 2023*. arXiv:2205.10625. ✅ ⚠️ *No contiene retrieval — no citar como referencia de RAG.*
+- Khot, T., Trivedi, H., Finlayson, M., Fu, Y., Richardson, K., Clark, P., & Sabharwal, A. (2023). "Decomposed Prompting: A Modular Approach for Solving Complex Tasks". *ICLR 2023*. arXiv:2210.02406. ✅
+- Zheng, H. S., Mishra, S., Chen, X., Cheng, H.-T., Chi, E. H., Le, Q. V., & Zhou, D. (2024). "Take a Step Back: Evoking Reasoning via Abstraction in Large Language Models". *ICLR 2024*. arXiv:2310.06117. ✅
+- Jagerman, R., Zhuang, H., Qin, Z., Wang, X., & Bendersky, M. (2023). *Query Expansion by Prompting Large Language Models*. arXiv:2305.03653. ✅ *Preprint sin venue.*
+
+**Patrones adaptativos**
+- Trivedi, H., Balasubramanian, N., Khot, T., & Sabharwal, A. (2023). "Interleaving Retrieval with Chain-of-Thought Reasoning for Knowledge-Intensive Multi-Step Questions". *ACL 2023*, 10014–10037. DOI 10.18653/v1/2023.acl-long.557. ✅ **(IRCoT)**
+- Asai, A., Wu, Z., Wang, Y., Sil, A., & Hajishirzi, H. (2024). "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection". *ICLR 2024 (Oral)*. arXiv:2310.11511. ✅ *El estatus "Oral" está verificado; la afirmación "top 1 %" que circula, no.*
+- Yan, S.-Q., Gu, J.-C., Zhu, Y., & Ling, Z.-H. (2024). *Corrective Retrieval Augmented Generation* (CRAG). arXiv:2401.15884. ✅ ⚠️ **Preprint sin venue.**
+
+**Recuperación estructurada**
+- Edge, D., Trinh, H., Cheng, N., Bradley, J., Chao, A., Mody, A., Truitt, S., Metropolitansky, D., Ness, R. O., & Larson, J. (2024). *From Local to Global: A Graph RAG Approach to Query-Focused Summarization*. arXiv:2404.16130. ✅ ⚠️ **Preprint sin venue tras más de dos años.** *La v1 lista 8 autores y la v2 añade dos (10); se usa la v2.*
+- Sarthi, P., Abdullah, S., Tuli, A., Khanna, S., Goldie, A., & Manning, C. D. (2024). "RAPTOR: Recursive Abstractive Processing for Tree-Organized Retrieval". *ICLR 2024*. arXiv:2401.18059. ✅
+- Jiménez Gutiérrez, B., Shu, Y., Gu, Y., Yasunaga, M., & Su, Y. (2024). "HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models". *NeurIPS 2024*. arXiv:2405.14831. ✅
+- Jiménez Gutiérrez, B., Shu, Y., Qi, W., Zhou, S., & Su, Y. (2025). "From RAG to Memory: Non-Parametric Continual Learning for Large Language Models" (HippoRAG 2). *ICML 2025*, PMLR 267, 21497–21515. ✅
+- Guo, Z., Xia, L., Yu, Y., Ao, T., & Huang, C. (2025). "LightRAG: Simple and Fast Retrieval-Augmented Generation". *Findings of the ACL: EMNLP 2025*, 10746–10761. DOI 10.18653/v1/2025.findings-emnlp.568. ✅ *Enviado a ICLR 2025 y retirado; es **Findings**, no main.*
+- Traag, V. A., Waltman, L., & van Eck, N. J. (2019). "From Louvain to Leiden: guaranteeing well-connected communities". *Scientific Reports*, 9, 5233. ⚠️ *Tomada de la cita interna de Edge et al.; confirmar el DOI en la fuente si se cita textualmente.*
+
+**Evaluaciones comparativas**
+- Wang, X., Wang, Z., Gao, X., Zhang, F., Wu, Y., Xu, Z., Shi, T., Wang, Z., Li, S., Qian, Q., Yin, R., Lv, C., Zheng, X., & Huang, X. (2024). "Searching for Best Practices in Retrieval-Augmented Generation". *EMNLP 2024*, 17716–17736. arXiv:2407.01219. ✅ **La cita más importante del Tomo 12.**
+- Jin, J., Zhu, Y., Dong, G., Zhang, Y., Yang, X., Zhang, C., Zhao, T., Yang, Z., Dou, Z., & Wen, J.-R. (2025). "FlashRAG: A Modular Toolkit for Efficient Retrieval-Augmented Generation Research". *WWW 2025, Resource Track*. arXiv:2405.13576. ✅ ⚠️ *Las cifras citadas proceden de la v1; existe una v2 posterior.*
+- Zhang, X., Song, Y., Wang, Y., et al. (2024). "RAGLAB: A Modular and Research-Oriented Unified Framework for Retrieval-Augmented Generation". *EMNLP 2024, System Demonstrations*, 408–418. DOI 10.18653/v1/2024.emnlp-demo.43. ✅
+- Rau, D., Déjean, H., Chirkova, N., Formal, T., Wang, S., Nikoulina, V., & Clinchant, S. (2024). "BERGEN: A Benchmarking Library for Retrieval-Augmented Generation". *Findings of EMNLP 2024*, 7640–7663. ✅
+- Ammann, P. J. L., Golde, J., & Akbik, A. (2025). *Question Decomposition for Retrieval-Augmented Generation*. *ACL SRW 2025*. arXiv:2507.00355. ✅
+- Xiang, Z., Wu, C., Zhang, Q., Chen, S., Hong, Z., Huang, X., & Su, J. (2025). *When to use Graphs in RAG: A Comprehensive Analysis for Graph Retrieval-Augmented Generation*. arXiv:2506.05690. ✅ ⚠️ *Los autores anuncian aceptación en ICLR'26; no confirmada de forma independiente. Tratar como preprint.*
+- Han, H., Ma, L., Wang, Y., et al. (2025). *RAG vs. GraphRAG: A Systematic Evaluation and Key Insights*. arXiv:2502.11371. ✅ ⚠️ *Preprint sin venue.*
+- Laitenberger, A., Manning, C. D., & Liu, N. F. (2025). "Stronger Baselines for Retrieval-Augmented Generation with Long-Context Language Models". *EMNLP 2025*, 32559–32569. arXiv:2506.03989. ✅
+- Hussain, Z., & Nielbo, K. (2026). *The Coverage Illusion: From Pre-retrieval Routing Failure to Post-retrieval Cascades in a Production RAG System*. arXiv:2605.27220. ✅ ⚠️ *Preprint sin venue. Fuente del 27,8 % de consultas que necesitan aumentación.*
+- Medrano, L., Verma, A., & Chhabra, M. (2026). *RAG-Fusion en producción*. arXiv:2603.02153. ✅ ⚠️ *Preprint sin venue.*
+- Akarsu, M., Karaman, R. K., & Mierbach, C. (2026). *From BM25 to Corrective RAG: Benchmarking Retrieval Strategies for Text-and-Table Documents*. arXiv:2604.01733. ✅ ⚠️ *Preprint sin venue. Fuente de que HyDE empeora en corpus tabulares.*
+- Kotte, V. (2026). *Not All Queries Need Rewriting*. arXiv:2603.13301. ✅ ⚠️ *Preprint de autor único.*
+- Bigdeli, A., Hamidi Rad, R., Le, H. S., Incesu, M., Arabzadeh, N., Clarke, C. L. A., & Bagheri, E. (2026). *Reproducibility study of LLM query reformulation*. arXiv:2604.27421. ✅ ⚠️ *Preprint sin venue.*
+- Eibich, M., Nagpal, S., & Fred-Ojala, A. (2024). *ARAGOG: Advanced RAG Output Grading*. arXiv:2404.01037. ✅ ⚠️ *Preprint sin venue.*
+- Ferrazzi, P., Cvjeticanin, M., Piraccini, A., & Giannuzzi, D. (2026). *Is Agentic RAG worth it?*. *ACL 2026 (Industry Track)*. arXiv:2601.07711. ✅
+- Iturra-Bocaz, G., & Galuscakova, P. (2026). *A Reproducibility Study of Metacognitive Retrieval-Augmented Generation*. *SIGIR 2026*. arXiv:2604.19899. DOI 10.1145/3805712.3808551. ✅ ⚠️ *La aceptación consta en arXiv y el DOI está registrado; la página de ACM devolvió 403.*
+
+**Fuentes de industria** (citadas como tales, no como literatura académica)
+- LangChain (2023, 24 de octubre). *Query Transformations*. Blog post. ✅ *Donde se popularizan multi-query y RAG-Fusion — sin paper fundacional (ver Rackauckas 2024, abajo).*
+- Rackauckas, Z. (2024). "RAG-Fusion: a New Take on Retrieval-Augmented Generation". *International Journal on Natural Language Computing (IJNLC)*, 13(1), febrero de 2024. arXiv:2402.03367. ✅ *Verificada 2026-09-05 (arXiv, journal-ref). Existe, pero el §4.1 del Tomo 12 explica por qué NO califica como fundacional: es descriptivo (evalúa "the newly popularized RAG-Fusion method"), el venue es de bajo perfil y la metodología es un case study con evaluación manual.*
+- Edge, D., Trinh, H., & Larson, J. (2024, 25 de noviembre). *LazyGraphRAG: Setting a new standard for quality and cost*. Microsoft Research Blog. ✅
+- `microsoft/graphrag` (repositorio, licencia MIT). ✅ *README verificado: "not an officially supported Microsoft offering".*
+
+---
+
+## 16. Complemento — frameworks de orquestación (Tomo 13)
+
+> [!note] Verificadas el 28–29 de julio de 2026, antes de escribir; consolidadas aquí el 2026-09-05
+> Schluntz & Zhang (2024), *Building effective agents*, ya figura en §10. Lo perecedero del Tomo 13 (versiones, APIs, changelogs) se cita como documentación oficial y **caduca solo**: verificar antes de reutilizar.
+
+**Académicas** — solo DSPy tiene linaje publicado
+- Khattab, O., Singhvi, A., Maheshwari, P., Zhang, Z., Santhanam, K., Vardhamanan, S., Haq, S., Sharma, A., Joshi, T. T., Moazam, H., Miller, H., Zaharia, M., & Potts, C. (2024). "DSPy: Compiling Declarative Language Model Calls into State-of-the-Art Pipelines". *ICLR 2024 (Spotlight)*. arXiv:2310.03714. ✅ ⚠️ *El arXiv (v1) dice "Self-Improving Pipelines"; el camera-ready de ICLR dice "State-of-the-Art Pipelines".*
+- Khattab, O., Santhanam, K., Li, X. L., Hall, D., Liang, P., Potts, C., & Zaharia, M. (2022). *Demonstrate-Search-Predict*. arXiv:2212.14024. ✅ *Preprint. El predecesor.*
+- Opsahl-Ong, K., Ryan, M. J., Purtell, J., Broman, D., Potts, C., Zaharia, M., & Khattab, O. (2024). "Optimizing Instructions and Demonstrations for Multi-Stage Language Model Programs" (MIPRO). *EMNLP 2024*. arXiv:2406.11695. ✅
+- Agrawal, L., et al. (2026). "GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning". *ICLR 2026 (Oral)*. arXiv:2507.19457. ✅
+- Sarmah, B., Dutta, S., Grigoryan, A., Tiwari, M., Pasquali, S., & Mehta, D. (2024). *A Comparative Study of DSPy Teleprompter Algorithms*. arXiv:2412.15298. ✅ *Preprint, muestra pequeña, pero independiente.*
+- Aali, A., et al. (2026). *Structured Prompts Improve Evaluation of Language Models*. arXiv:2511.20836. ✅ ⚠️ *No es evaluación independiente: dos coautores son autores del paper de DSPy.*
+
+**Posturas con autoridad**
+- Chase, H. (2025, 20 de octubre). *Reflections on Three Years of Building LangChain*. Blog post. ✅
+- Husain, H. (2024, 14 de febrero). *"Fuck You, Show Me The Prompt."* Blog post. ✅
+- Octomind (2024, ~20 de junio). *Why we no longer use LangChain for building our AI agents*. ⚠️ **`octomind.dev` no resolvía DNS el 2026-07-29**; el contenido y la discusión se conservan en el hilo de Hacker News (id 40739982). *Citar el hilo, no la URL original.*
+
+**Documentación oficial** (perecedera)
+- LangChain: changelog (medición de `deepagents` v0.7.0b2), guía de migración a v1, política de versionado y release, tutorial de evaluación de LangSmith, issue de descontinuación de `langchain-community`. ✅ *Verificada julio–agosto de 2026.*
+- LlamaIndex, DSPy, Haystack, RAGFlow: repositorios y PyPI. ✅
+- OpenTelemetry: convenciones semánticas GenAI (`gen_ai.*`) — **`Status: Development`** a agosto de 2026. ✅
+
+---
+
+## 17. Complemento — structured data RAG (Tomo 14)
+
+> [!note] Verificadas el 2026-09-05, después de escrito el tomo (2026-08-28) — al revés de la regla
+> El Tomo 14 se generó sin pasar por el protocolo de verificación y sin consolidar aquí sus fuentes. La auditoría del 2026-09-05 encontró **4 errores** en 7 referencias: un autor inventado ("Baber" por Bahdanau), el título y los autores del paper de DAIL-SQL, el año y venue de BIRD (más una cifra del §1.2 que no provenía del paper) y una URL de documentación muerta. Todos corregidos en el tomo.
+
+- Yu, T., Zhang, R., Yang, K., Yasunaga, M., Wang, D., Li, Z., Ma, J., Li, I., Yao, Q., Roman, S., Zhang, Z., & Radev, D. (2018). "Spider: A Large-Scale Human-Labeled Dataset for Complex and Cross-Domain Semantic Parsing and Text-to-SQL Task". *Proceedings of EMNLP 2018*, 3911–3921. DOI 10.18653/v1/D18-1425. ✅ *Verificada 2026-09-05 (ACL Anthology). 10.181 preguntas y 5.693 consultas SQL únicas sobre 200 bases.*
+- Rajkumar, N., Li, R., & Bahdanau, D. (2022). *Evaluating the Text-to-SQL Capabilities of Large Language Models*. arXiv:2204.00498. ✅ *Verificada 2026-09-05 (arXiv; DBLP: preprint sin venue formal). Codex alcanza 67 % de execution accuracy en Spider.*
+- Pourreza, M., & Rafiei, D. (2023). "DIN-SQL: Decomposed In-Context Learning of Text-to-SQL with Self-Correction". *Advances in Neural Information Processing Systems 36 (NeurIPS 2023)*, 36339–36348. arXiv:2304.11015. ✅ *Verificada 2026-09-05 (BibTeX oficial de NeurIPS).*
+- Gao, D., Wang, H., Li, Y., Sun, X., Qian, Y., Ding, B., & Zhou, J. (2024). "Text-to-SQL Empowered by Large Language Models: A Benchmark Evaluation" (DAIL-SQL). *Proceedings of the VLDB Endowment*, 17(5), 1132–1145. DOI 10.14778/3641204.3641221. arXiv:2308.15363. ✅ *Verificada 2026-09-05 (Crossref; PDF de PVLDB). 86,6 % de EX en Spider.*
+- Li, J., Hui, B., Qu, G., Yang, J., Li, B., Li, B., Wang, B., Qin, B., Geng, R., Huo, N., Zhou, X., Ma, C., Li, G., Chang, K., Huang, F., Cheng, R., & Li, Y. (2023). "Can LLM Already Serve as A Database Interface? A BIg Bench for Large-Scale Database Grounded Text-to-SQLs" (BIRD). *Advances in Neural Information Processing Systems 36 (NeurIPS 2023), Datasets and Benchmarks Track*, 42330–42357. arXiv:2305.03111. ✅ *Verificada 2026-09-05 (proceedings de NeurIPS). GPT-4: 54,89 % de EX frente a 92,96 % humano.*
+- LangChain (s.f.). *Build a SQL agent*. Documentación oficial: docs.langchain.com/oss/python/langchain/sql-agent ✅ *Verificada 2026-09-05. La URL que citaba el tomo (`docs/use_cases/sql`) devuelve 404.*
+- LlamaIndex (s.f.). *NL SQL table — `NLSQLTableQueryEngine`*. Referencia de API: developers.llamaindex.ai/python/framework-api-reference/query_engine/NL_SQL_table/ ✅ *Verificada 2026-09-05 (la clase se exporta desde `llama_index.core.query_engine`; `docs.llamaindex.ai` redirige al dominio nuevo).*
+
+---
+
+## 18. Adiciones de la revisión del 2026-08-28 (Tomos 04, 06, 09, 10)
+
+> [!note] Verificadas el 2026-09-05
+> La revisión del 2026-08-28 añadió contenido a los Tomos 04 (Matryoshka, quantization, modelos), 06 (late chunking), 09 (LLM-as-judge) y 10 (guardrails) sin pasar sus fuentes por verificación ni por este tomo. Resultado de la auditoría: **una referencia inexistente** ("Yamada et al. (2024), *Scalar and Binary Quantization for ANN Search*" — fusión de un post de Hugging Face con un paper de 2021), **un título incorrecto** (Günther et al.) y nueve fichas correctas o con precisiones menores. Kusupati et al. (2022), Shakir, Aarsen & Lee (2024) y Anthropic (2024, *Contextual Retrieval*) ya figuraban en §12 y §7.
+
+- Yamada, I., Asai, A., & Hajishirzi, H. (2021). "Efficient Passage Retrieval with Hashing for Open-domain Question Answering" (BPR). *Proceedings of ACL-IJCNLP 2021, Volume 2: Short Papers*, 979–986. DOI 10.18653/v1/2021.acl-short.123. ✅ *Verificada 2026-09-05 (ACL Anthology). El paper que el post de Hugging Face cita como origen del paso de rescore.* — Tomo 04
+- Nussbaum, Z., Morris, J. X., Duderstadt, B., & Mulyar, A. (2025). "Nomic Embed: Training a Reproducible Long Context Text Embedder". *Transactions on Machine Learning Research*. arXiv:2402.01613. ✅ *Verificada 2026-09-05 (arXiv "Accepted to TMLR"; DBLP). Describe v1.* — Tomo 04
+- Nomic AI (2024, 14 de febrero). *Unboxing Nomic Embed v1.5: Resizable Production Embeddings with Matryoshka Representation Learning*. Blog post y model card `nomic-ai/nomic-embed-text-v1.5`. ✅ *Verificada 2026-09-05. Fuente del soporte Matryoshka (64–768 dimensiones).* — Tomo 04
+- Sturua, S., Mohr, I., Akram, M. K., Günther, M., Wang, B., Krimmel, M., Wang, F., Mastrapas, G., Koukounas, A., Wang, N., & Xiao, H. (2024). *jina-embeddings-v3: Multilingual Embeddings With Task LoRA*. arXiv:2409.10173. Versión revisada por pares con otro título: "Jina Embeddings V3: Multilingual Text Encoder with Low-Rank Adaptations", *ECIR 2025*, LNCS, 123–129, DOI 10.1007/978-3-031-88720-8_21. ✅ *Verificada 2026-09-05 (arXiv; Crossref).* — Tomo 04
+- OpenAI (2024, 25 de enero). *New embedding models and API updates*. Anuncio oficial; y *Create embeddings* (referencia de API, parámetro `dimensions`, "only supported in text-embedding-3 and later models"). ✅ *Verificada 2026-09-05 (documentación oficial; openai.com devolvió 403 al fetcher, la fecha se confirmó por registros del mismo día).* — Tomo 04
+- Koenig, D., & Shakir, A. (2024, 12 de abril). *64 bytes per embedding, yee-haw*. Mixedbread Blog; y model card `mixedbread-ai/mxbai-embed-large-v1`. ✅ *Verificada 2026-09-05. El post de lanzamiento (Lee, Shakir, Koenig & Lipp, 8 de marzo de 2024) aún decía que la versión Matryoshka estaba "in the making"; el soporte MRL + binario lo documenta el post de abril.* — Tomo 04
+- Günther, M., Mohr, I., Williams, D. J., Wang, B., & Xiao, H. (2024). *Late Chunking: Contextual Chunk Embeddings Using Long-Context Embedding Models*. arXiv:2409.04701 (v3, 2025). ✅ *Verificada 2026-09-05 (arXiv; DBLP: preprint). Título corregido ("Embeddings", no "Representations").* — Tomo 06
+- Liu, Y., Iter, D., Xu, Y., Wang, S., Xu, R., & Zhu, C. (2023). "G-Eval: NLG Evaluation using GPT-4 with Better Human Alignment". *Proceedings of EMNLP 2023*, 2511–2522. DOI 10.18653/v1/2023.emnlp-main.153. arXiv:2303.16634. ✅ *Verificada 2026-09-05 (ACL Anthology).* — Tomo 09
+- Zheng, L., Chiang, W.-L., Sheng, Y., Zhuang, S., Wu, Z., Zhuang, Y., Lin, Z., Li, Z., Li, D., Xing, E. P., Zhang, H., Gonzalez, J. E., & Stoica, I. (2023). "Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena". *Advances in Neural Information Processing Systems 36 (NeurIPS 2023), Datasets and Benchmarks Track*, 46595–46623. arXiv:2306.05685. ✅ *Verificada 2026-09-05 (BibTeX oficial de NeurIPS). Distinta del paper de Chatbot Arena de 2024 (§9).* — Tomo 09
+- Rebedea, T., Dinu, R., Sreedhar, M. N., Parisien, C., & Cohen, J. (2023). "NeMo Guardrails: A Toolkit for Controllable and Safe LLM Applications with Programmable Rails". *Proceedings of EMNLP 2023: System Demonstrations*, 431–445. DOI 10.18653/v1/2023.emnlp-demo.40. ✅ *Verificada 2026-09-05 (ACL Anthology).* — Tomo 10
+- Inan, H., Upasani, K., Chi, J., Rungta, R., Iyer, K., Mao, Y., Tontchev, M., Hu, Q., Fuller, B., Testuggine, D., & Khabsa, M. (2023). *Llama Guard: LLM-based Input-Output Safeguard for Human-AI Conversations*. arXiv:2312.06674. ✅ *Verificada 2026-09-05 (arXiv; DBLP: preprint sin venue formal).* — Tomo 10
 
 ---
 

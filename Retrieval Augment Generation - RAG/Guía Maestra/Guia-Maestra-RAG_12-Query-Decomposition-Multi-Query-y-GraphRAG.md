@@ -3,8 +3,8 @@ title: "Tomo 12 — ⭐ Técnicas avanzadas de query: decomposition, multi-query
 tags: [rag, complemento, vanguardia, query-decomposition, multi-query, graphrag, raptor, self-rag, ircot, step-back, hyde]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 12
-version: 1.1
-updated: 2026-08-28
+version: 1.2
+updated: 2026-09-05
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -254,7 +254,7 @@ El diagnóstico del paper es la clave: *"what to retrieve depends on what has al
 
 **🔧 Definición (Asai et al., ICLR 2024 *Oral*):** un modelo que *"adaptively retrieves passages on-demand, and generates and reflects on retrieved passages and its own generations using special tokens, called reflection tokens"*.
 
-**📄 Paper:** Asai, S., Wu, Z., Wang, Y., Sil, A. & Hajishirzi, H. (2023). *Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection.* arXiv:2310.11511. Aceptado como **Oral** en ICLR 2024 — el nivel de prestigio más alto posible en ese venue.
+**📄 Paper:** Asai, A., Wu, Z., Wang, Y., Sil, A. & Hajishirzi, H. (2023). *Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection.* arXiv:2310.11511. Aceptado como **Oral** en ICLR 2024 — el nivel de prestigio más alto posible en ese venue.
 
 #### 6.2.1 El mecanismo de reflection tokens — en detalle
 
@@ -394,7 +394,7 @@ Este es el mecanismo más distintivo del paper y el menos citado en tutoriales:
 > [!tip] 💡 Por qué importa
 > El retriever opera a nivel de **chunk** (típicamente 200–500 tokens). Un chunk puede contener 3 hechos relevantes y 7 irrelevantes. Sin refinamiento, esos 7 hechos irrelevantes **contaminan** el contexto y pueden provocar alucinaciones. CRAG ataca exactamente esa granularidad.
 >
-> Es la misma lógica que el *groundedness check* del [[Guia-Maestra-RAG_09-Guardrails-y-Seguridad|Tomo 09 §4.4]] — pero aplicada **antes** de generar, no después. CRAG evalúa la relevancia del contexto *preventivamente*; el T09 evalúa si la respuesta *ya generada* está anclada. Son complementarios: CRAG reduce la probabilidad de que el generador alucine; el groundedness check detecta las que se le escapan.
+> Es la misma lógica que el *groundedness check* del [[Guia-Maestra-RAG_09-Hallucinations-Evaluacion-y-Agentic-RAG#4.5 Groundedness verification automatizada|Tomo 09 §4.5]] — pero aplicada **antes** de generar, no después. CRAG evalúa la relevancia del contexto *preventivamente*; el T09 evalúa si la respuesta *ya generada* está anclada. Son complementarios: CRAG reduce la probabilidad de que el generador alucine; el groundedness check detecta las que se le escapan.
 
 #### 6.3.3 El evaluador de retrieval — fortalezas y debilidades
 
@@ -724,7 +724,8 @@ Audiencia: 🧭 👔
 - Iturra-Bocaz, G., & Galuscakova, P. (2026). *A Reproducibility Study of Metacognitive Retrieval-Augmented Generation*. **SIGIR 2026**. arXiv:2604.19899. DOI 10.1145/3805712.3808551. ✅ ⚠️ *La aceptación en SIGIR consta en los metadatos de arXiv y el DOI está registrado, pero la página de ACM devuelve 403 — no se pudo confirmar en el registro del editor.*
 
 **Fuentes de industria** (citadas como tales, no como literatura académica)
-- LangChain (2023, 24 de octubre). *Query Transformations*. ✅ *Donde se popularizan multi-query y RAG-Fusion — sin citar paper, porque no existe.*
+- LangChain (2023, 24 de octubre). *Query Transformations*. ✅ *Donde se popularizan multi-query y RAG-Fusion — sin citar paper fundacional (ver Rackauckas 2024, abajo).*
+- Rackauckas, Z. (2024). "RAG-Fusion: a New Take on Retrieval-Augmented Generation". *International Journal on Natural Language Computing (IJNLC)*, 13(1), febrero de 2024. arXiv:2402.03367. ✅ *Verificada 2026-09-05 (arXiv, journal-ref). Existe, pero el §4.1 del Tomo 12 explica por qué NO califica como fundacional: es descriptivo (evalúa "the newly popularized RAG-Fusion method"), el venue es de bajo perfil y la metodología es un case study con evaluación manual.*
 - Edge, D., Trinh, H., & Larson, J. (2024, 25 de noviembre). *LazyGraphRAG: Setting a new standard for quality and cost*. Microsoft Research Blog. ✅
 - `microsoft/graphrag` (MIT). ✅ *README verificado: "not an officially supported Microsoft offering".*
 

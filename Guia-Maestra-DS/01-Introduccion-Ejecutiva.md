@@ -3,7 +3,8 @@ title: "Tomo 01 — Introducción Ejecutiva"
 tags: [data-science, machine-learning, introduccion, negocio, valor]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 01
-version: 6.0
+version: 6.1
+updated: 2026-09-06
 ---
 
 # 👔 Tomo 01 — Introducción Ejecutiva
@@ -190,9 +191,9 @@ Audiencia: 🔧 🧭 👔
   │ 1. PREGUNTA DE NEGOCIO   ¿Qué decisión mejora? ¿Cuánto vale? (T01)   │
   └──────────────┬───────────────────────────────────────────────────────┘
                  ▼
-  ┌──────────────────────────┐   El ~80% del tiempo real del proyecto
-  │ 2. DATOS: obtención,     │   se gasta aquí, no en los modelos.
-  │    limpieza, calidad     │   (T03 · T04 · T05)
+  ┌──────────────────────────┐   La mayor parte del tiempo real del proyecto
+  │ 2. DATOS: obtención,     │   (≈45–80 % según encuestas) se gasta aquí,
+  │    limpieza, calidad     │   no en los modelos. (T03 · T04 · T05)
   │    EDA y escalado        │
   └──────────────┬───────────┘
                  ▼
@@ -221,7 +222,7 @@ Audiencia: 🔧 🧭 👔
 
 **🧭 Las tres verdades incómodas del ciclo:**
 
-1. **El 80% del esfuerzo es datos, no modelos.** Un dataset pequeño pero limpio y representativo supera a uno masivo pero sesgado ([[03-Preparacion-de-Datos]], [[04-EDA]], [[05-Escalado-de-Datos]]). El encuestón del *Literary Digest* en 1936 falló con 10 millones de respuestas por sesgo de selección: el tamaño no salva a la calidad.
+1. **La mayor parte del esfuerzo es datos, no modelos.** El «80 %» que repite la industria nace de encuestas de proveedores de mediados de la década pasada; una encuesta más reciente y amplia lo sitúa más cerca de la mitad — Anaconda (2020), 2.360 respondentes: ~45 % del tiempo entre carga y limpieza de datos. Úsalo como orden de magnitud, no como cifra. Y el tamaño no salva a la calidad: un dataset pequeño pero limpio y representativo supera a uno masivo pero sesgado ([[03-Preparacion-de-Datos]], [[04-EDA]], [[05-Escalado-de-Datos]]). El sondeo del *Literary Digest* de 1936 envió unas 10 millones de papeletas, recibió ~2,4 millones y erró igual, por un marco muestral sesgado (guías telefónicas, suscriptores, registros de automóviles) y, sobre todo, por sesgo de no-respuesta (Squire, 1988). *(Corregido el 2026-09-06: decía «falló con 10 millones de respuestas por sesgo de selección».)*
 2. **El modelo es una fracción del sistema.** El código de ML es una pieza pequeña rodeada de infraestructura de datos, serving y monitoreo; ignorar ese entorno genera "deuda técnica oculta" que se paga con intereses (Sculley et al., 2015). Por eso existe [[13-MLOps-XAI-Etica]].
 3. **Un modelo sin monitoreo se degrada en silencio.** El mundo cambia (drift); el modelo entrenado con el mundo de ayer decide cada vez peor sobre el mundo de hoy ([[13-MLOps-XAI-Etica]]).
 
@@ -326,6 +327,8 @@ Audiencia: 👔
 - (Breiman, 2001b) — las dos culturas del modelado: explicar vs predecir.
 - (Davenport & Patil, 2012) — el rol del Data Scientist en la empresa.
 - (Sculley et al., 2015) — deuda técnica oculta en sistemas de ML.
+- (Squire, 1988) — por qué falló el sondeo del *Literary Digest*: marco muestral sesgado y, sobre todo, no-respuesta.
+- (Anaconda, 2020) — encuesta *State of Data Science*: ~45 % del tiempo en carga y limpieza de datos (informe de empresa, no revisado por pares).
 - (Géron, 2022) y (James et al., 2021) — panorámicas técnicas del ciclo completo.
 
 Fichas completas con datos de publicación en [[16-Bibliografia]].

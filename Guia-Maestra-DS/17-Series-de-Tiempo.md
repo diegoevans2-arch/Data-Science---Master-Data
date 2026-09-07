@@ -3,8 +3,8 @@ title: "Tomo 17 — Series de Tiempo y Forecasting"
 tags: [data-science, machine-learning, time-series, forecasting]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 17
-version: 6.2
-updated: 2026-07-29
+version: 6.3
+updated: 2026-09-06
 ---
 
 # 📈 Tomo 17 — Series de Tiempo y Forecasting
@@ -181,6 +181,9 @@ Audiencia: 🔧 🧭
 | SARIMA (+SARIMAX) | ARIMA + componente estacional (P,D,Q)ₘ; la X agrega variables exógenas | Estacionalidad fuerte + necesidad de regresores externos (precio, feriados) | Muchos órdenes que calibrar (auto_arima ayuda) | ARIMA con calendario incorporado |
 | Prophet | Modelo aditivo: tendencia por tramos (changepoints) + estacionalidades múltiples (Fourier) + feriados (Taylor & Letham, 2018) | Series de negocio diarias con feriados, cambios de tendencia y analistas no especialistas | Caja relativamente rígida; puede perder contra ETS/ARIMA bien tuneados | El plan de vuelo por capas: ruta base + temporadas + días especiales |
 
+> [!note] 🧊 Prophet en 2026: vigente, pero congelado
+> Desde la versión 1.4.0 el repositorio oficial declara a Prophet en **modo mantenimiento**: solo correcciones de errores y actualizaciones de dependencias; «no hay nuevas funcionalidades planificadas» (repositorio facebook/prophet, consultado el 2026-09-06). No es motivo para descartarlo — sigue instalable, estable y documentado, y su modelo (Taylor & Letham, 2018) sigue siendo la referencia pedagógica de «tendencia por tramos + Fourier + feriados» — pero cambia la lectura de la tabla de decisión: elegirlo hoy es elegir una herramienta que no evolucionará. Si quieres la misma idea con un motor mantenido, la regresión armónica dinámica con errores ARIMA (sección 7) cubre estacionalidades de Fourier y feriados como regresores en cualquier librería vigente, y MSTL cubre la estacionalidad múltiple. Y recuerda la limitación que ya anota la tabla: en comparaciones controladas Prophet puede quedar detrás de ETS/ARIMA bien ajustados — se elige por accesibilidad para analistas no especialistas, no por precisión.
+
 > [!note] ETS y ARIMA no son rivales: son dos idiomas para lo mismo
 > **ETS** (Error-Trend-Seasonal) describe la serie por sus **componentes** (¿la tendencia es aditiva o amortiguada?, ¿la estacionalidad crece con el nivel?). **ARIMA** la describe por su **estructura de autocorrelación**. Muchas series se modelan bien con cualquiera de los dos; hay familias de ETS que tienen un ARIMA equivalente exacto. Regla práctica: **ETS si el pensamiento es "componentes", ARIMA si es "memoria y diferencias"**, y deja que la validación (sección 10) decida el ganador.
 
@@ -192,7 +195,7 @@ Audiencia: 🔧 🧭
 | Test | H₀ (hipótesis nula) | Qué revela si se rechaza | Consecuencia |
 |---|---|---|---|
 | **Ljung-Box** (autocorrelación) | Los residuos son ruido blanco | Queda señal sin capturar en la mesa | Agregar términos AR/MA o estacionales y volver a identificar (Ljung & Box, 1978) |
-| **Jarque-Bera / Shapiro-Wilk** (normalidad) | Los residuos son normales | Colas más pesadas o asimetría de la asumida | NO invalida el punto pronosticado, pero sí los **intervalos paramétricos** que asumen normalidad → usar bootstrap o conformal prediction (sección 9) |
+| **Jarque-Bera / Shapiro-Wilk** (normalidad) | Los residuos son normales | Colas más pesadas o asimetría de la asumida | NO invalida el punto pronosticado, pero sí los **intervalos paramétricos** que asumen normalidad → usar bootstrap o conformal prediction en su variante adaptativa (sección 9) |
 | **ARCH test** (heterocedasticidad condicional) | La varianza del residuo es constante en el tiempo | Volatilidad agrupada (tramos tranquilos y turbulentos que se alternan) | Los intervalos de ancho constante mienten; el modelo de referencia para esa varianza es GARCH (Engle, 1982) |
 
 **Checklist visual de una línea** (los cuatro gráficos que acompañan la tabla): residuos vs. tiempo (¿hay patrones o rachas?), histograma de residuos (¿parece campana?), correlograma de residuos —la ACF de la sección 4 aplicada al error— (¿hay barras fuera de la banda de confianza?), y gráfico Q-Q (¿los puntos siguen la diagonal en las colas?).
@@ -251,7 +254,10 @@ Audiencia: 🔧 🧭 👔
 | Mantenimiento | Pesadilla operativa | Un pipeline |
 | Cuándo gana | Pocas series largas y muy distintas entre sí | Muchas series relacionadas |
 
-La competencia **M5** (Walmart, ventas por SKU-tienda) la ganaron variantes de **LightGBM global** (Makridakis et al., 2022) — no deep learning, no ARIMA: boosting con buen feature engineering.
+La competencia **M5** (Walmart, ventas por SKU-tienda) la ganaron variantes de **LightGBM global** (Makridakis et al., 2022a) — no deep learning, no ARIMA: boosting con buen feature engineering.
+
+> [!note] 🧩 Combinar modelos, y lo que enseñan las competencias M
+> **Combinar gana.** Promediar los pronósticos de dos o tres modelos distintos (seasonal naive, ETS, ARIMA, boosting), incluso con pesos iguales, supera de forma consistente al mejor modelo individual elegido a posteriori: es la práctica con más evidencia acumulada del campo (Wang, Hyndman, Li & Kang, 2023). La M4 (100.000 series, 61 métodos) la ganó un híbrido de suavizamiento exponencial y redes recurrentes (Smyl, 2020), y su informe destaca a las combinaciones entre los métodos más precisos (Makridakis, Spiliotis & Assimakopoulos, 2020). **«Simple vs. profundo» depende de datos y costo, no de fe.** Sobre las series mensuales de la M3, ocho métodos estadísticos dominaron a los de machine learning en todos los horizontes (Makridakis, Spiliotis & Assimakopoulos, 2018); un estudio posterior de los mismos autores, con deep learning entrenado en modo global y en ensemble, revirtió ese resultado a un costo computacional muy superior (Makridakis et al., 2023). Y la M6, con activos financieros, destacó el valor del intercambio de información y de la «sabiduría de las multitudes» junto a la enorme dificultad de batir sistemáticamente al mercado (Makridakis et al., 2025) — el random walk de la sección 5, en vivo.
 
 **Deep learning especializado** ([[12-Deep-Learning]]) paga cuando hay series masivas y patrones complejos compartidos:
 
@@ -260,7 +266,10 @@ La competencia **M5** (Walmart, ventas por SKU-tienda) la ganaron variantes de *
 | DeepAR | RNN autoregresivo probabilístico (Amazon) | Muchas series, se quiere distribución completa |
 | N-BEATS / N-HiTS | Bloques de proyección backward/forward, sin componentes hechos a mano | Series abundantes, alto rendimiento sin feature engineering |
 | Temporal Fusion Transformer (TFT) | Attention + variables estáticas/dinámicas/exógenas, con interpretabilidad | Problema rico en covariables, se valora explicabilidad |
-| PatchTST / TimesFM y foundation models | Transformers sobre parches temporales; modelos preentrenados | Frontera actual; útiles con series largas o zero-shot |
+| Foundation models (TimesFM, Chronos, Moirai) | Transformers preentrenados sobre corpus masivos de series; pronostican zero-shot una serie nunca vista, con distribución completa | Baseline adicional desde 2024: cero entrenamiento; validar en walk-forward contra seasonal naive y ETS (ver callout) |
+
+> [!note] 📡 Foundation models de series (2024–2026): qué muestra la evaluación independiente
+> Desde 2024 existen modelos preentrenados sobre corpus masivos de series que pronostican **zero-shot** una serie nunca vista: TimesFM (Das et al., 2024), Chronos (Ansari et al., 2024) y Moirai (Woo et al., 2024), además de Lag-Llama (Rasul et al., 2024) y el comercial TimeGPT (Garza, Challu & Mergenthaler-Canseco, 2024). Sus propios papers reportan un desempeño zero-shot comparable — «ocasionalmente superior» — al de modelos entrenados en cada dataset, no una superioridad sistemática. El benchmark independiente GIFT-Eval (Aksu et al., 2024) agrega tres matices: en su evaluación original un PatchTST entrenado por dataset quedó primero; los foundation models dominan en horizonte corto y pierden terreno en horizontes largos; y los corpus de preentrenamiento de TimesFM, Chronos y Moirai se solapan parcialmente con los datos de test (leakage), así que sus cifras «zero-shot» se leen con cautela. Todos eran preprints en arXiv al momento de escribir, y el leaderboard vivo cambia mes a mes. Lo que cambia para este tomo: un foundation model ya es un **baseline estándar incluso con pocas series**, junto al seasonal naive y ETS — y se valida con el mismo walk-forward (sección 10), nunca con la cifra del paper.
 
 **🧭 Cuándo usar ML/DL vs. clásico:** ML global para catálogos grandes, variables externas relevantes, no-linealidades. Clásico (ETS/ARIMA) para **pocas series largas y estables** — rinden igual con una fracción del esfuerzo y son más transparentes.
 
@@ -344,13 +353,18 @@ Audiencia: 🔧 🧭 👔
 |---|---|---|
 | Intervalos paramétricos | ARIMA/ETS entregan intervalos asumiendo residuos normales | Rápidos; el supuesto de normalidad suele quedar corto en las colas |
 | Quantile regression | Entrenar el modelo con **Pinball/Quantile Loss** ([[08-Metricas-de-Evaluacion]]) para predecir el P10, P50, P90 directamente | Sin supuesto de distribución; un modelo por cuantil |
-| Simulación / conformal | Bootstrap de residuos, o conformal prediction para intervalos con cobertura garantizada | Robustos; conformal es la frontera actual |
+| Simulación / conformal | Bootstrap de residuos, o conformal prediction para intervalos con cobertura garantizada | Robustos; la garantía de cobertura del conformal clásico exige intercambiabilidad — ver callout |
+
+> [!warning] ⚠️ Conformal en series de tiempo: la garantía viene con letra chica
+> La cobertura garantizada del conformal clásico (*split conformal*) se demuestra bajo **intercambiabilidad**: que el orden de los datos no importe. Una serie de tiempo viola ese supuesto por construcción — autocorrelación, drift, quiebres — y bajo drift la cobertura empírica de un conformal ingenuo puede caer por debajo de la nominal justo cuando más se necesita. Las variantes para series lo corrigen: **Adaptive Conformal Inference** (Gibbs & Candès, 2021) reajusta en línea el nivel de error según los fallos recientes y garantiza la cobertura *promedio de largo plazo* sea cual sea el proceso generador; **EnbPI** (Xu & Xie, 2021) envuelve un ensemble de modelos y acota la brecha de cobertura sin exigir intercambiabilidad. Regla práctica: en producción con drift usa una variante adaptativa y monitorea la cobertura empírica en walk-forward (sección 10) — la garantía es sobre el promedio en el tiempo, no sobre cada ventana. La versión general del método está en [[11-Mejora-de-Modelos]], sección 5.
 
 > [!tip] 💡 Analogía
 > Un pronóstico de punto es el hombre del tiempo que dice "mañana, 22 grados". El probabilístico dice "entre 18 y 26, con 90% de confianza". Solo el segundo te deja decidir si llevas abrigo — y en negocios, el abrigo es el stock de seguridad, la reserva o el turno extra.
 
 > [!warning] ⚠️ Un intervalo se evalúa por su cobertura, no por lo angosto
 > Un intervalo del 90% es honesto si el valor real cae dentro **el 90% de las veces**. Un intervalo angosto que solo acierta el 60% es peor que uno ancho bien calibrado: da falsa seguridad. Al validar cuantiles, mide **cobertura empírica** además del Pinball Loss.
+
+**Cómo puntuar una distribución completa: calibración, nitidez y CRPS.** El callout anterior es la mitad del criterio. El paradigma estándar de la evaluación probabilística es **maximizar la nitidez (*sharpness*) sujeto a calibración** (Gneiting, Balabdaoui & Raftery, 2007): entre dos pronósticos bien calibrados gana el más angosto, porque un intervalo calibrado pero enorme no informa ninguna decisión. Para resumir ambas cosas en un solo número se usan **reglas de puntuación propias** (*proper scoring rules*), las que solo se optimizan diciendo la verdad sobre la distribución (Gneiting & Raftery, 2007): el Pinball Loss lo es para un cuantil y el **CRPS** (Continuous Ranked Probability Score) lo es para la distribución completa; se lee como un MAE generalizado a distribuciones, en las unidades de la serie, y coincide con el MAE cuando el pronóstico es un punto. Es la métrica probabilística del benchmark GIFT-Eval (Aksu et al., 2024); la M5 de incertidumbre se evaluó con una pérdida pinball escalada y ponderada (Makridakis et al., 2022b). Reporta siempre el trío: cobertura empírica, ancho medio y CRPS o pinball.
 
 **👔 En una frase para el negocio:** pedir "el pronóstico" a secas es pedir media información; la pregunta completa es "el pronóstico **y su intervalo**", porque la decisión se toma en el margen, no en el centro.
 
@@ -382,6 +396,7 @@ Dos variantes: **ventana creciente** (expanding: el train acumula toda la histor
 | WAPE | Σ│y−ŷ│ / Σ│y│ | Robusto con ceros; agrega bien por SKU | — |
 | **MASE** | MAE_modelo / MAE_naive_in-sample (Hyndman & Koehler, 2006) | **La métrica de referencia**: comparable entre series, definida con ceros | Requiere definir bien el naive estacional |
 | Pinball / Quantile Loss | error asimétrico por cuantil | Pronóstico probabilístico (sección 9) | Se evalúa junto con la cobertura |
+| CRPS | integral del error cuadrático entre la CDF pronosticada y la observada; MAE generalizado a distribuciones | Distribución completa (sección 9) | En unidades de la serie: para comparar entre series hay que escalarlo, como el MASE |
 
 **Lectura del MASE:** `< 1` = le ganas al naive; `> 1` = tu modelo sofisticado **pierde** contra "igual que ayer". Es la vara que desinfla la mayoría de los modelos que "parecían buenos".
 
@@ -404,7 +419,8 @@ Síntesis operativa del tomo — de la situación al punto de partida:
 | Tu situación | Punto de partida | Por qué |
 |---|---|---|
 | Serie única, corta, estable | Holt-Winters (ETS) o SARIMA | Robustos, pocos datos, transparentes |
-| Serie única con feriados y cambios de tendencia | Prophet | Maneja changepoints y calendario sin tuning fino |
+| Serie única con feriados y cambios de tendencia | Prophet (en modo mantenimiento desde v1.4.0) o regresión armónica dinámica + ARIMA (sección 7) | Changepoints y calendario sin tuning fino; el segundo, con motor mantenido |
+| Pocas series y sin tiempo de entrenar | Foundation model zero-shot (sección 6) como baseline adicional | Compararlo en walk-forward con seasonal naive y ETS; nunca fiarse de la cifra del paper |
 | Miles de series relacionadas (retail) | LightGBM **global** con features | Cross-learning, un solo pipeline, ganó la M5 |
 | Estacionalidad múltiple (horaria/eléctrica) | MSTL, Prophet o ML con features | Los modelos de una sola estación no bastan |
 | Demanda intermitente (muchos ceros) | Croston / SBA / TSB | El instrumental normal falla con ceros |
@@ -413,7 +429,7 @@ Síntesis operativa del tomo — de la situación al punto de partida:
 | **Siempre, en todos los casos** | **Seasonal naive como baseline** | Es la vara que valida si vale la pena lo demás |
 
 > [!tip] 🧭 El orden correcto de trabajo
-> Descomponer → baseline naive → un modelo clásico simple → (solo si el volumen y las series lo justifican) ML global → probabilístico si la decisión lo pide. **Subir un escalón solo cuando la validación walk-forward demuestre que el anterior no basta.** La complejidad se gana, no se asume.
+> Descomponer → baseline naive → un modelo clásico simple → combinar dos o tres finalistas → (solo si el volumen y las series lo justifican) ML global → probabilístico si la decisión lo pide. **Subir un escalón solo cuando la validación walk-forward demuestre que el anterior no basta.** La complejidad se gana, no se asume.
 
 ---
 
@@ -423,7 +439,12 @@ Síntesis operativa del tomo — de la situación al punto de partida:
 - (Cleveland et al., 1990) — STL.
 - (Hyndman & Koehler, 2006) — MASE y métricas de forecast.
 - (Taylor & Letham, 2018) — Prophet.
-- (Makridakis et al., 2022) — resultados de la competencia M5 (dominio de los modelos globales).
+- (Makridakis et al., 2022a) — resultados de la competencia M5 de precisión (dominio de los modelos globales). · (Makridakis et al., 2022b) — la M5 de incertidumbre.
+- (Makridakis, Spiliotis & Assimakopoulos, 2020) — la M4. · (Smyl, 2020) — el híbrido ES-RNN ganador de la M4. · (Makridakis, Spiliotis & Assimakopoulos, 2018) — estadístico vs. ML sobre la M3. · (Makridakis et al., 2023) — estadístico, ML y deep learning: comparaciones y caminos. · (Makridakis et al., 2025) — la M6.
+- (Wang, Hyndman, Li & Kang, 2023) — combinación de pronósticos: revisión de 50 años.
+- (Das et al., 2024) — TimesFM. · (Ansari et al., 2024) — Chronos. · (Woo et al., 2024) — Moirai. · (Rasul et al., 2024) — Lag-Llama. · (Garza, Challu & Mergenthaler-Canseco, 2024) — TimeGPT. · (Aksu et al., 2024) — GIFT-Eval. Todos preprints en arXiv al 2026-09-06.
+- (Gibbs & Candès, 2021) — Adaptive Conformal Inference. · (Xu & Xie, 2021) — EnbPI, conformal para series sin intercambiabilidad.
+- (Gneiting, Balabdaoui & Raftery, 2007) — calibración y nitidez. · (Gneiting & Raftery, 2007) — proper scoring rules y CRPS.
 - (Wickramasuriya et al., 2019) — reconciliación óptima (MinT) en forecasting jerárquico.
 - (Hyndman & Athanasopoulos, 2021) — *Forecasting: Principles and Practice*, la referencia moderna abierta.
 - (Wang, Smith & Hyndman, 2006) — medidas de fuerza de tendencia y estacionalidad (F_T, F_S) sobre componentes STL.

@@ -3,8 +3,8 @@ title: "Tomo 10 — Validación y Data Leakage"
 tags: [data-science, machine-learning, validacion, cross-validation, leakage]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 10
-version: 6.4
-updated: 2026-08-28
+version: 6.5
+updated: 2026-09-06
 ---
 
 # 🛡️ Tomo 10 — Validación y Data Leakage
@@ -42,7 +42,7 @@ Audiencia: 🔧 🧭
 | LOOCV (Leave-One-Out) | K = N: cada muestra es test una vez | Casi sin sesgo; máximo uso de datos | Carísimo (N modelos); alta varianza con ruido | Datasets muy chicos (N < 50), modelos baratos |
 | Leave-P-Out | Todas las combinaciones de P muestras como test | Exhaustivo | Combinatorialmente inviable salvo P pequeño y N chico | Solo casos minúsculos |
 | Time Series Split (walk-forward / rolling-origin) | El train siempre **precede** temporalmente al test; variante **expanding** o **sliding** (ver nota) | Respeta la flecha del tiempo; sin leakage temporal | Sin aleatorización; los primeros folds entrenan con poca historia | Cualquier dato con dependencia temporal: ventas, sensores, finanzas |
-| Purged K-Fold | Time series split con **gap** (embargo) entre fin de train e inicio de test | Previene fuga por autocorrelación entre vecinos temporales | Sacrifica datos en el gap | Trading algorítmico, sensores de alta frecuencia (mlfinlab) |
+| Purged K-Fold | K-Fold para series cuyas etiquetas abarcan intervalos de tiempo: el **purging** elimina del train las observaciones cuyas etiquetas se traslapan en el tiempo con las del test, y el **embargo** descarta además las inmediatamente posteriores al test (López de Prado, 2018) | Previene la fuga por autocorrelación y por etiquetas que se solapan entre vecinos temporales | Sacrifica datos en el purgado y en el embargo | Trading algorítmico, sensores de alta frecuencia |
 
 **Expanding vs. sliding window:** el Time Series Split (también llamado *walk-forward* o *rolling-origin*) tiene dos variantes. **Expanding window** — el train acumula toda la historia sin descartar nada — conviene con series **estables** y **poca historia** disponible: cada dato pasado sigue aportando señal. **Sliding window** — el train mantiene un largo fijo y "olvida" lo más antiguo — conviene cuando hay **drift** o cambios de régimen, porque historia muy vieja deja de representar el proceso actual y solo agrega ruido (Hyndman & Athanasopoulos, 2021; Bergmeir & Benítez, 2012). Igual de determinante: **validar al horizonte real de la decisión**, no al horizonte que resulte más cómodo de calcular (Tashman, 2000) — desarrollo completo de horizonte y métricas de forecasting en [[17-Series-de-Tiempo|Tomo 17 §10]].
 
@@ -67,7 +67,7 @@ Audiencia: 🔧 🧭
 
 **🔧 Definición técnica:** dos loops de CV anidados:
 
-- **Outer loop (K folds):** estima el rendimiento **generalizado** del mejor modelo — cada fold es un test set final.
+- **Outer loop (K folds):** estima el rendimiento **generalizado** del procedimiento completo (familia de modelos + búsqueda de hiperparámetros) — cada fold es un test set final.
 - **Inner loop (dentro de cada fold del outer):** selecciona el modelo / hiperparámetros óptimos usando solo el train del fold externo.
 
 ```
@@ -90,6 +90,8 @@ Audiencia: 🔧 🧭
 - Datasets pequeños (< 5K filas) donde un holdout de test pierde demasiados datos.
 - Cuando se van a comparar múltiples familias de modelos Y tunear cada una — sin nested CV, el test set se "gasta" en las decisiones de selección.
 - Papers y publicaciones donde se requiere una estimación insesgada del error.
+
+**🔧 Por qué es obligatorio y qué estima:** elegir hiperparámetros y reportar el rendimiento con la *misma* CV produce un sesgo optimista: el criterio de selección también se sobreajusta, la degradación real «puede ser sorprendentemente grande» y prácticas de evaluación muy comunes sufren este *selection bias* (Cawley & Talbot, 2010; Varma & Simon, 2006). Un matiz importante: el outer loop no estima el rendimiento de *un* modelo concreto, sino del **procedimiento completo** — familia de modelos más estrategia de búsqueda — aplicado a datos como los tuyos. El modelo que va a producción se reentrena con todos los datos repitiendo ese mismo procedimiento, y la cifra que reportas es la del outer loop, nunca la mejor del inner loop.
 
 **🧭 Cuándo puedes saltarlo:** con datasets grandes (> 100K), un train/val/test simple con holdout generoso es suficiente y mucho más barato computacionalmente.
 
@@ -133,7 +135,7 @@ Audiencia: 🔧 🧭 👔
 
 **🔧 Definición técnica:**
 
-- **Intervalo de confianza del CV:** reportar media ± std de los folds; IC 95% ≈ `media ± 1.96·std/√K` ([[02-Fundamentos-Matematicos]]). Dos modelos con IC ampliamente traslapados no son distinguibles con esos datos.
+- **Dispersión entre folds — y por qué no es un intervalo de confianza:** reporta media y desviación estándar de los folds como *descriptivos*, pero no conviertas esa std en un IC con `media ± 1.96·std/√K` ([[02-Fundamentos-Matematicos]]): los folds comparten datos de entrenamiento, sus errores están correlacionados y no existe un estimador insesgado universal de la varianza del K-Fold — los estimadores ingenuos la subestiman (Bengio & Grandvalet, 2004). Además, lo que CV estima no es el error del modelo que ajustaste, sino el error promedio de modelos entrenados con otras muestras de la misma población; los IC estándar pueden tener cobertura muy por debajo del 95% nominal, y solo un esquema anidado diseñado para estimar esa varianza recupera una cobertura aproximadamente correcta (Bates, Hastie & Tibshirani, 2024). Regla práctica: dos modelos cuyas medias difieren menos que la dispersión entre folds no son distinguibles con esos datos — el test corregido viene en los bullets siguientes.
 - **Paired t-test sobre folds:** compara los K scores de ambos modelos **sobre los mismos folds** (pareado). Cuidado: los folds comparten datos de train → no son independientes → el t-test estándar es demasiado optimista.
 - **Corrección de Nadeau-Bengio:** ajusta la varianza del t-test por la correlación entre folds (Nadeau & Bengio, 2003) — el test correcto para comparar modelos vía CV repetido.
 - **Test de McNemar:** para clasificadores evaluados en el MISMO test set: examina la matriz de desacuerdos (casos donde uno acierta y el otro no); apropiado cuando reentrenar K veces es inviable.
@@ -147,7 +149,7 @@ Audiencia: 🔧 🧭 👔
 Audiencia: 🔧 🧭 👔
 
 > [!danger] 🚨 El error más costoso del ML aplicado
-> El leakage produce modelos que parecen excelentes en desarrollo y fallan en producción. Es la causa Nº1 de la brecha entre métricas offline y realidad (Kaufman et al., 2012). Es silencioso: nada "falla" — los números simplemente mienten.
+> El leakage produce modelos que parecen excelentes en desarrollo y fallan en producción. Es la causa Nº1 de la brecha entre métricas offline y realidad (Kaufman et al., 2012) y un motor de la crisis de reproducibilidad de la ciencia basada en ML: una revisión sistemática encontró leakage en 17 campos, afectando a 294 papers (Kapoor & Narayanan, 2023). Es silencioso: nada "falla" — los números simplemente mienten.
 
 > [!tip] 💡 Analogía general
 > Es el alumno que encontró la pauta del examen en la fotocopiadora. Sus notas de práctica son perfectas — y no aprendió nada. El día del examen real (producción), donde no hay pauta que copiar, se derrumba. Peor: durante meses, todos celebraron sus notas.
@@ -163,6 +165,9 @@ Audiencia: 🔧 🧭
 | Leakage temporal | Información del futuro para predecir el pasado | Usar el promedio anual para predecir enero (el promedio incluye feb–dic); features rolling mal alineadas; usar los valores REALES futuros de variables exógenas (clima, precio del competidor) al validar — en producción no los tendrás, hay que pronosticarlos o usar solo regresores conocidos de antemano ([[17-Series-de-Tiempo|Tomo 17 §7]]) |
 | Leakage por duplicados | La misma entidad (o casi) presente en train y test | Cliente duplicado con formatos distintos; imágenes aumentadas repartidas entre train y test |
 | Leakage por ID / timestamp | IDs o timestamps que codifican el target indirectamente | IDs correlativos donde los fraudes se cargaron al final; timestamp que delata el proceso de etiquetado |
+| Sin test set / test reutilizado | No hay un test set intocable, o se reporta como estimación final el score del mismo conjunto usado para elegir modelo o features (Kapoor & Narayanan, 2023) | Reportar el mejor score de la búsqueda de hiperparámetros como rendimiento esperado (§1.1) |
+| Test no representativo (sampling bias) | El test set no proviene de la población donde el modelo se usará (Kapoor & Narayanan, 2023) | Validar un modelo clínico con pacientes de un solo hospital y desplegarlo en toda la red; ver adversarial validation (§1.3) |
+| Train-serving skew | Las features de entrenamiento se calculan con un código o una fuente distintos de los que las calculan en inferencia: offline con tablas cerradas y corregidas a posteriori, online con los datos parciales disponibles en el instante de la predicción (Breck et al., 2017) | `saldo_promedio_30d` calculado en batch con transacciones que en producción llegan con días de retraso; una categoría que en el data warehouse ya viene limpia y en el servicio online llega cruda |
 
 ### 3.2 Cómo detectarlo
 
@@ -179,6 +184,8 @@ Audiencia: 🔧 🧭 👔
 
 - **Pipeline de sklearn para TODO el preprocesamiento:** cada fold re-ajusta imputers, scalers, encoders y selección solo con su train ([[05-Escalado-de-Datos]], [[03-Preparacion-de-Datos]]).
 - **Separación temporal por diseño:** en datos con tiempo, split cronológico + gap si hay autocorrelación.
+- **Validar con las features que existirán al servir:** construye el set de validación *point-in-time* (solo lo disponible en el instante de cada predicción; el mecanismo de point-in-time join está en [[22-Feature-Engineering-Avanzado]] §2.1) y, cuando el sistema ya opera, registra las features tal como se calcularon al servir y entrena con ese log — es la única forma de que la métrica offline y la online midan lo mismo; el test de skew es «quizá el más importante y el menos implementado» (Breck et al., 2017). El monitoreo continuo de este skew en producción se trata en [[13-MLOps-XAI-Etica]].
+- **Model info sheet por modelo:** una hoja que documenta, tipo por tipo, cómo se descartó cada leakage de la tabla de §3.1 antes de reportar resultados (Kapoor & Narayanan, 2023); complementa, no reemplaza, la model card de [[13-MLOps-XAI-Etica]].
 - **Auditoría de features, una por una:** ¿estaba disponible este dato en el momento exacto de la predicción? ¿podría codificar el target por la puerta trasera? La auditoría de 30 minutos más rentable del proyecto.
 
 **👔 En una frase para el negocio:** cuando un resultado parece demasiado bueno para ser verdad, la respuesta correcta no es celebrar — es auditar; el leakage se paga con intereses después del deployment.
@@ -197,10 +204,15 @@ Audiencia: 🔧 🧭 👔
 - (Kohavi, 1995) — estudio clásico de cross-validation y holdout.
 - (Nadeau & Bengio, 2003) — la corrección de varianza para comparar modelos con CV.
 - (Kaufman et al., 2012) — taxonomía del leakage en minería de datos.
+- (Kapoor & Narayanan, 2023) — leakage y crisis de reproducibilidad en la ciencia basada en ML; taxonomía de ocho tipos y model info sheets.
+- (Breck et al., 2017) — *The ML Test Score*: el test de training/serving skew.
+- (Bengio & Grandvalet, 2004) — no existe estimador insesgado de la varianza del K-Fold. · (Bates, Hastie & Tibshirani, 2024) — qué estima la validación cruzada y cuán bien lo hace.
+- (Cawley & Talbot, 2010) — sobreajuste del criterio de selección y selection bias en la evaluación. · (Varma & Simon, 2006) — sesgo del error estimado al tunear y evaluar con la misma CV.
 - (Hastie et al., 2009), (Géron, 2022) — validación en el flujo completo.
 - (Hyndman & Athanasopoulos, 2021) — *Forecasting: Principles and Practice*, respaldo de la validación walk-forward y sus variantes expanding/sliding.
 - (Bergmeir & Benítez, 2012) — uso correcto de cross-validation en predictores de series de tiempo.
 - (Tashman, 2000) — revisión de pruebas out-of-sample y del efecto del horizonte en la precisión del pronóstico.
+- (López de Prado, 2018) — *Advances in Financial Machine Learning*: purged K-Fold y embargo. *(Corregido el 2026-09-06: la fila citaba una librería, «mlfinlab», en lugar de la fuente original.)*
 
 Fichas completas con datos de publicación en [[16-Bibliografia]].
 

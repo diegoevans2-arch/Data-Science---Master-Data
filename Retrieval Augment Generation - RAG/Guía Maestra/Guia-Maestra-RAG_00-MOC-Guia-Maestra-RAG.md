@@ -3,7 +3,8 @@ title: "Tomo 00 — MOC · Guía Maestra de RAG"
 tags: [rag, moc, indice, guia-maestra]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 00
-version: 2.2
+version: 2.3
+updated: 2026-09-05
 status: in-progress
 type: vault-index
 project: guia-maestra-rag
@@ -24,7 +25,9 @@ author: El Egypcio
 
 **Curso base:** *Retrieval Augmented Generation (RAG)* — DeepLearning.AI (Coursera / USS)
 **Estructura del curso:** 5 módulos (temario real indexado).
-**Última actualización:** 2026-07-29 — 🏁🏁 **GUÍA COMPLETA: 15/15 TOMOS.** Con el Tomo 13 se cierra el cuerpo entero: **11 tomos sobre el curso** (01–11, Módulos 1–5), **2 complementos de vanguardia** (12–13, con bibliografía externa verificada antes de escribir) y **2 transversales** (15 glosario, 16 bibliografía). El Tomo 13 detectó además **dos imprecisiones en el Tomo 10**, ya corregidas: la licencia de Arize Phoenix es **Elastic-2.0** (*source-available*, no OSI) y no "open-source" como dice el curso; y las convenciones GenAI de OpenTelemetry siguen en **`Status: Development`** — no hay estándar estable de tracing para GenAI a julio de 2026.
+**Última actualización:** 2026-09-05 — 🔧 **PROTOCOLO DE MANTENIMIENTO (§9 de Instrucciones) ejecutado sobre toda la guía.** Hallazgos y correcciones: (1) el **[[Guia-Maestra-RAG_14-Structured-Data-RAG|Tomo 14 · Structured Data RAG]]**, generado el 2026-08-28, no estaba en este tracker, **ningún tomo lo enlazaba** (nota huérfana) y su bibliografía no había pasado por verificación — hoy queda integrado: fila en el plan, navegación T13 → T14 → T15, rama propia en el diagrama (GATE 0), y bibliografía en el Tomo 16 §17 con **4 errores corregidos** (autor "Baber" → Bahdanau; título/autores de DAIL-SQL; año/venue de BIRD y una cifra que no salía del paper; URL de LangChain muerta) más un import inexistente en su código. (2) Las referencias de los **Tomos 12 y 13** —verificadas al escribirlos— **nunca se habían consolidado en el Tomo 16**: hoy sí (§15–§16, 48 fichas). (3) La revisión del 2026-08-28 (T04 v1.4; T06, T09, T10, T12, T13 v1.1) tampoco había quedado registrada aquí; sus 11 fuentes nuevas se verificaron: **una referencia inexistente en el T04** ("Yamada et al., 2024") se reemplazó por sus dos fuentes reales y se corrigió un título en el T06 (Tomo 16 §18). (4) Reparados: un wikilink roto en el T12 (apuntaba a un tomo inexistente), un ancla rota en el T02 y la navegación del T15. (5) Episodio 14 del podcast agregado en `Prompts-NotebookLM.md`. La guía tiene hoy **16 tomos + el diagrama de flujo**: 11 del curso, 3 complementos (12–14) y 2 transversales.
+
+**Anterior:** 2026-07-29 — 🏁🏁 **GUÍA COMPLETA: 15/15 TOMOS.** Con el Tomo 13 se cierra el cuerpo entero: **11 tomos sobre el curso** (01–11, Módulos 1–5), **2 complementos de vanguardia** (12–13, con bibliografía externa verificada antes de escribir) y **2 transversales** (15 glosario, 16 bibliografía). El Tomo 13 detectó además **dos imprecisiones en el Tomo 10**, ya corregidas: la licencia de Arize Phoenix es **Elastic-2.0** (*source-available*, no OSI) y no "open-source" como dice el curso; y las convenciones GenAI de OpenTelemetry siguen en **`Status: Development`** — no hay estándar estable de tracing para GenAI a julio de 2026.
 
 **Anterior:** 2026-07-28 — **MÓDULO 5 + TRANSVERSALES COMPLETOS. 13 de 15 tomos hechos.** Tras cerrar el M5 se generaron los dos tomos transversales: el **[[Guia-Maestra-RAG_15-Glosario-Ejecutivo|Tomo 15 · Glosario ejecutivo]]** (154 términos consolidados, con una sección nueva de **colisiones de vocabulario** que solo se detectan al consolidar — la más grave: `top_k` significa dos cosas incompatibles según el tomo) y el **[[Guia-Maestra-RAG_16-Bibliografia|Tomo 16 · Bibliografía]]** (**52/52 obras verificadas contra fuente primaria**, con 4 errores corregidos y 6 fichas precisadas). Solo quedan los complementos de vanguardia 12 y 13.
 
@@ -69,7 +72,7 @@ Leyenda: ✅ Hecho · 🚧 En curso · ⬜ Pendiente
 
 ## 📚 Plan de tomos y tracker
 
-Plan realineado al temario real de los 5 módulos del curso. Los tomos 01–11 siguen el curso como fuente primaria; los tomos 12–13 son complementos de vanguardia con bibliografía externa.
+Plan realineado al temario real de los 5 módulos del curso. Los tomos 01–11 siguen el curso como fuente primaria; los tomos 12–14 son complementos de vanguardia con bibliografía externa.
 
 | #   | Tomo                                                                                                                                                     |   Módulo    | Estado |
 | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------: | :----: |
@@ -87,6 +90,7 @@ Plan realineado al temario real de los 5 módulos del curso. Los tomos 01–11 s
 | 11  | [[Guia-Maestra-RAG_11-Quantization-Trade-offs-y-Multimodal-RAG\|Quantization, trade-offs de cost/latency y multimodal RAG]]                              |     M5      |   ✅    |
 | 12  | [[Guia-Maestra-RAG_12-Query-Decomposition-Multi-Query-y-GraphRAG\|⭐ Complemento · Técnicas avanzadas de query: decomposition, multi-query, GraphRAG]]     |   Externo   |   ✅    |
 | 13  | [[Guia-Maestra-RAG_13-Frameworks-LangChain-LlamaIndex\|⭐ Complemento · Frameworks: LangChain, LlamaIndex, DSPy — y no usar ninguno]]                     |   Externo   |   ✅    |
+| 14  | [[Guia-Maestra-RAG_14-Structured-Data-RAG\|⭐ Complemento · Structured Data RAG: Text2SQL, Table QA y consultas sobre datos tabulares]]                  |   Externo   |   ✅    |
 | 15  | [[Guia-Maestra-RAG_15-Glosario-Ejecutivo\|Glosario ejecutivo]]                                                                                           | Transversal |   ✅    |
 | 16  | [[Guia-Maestra-RAG_16-Bibliografia\|Bibliografía]]                                                                                                       | Transversal |   ✅    |
 
@@ -118,7 +122,7 @@ Plan realineado al temario real de los 5 módulos del curso. Los tomos 01–11 s
 > **El tomo se escribió como mapa de "qué paga y qué no", no como catálogo.** Es más útil así, y es lo que la evidencia sostiene.
 
 > [!tip] ⭐ Tomos de complemento (vanguardia)
-> Los tomos 12–13 cubren temas que el curso no aborda explícitamente pero que son práctica estándar en producción (HyDE, query rewriting/decomposition, GraphRAG, frameworks de orquestación). Se construyen con **bibliografía externa verificable** y se mantienen actualizados como parte del mandato de vanguardia. El número 14 queda reservado por si surgen tomos intermedios.
+> Los tomos 12–14 cubren temas que el curso no aborda explícitamente pero que son práctica estándar en producción (query rewriting/decomposition, GraphRAG, frameworks de orquestación, Text2SQL y Table QA sobre datos estructurados). Se construyen con **bibliografía externa verificable** y se mantienen actualizados como parte del mandato de vanguardia. El número 14 —antes reservado— lo ocupa desde el 2026-08-28 el complemento de Structured Data RAG.
 >
 > **Corrección de alcance (2026-07-18):** el plan original asignaba *hybrid search con RRF* al Tomo 12 como complemento externo. Al indexar el material del Módulo 2 se constató que **el curso sí cubre hybrid search y RRF en detalle** (fórmula, hiperparámetros `k` y `beta`), de modo que pasó a ser contenido del **Tomo 04** con el curso como fuente primaria. El Tomo 12 queda acotado a lo que efectivamente es externo.
 
@@ -133,7 +137,7 @@ Plan realineado al temario real de los 5 módulos del curso. Los tomos 01–11 s
 > Toda la guía enfocándote en los bloques 🧭 y las tablas comparativas. Ideal para decidir arquitecturas y trade-offs (keyword vs. semantic vs. hybrid, cuándo rerankear, RAG vs. fine-tuning, cost vs. latency) sin implementar tú mismo.
 
 > [!info] 🔧 Ruta técnica (el "cómo")
-> Recorrido completo 01 → 13, con foco en los bloques 🔧 y el código. Base para construir sistemas RAG reales de punta a punta, incluyendo los complementos de vanguardia.
+> Recorrido completo 01 → 14, con foco en los bloques 🔧 y el código. Base para construir sistemas RAG reales de punta a punta, incluyendo los complementos de vanguardia.
 
 ---
 

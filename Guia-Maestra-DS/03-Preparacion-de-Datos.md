@@ -3,8 +3,8 @@ title: "Tomo 03 — Preparación y Calidad de Datos"
 tags: [data-science, machine-learning, data-quality, preprocessing, feature-engineering]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 03
-version: 6.2
-updated: 2026-07-29
+version: 6.4
+updated: 2026-09-06
 ---
 
 # 🧹 Tomo 03 — Preparación y Calidad de Datos
@@ -161,11 +161,13 @@ Audiencia: 🔧 🧭
 | Valor constante | Rellena con 0, −1 o categoría 'Unknown' | Etiqueta honesta: "aquí no sabemos" | Cuando el faltante tiene significado propio | El modelo puede leer el constante como valor real |
 | Forward / backward fill | Propaga el último (o siguiente) valor conocido | Si el lunes no midieron la temperatura, vale la del domingo | Series de tiempo con continuidad física | Peligroso con gaps largos o series volátiles |
 | KNN Imputer | Imputa con la media de los K vecinos más cercanos en el espacio de features | Preguntarle a los 5 vecinos más parecidos qué valor tendrían | Preserva relaciones entre variables; MAR | Costoso O(N²); exige escalado previo ([[05-Escalado-de-Datos]]) |
-| IterativeImputer (MICE) | Modela cada feature con nulos en función de las demás, en rondas iterativas hasta converger | Detectives que refinan sus deducciones escuchándose en rondas | El estándar para MAR en datasets complejos | Más lento; requiere cuidado para no filtrar el target |
+| IterativeImputer / imputación múltiple (MICE) | Modela cada feature con nulos en función de las demás, en rondas iterativas hasta converger | Detectives que refinan sus deducciones escuchándose en rondas | El estándar para MAR en datasets complejos | Más lento; requiere cuidado para no filtrar el target; por defecto entrega **una sola** imputación (ver abajo) |
 | Imputación con modelo ML | Entrena un modelo predictivo por columna con nulos usando las demás como features | Contratar un adivino profesional por cada columna | Máxima precisión cuando la columna es crítica | Costoso; riesgo de sobre-confianza en valores inventados |
 | Indicador de missingness | Columna binaria `era_nulo` junto a la imputación | Dejar una nota: "esta pieza faltaba" | Siempre que la ausencia pueda ser informativa (MNAR) | Duplica columnas; interacción con One-Hot |
 
 **🧭 Cuándo usar qué:** primero diagnostica el mecanismo (compara perfiles de filas con y sin nulos; `missingno` ayuda, [[04-EDA]]). MCAR leve → simple; MAR → KNN/MICE; sospecha de MNAR → indicador + imputación + juicio de dominio. En árboles y boosting, recuerda que XGBoost/LightGBM manejan nulos nativamente ([[07-Modelos-Supervisados]]): a veces la mejor imputación es no imputar.
+
+**🔧 Ojo con la etiqueta MICE.** La **imputación múltiple** (van Buuren & Groothuis-Oudshoorn, 2011) genera *m* datasets muestreando de la distribución predictiva y combina los resultados con las reglas de Rubin, para que la incertidumbre de lo imputado se refleje en los intervalos. `IterativeImputer`, en su modo por defecto, entrega **una sola** imputación de medias condicionales: mejor que la media global, pero con la misma subestimación de varianza; su documentación exige `sample_posterior` para usarlo como imputación múltiple. Para un modelo predictivo el criterio cambia (Sperrin et al., 2020): lo que importa no es la insesgadez de un coeficiente sino que el procedimiento de imputación sea **reproducible en producción** (sin el target, que allí no existe) y que el mecanismo de ausencia sea el mismo en desarrollo y despliegue. Bajo ese criterio, el indicador de missingness es legítimo con cualquier mecanismo, no solo MNAR, siempre que la ausencia vaya a seguir ocurriendo igual cuando el modelo prediga.
 
 **👔 En una frase para el negocio:** los datos que faltan también cuentan una historia — quién no responde, qué sensor se apaga, qué campo nadie llena — y esa historia puede ser más predictiva que los datos presentes.
 
@@ -195,10 +197,10 @@ Audiencia: 🔧 🧭
 | Modified Z-score (MAD) | Usa mediana y desviación absoluta mediana en lugar de μ y σ | El Z-score con chaleco antibalas: los extremos no lo contaminan | Distribuciones asimétricas o contaminadas | Menos conocido; requiere umbral propio (~3.5) |
 | DBSCAN / HDBSCAN | Puntos en regiones de baja densidad quedan etiquetados como ruido (−1) | Quien estaciona solo en el rincón vacío del estacionamiento | Outliers **multivariados**, formas arbitrarias, sin supuestos | Sensible a parámetros; costoso en alta dimensión ([[06-Clustering]]) |
 | Isolation Forest | Árboles con splits aleatorios: los outliers se aíslan con pocos cortes (camino corto) | La persona fácil de identificar con dos preguntas: "¿vino en helicóptero?" | Alta dimensión, escalable, el workhorse moderno (Liu et al., 2008) | No captura bien outliers "locales"; contamination a estimar |
-| Local Outlier Factor (LOF) | Compara la densidad local de un punto con la de sus vecinos; LOF ≫ 1 = raro **para su barrio** | Gastar $50.000/mes está bien en un barrio caro y es rarísimo en otro | Outliers contextuales, densidades heterogéneas (Breunig et al., 2000) | Lento con N grande; sin `predict()` para datos nuevos |
+| Local Outlier Factor (LOF) | Compara la densidad local de un punto con la de sus vecinos; LOF ≫ 1 = raro **para su barrio** | Gastar $50.000/mes está bien en un barrio caro y es rarísimo en otro | Outliers contextuales, densidades heterogéneas (Breunig et al., 2000) | Lento con N grande; para datos nuevos requiere el modo `novelty=True` (scikit-learn ≥ 0.20), que no debe puntuar el propio train |
 | Elliptic Envelope | Ajusta una gaussiana multivariada robusta (MCD) y marca lo que cae fuera del elipsoide | Dibujar el óvalo de "lo normal" y mirar quién quedó afuera | Datos ~gaussianos multivariados | Falla feo si los datos no son gaussianos |
 
-Los métodos basados en modelos (Isolation Forest, LOF, One-Class SVM, Autoencoder) se retoman como **detección de anomalías** de pleno derecho en [[07-Modelos-Supervisados#Detección de Anomalías|Tomo 07]].
+Los métodos basados en modelos (Isolation Forest, LOF, One-Class SVM, Autoencoder) se retoman como **detección de anomalías** de pleno derecho en [[07-Modelos-Supervisados#3. Detección de Anomalías|Tomo 07]].
 
 ### 3.2 Estrategias de tratamiento
 
@@ -266,7 +268,7 @@ Audiencia: 🔧
 | Técnica | Cómo funciona | 💡 Analogía | Cuándo conviene | Limitaciones |
 |---|---|---|---|---|
 | RandomOverSampler | Replica aleatoriamente muestras minoritarias | Fotocopiar las mismas 30 agujas | Baseline rápido | Overfitting: el modelo memoriza copias idénticas |
-| SMOTE | Genera muestras **sintéticas** interpolando entre un punto minoritario y sus K vecinos (Chawla et al., 2002) | Inventar alumnos "intermedios" entre dos compañeros reales | El estándar; clases con estructura continua | Puede crear puntos en zonas de la mayoría; ruido si hay outliers |
+| SMOTE | Genera muestras **sintéticas** interpolando entre un punto minoritario y sus K vecinos (Chawla et al., 2002) | Inventar alumnos "intermedios" entre dos compañeros reales | El estándar **histórico**; clases con estructura continua — ver la advertencia de §5.4 | Puede crear puntos en zonas de la mayoría; ruido si hay outliers |
 | ADASYN | Como SMOTE pero genera más sintéticos donde el clasificador más se equivoca | Reforzar con más ejercicios justo los temas donde el alumno falla | Fronteras de decisión difíciles | Amplifica ruido si la frontera es ruidosa |
 | SMOTENC | Variante de SMOTE para mezcla de features numéricas y categóricas | SMOTE que sabe que "ciudad" no se promedia | Datasets tabulares mixtos (el caso real típico) | Más lento; requiere declarar qué columnas son categóricas |
 | Borderline-SMOTE | Solo sintetiza entre muestras minoritarias **en la frontera** de decisión | Practicar solo los casos límite, no los obvios | Cuando la confusión vive en la frontera | Ignora estructura interna de la clase minoritaria |
@@ -304,6 +306,9 @@ Audiencia: 🔧 🧭
 | `scale_pos_weight` (XGBoost) | `N_negativos / N_positivos` como peso de la clase positiva | El equivalente boosting de class_weight ([[07-Modelos-Supervisados]]) |
 
 **🧭 Orden práctico de ataque:** (1) métricas correctas primero (AUC-PR, F1, MCC — [[08-Metricas-de-Evaluacion]]); (2) `class_weight` / `scale_pos_weight`; (3) ajuste de umbral; (4) recién entonces resampling (SMOTE y familia). Muchas veces (1)–(3) bastan y evitan inventar datos.
+
+> [!warning] ⚠️ Corregir el desbalance distorsiona las probabilidades
+> Oversampling, undersampling y SMOTE le enseñan al modelo una **prevalencia falsa**: el resultado son probabilidades de la clase minoritaria sistemáticamente sobreestimadas (miscalibration) **sin mejora de la discriminación** (AUC), demostrado por simulación con regresión logística (van den Goorbergh et al., 2022) y extendido a modelos de machine learning, donde los modelos sin corrección tuvieron calibración igual o mejor y la recalibración posterior no siempre reparó el daño (Carriero et al., 2025). Con clasificadores fuertes, el balanceo tampoco mejora el desempeño predictivo (Elor & Averbuch-Elor, 2022; preprint). Consecuencia práctica: si el output es un **score de riesgo** o alimenta decisiones por valor esperado (crédito, triage, priorización de campañas), no resamplees: entrena sobre la distribución real, evalúa con AUC-PR y calibración ([[08-Metricas-de-Evaluacion]]) y mueve el umbral ([[11-Mejora-de-Modelos]]). El resampling queda reservado para clasificadores débiles evaluados con métricas de etiqueta — y aun así exige recalibrar después.
 
 **👔 En una frase para el negocio:** cuando el evento que importa es 1 de cada 100, el "99% de acierto" es la métrica del autoengaño — estas técnicas obligan al modelo a mirar las agujas y no el pajar.
 
@@ -358,10 +363,13 @@ Audiencia: 🔧 🧭 👔
 | RFECV | RFE + cross-validation para elegir K automáticamente | K óptimo sin adivinar | Muy costoso | Como RFE, pero cuando el presupuesto de cómputo permite que K se elija solo |
 | Lasso (L1) | La regularización lleva coeficientes exactamente a 0 | Selección y regularización juntas ([[11-Mejora-de-Modelos]]) | Solo relaciones lineales; α controla la agresividad | Cuando quieres selección y modelo en un solo paso |
 | Importancia RF / XGBoost | Reducción promedio de impureza (MDI) o ganancia por feature | Captura no linealidades, rápido | MDI sesgado hacia alta cardinalidad y continuas | Screening rápido con no linealidades, como filtro previo antes de afinar con permutation importance |
-| Permutation Importance | Mide la caída de la métrica al permutar aleatoriamente cada feature en validación | Model-agnostic, menos sesgada | Lento; features correlacionadas se reparten el crédito | Cuando importa la relevancia REAL en validación, no in-sample |
+| Permutation Importance | Mide la caída de la métrica al permutar aleatoriamente cada feature en validación | Model-agnostic, menos sesgada | Lento; con features correlacionadas fuerza al modelo a extrapolar y puede **inflar** su importancia (Hooker et al., 2021; Strobl et al., 2008) | Cuando importa la relevancia REAL en validación, no in-sample |
 | SHAP-based | Importancia global a partir de valores SHAP ([[13-MLOps-XAI-Etica]]) | Muy precisa, model-agnostic, con dirección del efecto | Costosa de calcular en modelos grandes | Cuando además de la relevancia necesitas explicar la dirección del efecto ante negocio/reguladores |
+| Boruta | Wrapper sobre Random Forest: compara cada feature con copias permutadas de sí misma (*shadow features*) en rondas y conserva solo las que superan consistentemente a la mejor sombra (Kursa & Rudnicki, 2010) | Selección *all-relevant* con umbral estadístico, no top-K arbitrario | Costoso; hereda los sesgos de la importancia de RF | Tabular mediano donde no quieres perder ninguna feature relevante |
 
 **🧭 Estrategia práctica:** filtra lo obvio primero (varianza ~0, duplicadas, >95% nulos), corre un método rápido (mutual information o importancia de un RF baseline), y refina con permutation importance sobre validación. RFECV solo si el presupuesto de cómputo lo permite. Y todo **dentro** del pipeline: seleccionar features mirando el dataset completo es otra puerta de leakage ([[10-Validacion-y-Leakage]]).
+
+Con features correlacionadas — el caso real típico — la permutation importance no solo «reparte el crédito»: al permutar una variable manteniendo fija su compañera correlacionada, el modelo se evalúa sobre combinaciones que jamás ocurren en los datos, y esa **extrapolación** puede sobreestimar la importancia de las correlacionadas (Hooker et al., 2021); en Random Forest el sesgo hacia predictores correlacionados está documentado y su corrección es la *conditional permutation importance* (Strobl et al., 2008). Remedios prácticos: agrupar features correlacionadas (clustering jerárquico por Spearman y permutar el grupo completo, o conservar un representante por grupo), usar importancia condicional, o medir la caída de la métrica reentrenando sin la feature (*drop-column*). Boruta aporta una alternativa *all-relevant* con criterio estadístico explícito (Kursa & Rudnicki, 2010): lo que importa deja de ser un ranking a ojo y pasa a ser una decisión contrastada contra el azar.
 
 **👔 En una frase para el negocio:** menos features bien elegidas = modelo más barato de mantener, más rápido, más explicable ante reguladores y menos propenso a romperse cuando un sistema fuente cambia.
 
@@ -446,15 +454,15 @@ Audiencia: 🔧 🧭
 
 | Aspecto | t-SNE | UMAP |
 |---|---|---|
-| Preserva | Estructura local (vecindades) | Local **y** global |
+| Preserva | Local; global solo con inicialización informativa (PCA, el default de scikit-learn desde 1.2) | Local; global **depende de la inicialización** (spectral por defecto) — no es una ventaja intrínseca (Kobak & Linderman, 2021) |
 | Velocidad | Lenta en N grande | Mucho más rápido |
-| Determinismo | No determinista entre corridas | Reproducible (con semilla) |
+| Determinismo | Estocástico; reproducible fijando la semilla | Estocástico; reproducible fijando la semilla |
 | `transform()` para datos nuevos | No confiable | Sí — apto para producción |
 | Uso legítimo | Visualización final | Visualización **y** preprocessing |
 | Parámetros clave | `perplexity` | `n_neighbors`, `min_dist` |
 
-> [!warning] ⚠️ Regla crítica
-> Para exploración visual: ambos son excelentes. Para preprocessing antes de un modelo: **UMAP es claramente superior** (rápido, reproducible, preserva estructura global, tiene `transform()`). t-SNE se queda en la etapa de visualización — un embedding t-SNE alimentando un modelo en producción es un bug conceptual.
+> [!warning] ⚠️ Regla crítica: la «ventaja global» de UMAP era la inicialización
+> La creencia de que UMAP preserva la estructura global y t-SNE no nace de comparar UMAP con inicialización spectral contra t-SNE con inicialización aleatoria: con inicialización informativa (PCA o spectral) t-SNE conserva la estructura global tan bien como UMAP, y con inicialización aleatoria UMAP la pierde igual (Kobak & Linderman, 2021). El protocolo moderno de t-SNE — PCA init, learning rate alto, exaggeration para N grande — está en Kobak & Berens (2019) y scikit-learn lo trae por defecto desde la versión 1.2. En rigor, ninguno de los dos garantiza local y global a la vez; PaCMAP fue diseñado para ese equilibrio (Wang, Huang, Rudin & Shaposhnik, 2021). Lo que sí sobrevive: en cualquiera de los tres mapas, **las distancias entre clusters y sus tamaños no se interpretan**. Para preprocessing antes de un modelo, UMAP conserva la ventaja práctica de `transform()` — un embedding t-SNE alimentando un modelo en producción sigue siendo un bug conceptual —, pero valida siempre que el embedding aporte frente al modelo entrenado sin reducción. *(Corregido el 2026-09-06: la tabla y esta regla daban por intrínseca la preservación global de UMAP y por no determinista solo a t-SNE.)*
 
 ---
 
@@ -478,6 +486,11 @@ Audiencia: 🔧 🧭 👔
 - (Breunig et al., 2000) — Local Outlier Factor.
 - (van der Maaten & Hinton, 2008) — t-SNE.
 - (McInnes et al., 2018) — UMAP.
+- (van den Goorbergh et al., 2022), (Carriero et al., 2025) — corregir el desbalance daña la calibración sin mejorar la discriminación. · (Elor & Averbuch-Elor, 2022) — **preprint**: el balanceo no mejora a los clasificadores fuertes.
+- (Kobak & Linderman, 2021), (Kobak & Berens, 2019) — la inicialización decide la estructura global en t-SNE y UMAP. · (Wang, Huang, Rudin & Shaposhnik, 2021) — t-SNE, UMAP, TriMap y PaCMAP comparados.
+- (Hooker et al., 2021), (Strobl et al., 2008) — permutation importance con features correlacionadas. · (Kursa & Rudnicki, 2010) — Boruta.
+- (van Buuren & Groothuis-Oudshoorn, 2011) — MICE. · (Sperrin et al., 2020) — missing data para predicción vs. inferencia.
+- Documentación oficial de scikit-learn (`IterativeImputer` con `sample_posterior`, `LocalOutlierFactor` con `novelty=True`, `TSNE` con `init='pca'` por defecto) → [[16-Bibliografia]] §13. *(Corregido el 2026-09-06: la fila LOF decía «sin predict() para datos nuevos».)*
 - (Kuhn & Johnson, 2019) — feature engineering y selection aplicados.
 - (Géron, 2022) — pipelines de preparación end-to-end en scikit-learn.
 

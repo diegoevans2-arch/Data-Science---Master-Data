@@ -3,7 +3,8 @@ title: "Tomo 02 — Fundamentos Matemáticos y Estadísticos"
 tags: [data-science, machine-learning, matematicas, estadistica, fundamentos]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 02
-version: 6.0
+version: 6.1
+updated: 2026-09-06
 ---
 
 # 📐 Tomo 02 — Fundamentos Matemáticos y Estadísticos
@@ -123,7 +124,7 @@ Audiencia: 🔧
 > [!tip] 💡 Analogía
 > El *mise en place* de un chef: antes de cocinar, separa los ingredientes en bandejas independientes que no se mezclan (Q, columnas ortogonales) y deja la receta escrita en pasos escalonados (R, triangular) que se ejecutan de atrás hacia adelante. Cocinar así es más limpio y a prueba de errores que improvisar con todo revuelto.
 
-**🔧 Definición técnica:** `A = QR` con Q ortogonal (QᵀQ = I) y R triangular superior. Se construye con Gram-Schmidt o reflexiones de Householder. Es el método numéricamente estable para resolver mínimos cuadrados: en lugar de invertir XᵀX (que amplifica errores de redondeo cuando hay features correlacionadas), se resuelve `Rβ = Qᵀy` por sustitución hacia atrás. Es lo que `lstsq` usa por debajo.
+**🔧 Definición técnica:** `A = QR` con Q ortogonal (QᵀQ = I) y R triangular superior. Se construye con Gram-Schmidt o reflexiones de Householder. Es un método numéricamente estable para mínimos cuadrados: en lugar de invertir XᵀX (que amplifica errores de redondeo cuando hay features correlacionadas), se resuelve `Rβ = Qᵀy` por sustitución hacia atrás. En LAPACK esa es la ruta de `gels`/`gelsy` (factorización QR u ortogonal completa). La rutina `lstsq` de SciPy, en cambio, usa por defecto el driver `gelsd`, que resuelve el mismo problema mediante SVD (sección 1.4) con un algoritmo de divide y vencerás: igual de estable y sin pasar nunca por XᵀX (documentación oficial de SciPy y *LAPACK Users' Guide*, consultadas el 2026-09-06). La lección práctica no cambia: ninguna librería seria invierte (XᵀX); todas pasan por una factorización ortogonal, QR o SVD, y por eso los coeficientes «absurdos» de una implementación casera se arreglan cambiando de fórmula, no de datos. *(Corregido el 2026-09-06: decía que `lstsq` usa QR.)*
 
 **🧭 Cuándo usarlo:** no lo llamas directamente, pero explica por qué las librerías serias no calculan `(XᵀX)⁻¹` jamás: estabilidad numérica. Si implementas regresión "a mano" con la fórmula del libro y los coeficientes salen absurdos, la QR es la respuesta correcta.
 
@@ -634,6 +635,7 @@ Audiencia: 🔧 🧭
 - (Hastie et al., 2009) y (James et al., 2021) — puente entre estadística clásica y aprendizaje estadístico.
 - (Wasserman, 2004) — inferencia estadística concisa y completa.
 - (Géron, 2022) — perspectiva práctica de estos fundamentos en código.
+- Documentación oficial: `scipy.linalg.lstsq` (driver por defecto `gelsd`, SVD) y *LAPACK Users' Guide*, «Linear Least Squares Problems» → [[16-Bibliografia]] §13.
 
 Fichas completas con datos de publicación en [[16-Bibliografia]].
 
@@ -641,6 +643,6 @@ Fichas completas con datos de publicación en [[16-Bibliografia]].
 
 **Navegación:** [[00-MOC-Guia-Maestra|⬅ Volver al índice]] · Anterior: [[01-Introduccion-Ejecutiva|01 · Introducción Ejecutiva]] · Siguiente: [[03-Preparacion-de-Datos|03 · Preparación de Datos ➡]]
 
-> **Próximo tomo:** [[03-Preparacion-de-Datos]] — donde se gasta el 80% del tiempo real de un proyecto: limpieza, nulos (MCAR/MAR/MNAR), outliers, encoding, desbalance, feature engineering/selection y reducción de dimensionalidad.
+> **Próximo tomo:** [[03-Preparacion-de-Datos]] — donde se gasta la mayor parte del tiempo real de un proyecto: limpieza, nulos (MCAR/MAR/MNAR), outliers, encoding, desbalance, feature engineering/selection y reducción de dimensionalidad.
 
 

@@ -3,13 +3,13 @@ title: "Tomo 21 — Análisis de Supervivencia y Multi-Armed Bandits"
 tags: [data-science, machine-learning, supervivencia, bandits, experimentacion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 21
-version: 6.2
-updated: 2026-07-29
+version: 6.4
+updated: 2026-09-06
 ---
 
 # ⏳ Tomo 21 — Análisis de Supervivencia y Multi-Armed Bandits
 
-**Navegación:** [[00-MOC-Guia-Maestra|⬅ Volver al índice]] · Anterior: [[20-Sistemas-de-Recomendacion|20 · Sistemas de Recomendación]]
+**Navegación:** [[00-MOC-Guia-Maestra|⬅ Volver al índice]] · Anterior: [[20-Sistemas-de-Recomendacion|20 · Sistemas de Recomendación]] · Siguiente: [[22-Feature-Engineering-Avanzado|22 · Feature Engineering Avanzado ➡]]
 
 ---
 
@@ -112,15 +112,18 @@ Audiencia: 🔧 🧭 👔
 > [!tip] 💡 Analogía
 > El C-index es la pregunta de una carrera: si tomas dos corredores al azar, ¿el modelo acierta cuál llega primero a la meta (el evento), sin necesidad de saber el tiempo exacto de cada uno? Acertar el orden en todos los pares posibles da C-index = 1; acertar la mitad —lo mismo que tirar una moneda— da 0.5. Es el primo temporal del AUC: no evalúa si la probabilidad predicha es exacta, evalúa si el ranking de urgencia es correcto.
 
-**🔧 Definición técnica:** cuando hay no-linealidades e interacciones, los modelos de árboles se adaptan al marco de supervivencia: **Random Survival Forests** (Ishwaran et al., 2008) y **gradient boosting de supervivencia** (scikit-survival, XGBoost con objetivo AFT) — capturan estructura compleja respetando la censura.
+**🔧 Definición técnica:** cuando hay no-linealidades e interacciones, los modelos de árboles se adaptan al marco de supervivencia: **Random Survival Forests** (Ishwaran et al., 2008) y **gradient boosting de supervivencia** — implementado en scikit-survival (Pölsterl, 2020) y en XGBoost con objetivo **AFT**, que además admite censura por intervalo (Barnwal, Cho & Hocking, 2022) — capturan estructura compleja respetando la censura. Las redes neuronales entran por dos puertas: **DeepSurv** (Katzman et al., 2018) reemplaza el término lineal de Cox por una red, pero hereda el supuesto de proporcionalidad; **DeepHit** (Lee et al., 2018) aprende directamente la distribución del tiempo en una rejilla discreta, sin ese supuesto y con **competing risks** nativos (A.5). Criterio: con datos tabulares, RSF y boosting siguen siendo el punto de partida ([[23-Tabular-DL-vs-Boosting]]); las redes se justifican con riesgos en competencia o entradas no tabulares — y siempre evaluadas con las métricas de la tabla siguiente, no con un C-index solitario.
 
 **Métricas específicas** (no sirven las de clasificación tal cual):
 
 | Métrica | Qué mide | Nota |
 |---|---|---|
-| **C-index** (Harrell et al., 1982) | Probabilidad de ordenar bien **quién experimenta el evento primero** | El primo temporal del AUC ([[08-Metricas-de-Evaluacion]]); 0.5 = azar |
-| Time-dependent AUC | Discriminación evaluada a horizontes concretos (a 6, 12 meses) | Cuando importa un horizonte de decisión específico |
-| Brier score de supervivencia | Error de las probabilidades predichas en el tiempo | Mide **calibración**, no solo orden ([[11-Mejora-de-Modelos]]) |
+| **C-index** (Harrell et al., 1982; versión IPCW: Uno et al., 2011) | Probabilidad de ordenar bien **quién experimenta el evento primero** | El primo temporal del AUC ([[08-Metricas-de-Evaluacion]]); 0.5 = azar. La versión de Harrell depende de la distribución de la censura; la de Uno la corrige con pesos IPCW |
+| **Time-dependent AUC** (Uno et al., 2011; Blanche, Kattan & Gerds, 2019) | Discriminación evaluada a un horizonte concreto (a 6, 12 meses) | Si la decisión tiene horizonte fijo («¿se fuga antes de 12 meses?») es la métrica **propia**: el C-index puede premiar a un modelo mal especificado |
+| **Integrated Brier Score** (Graf et al., 1999) | Error cuadrático de S(t│x) integrado en el tiempo, con pesos IPCW | *Proper scoring rule*: combina calibración **y** discriminación — no mide «solo calibración» ([[11-Mejora-de-Modelos]]) |
+| **Calibración de supervivencia** (Haider et al., 2020) | Si las probabilidades predichas coinciden con lo observado | Curvas de calibración a horizonte t y **D-calibration** para la distribución completa |
+
+**Regla práctica:** reporta por separado discriminación (C-index o AUC(t)), error global (IBS) y calibración — un C-index alto con curvas descalibradas produce agendas de intervención con urgencias infladas.
 
 **🧭 Cuándo usarlo:** churn/deserción con historia de distinta longitud, tiempo-a-falla en mantención, tiempo-a-default en crédito, tiempo-a-recompra. Aplica todo el rigor de siempre: validación temporal ([[10-Validacion-y-Leakage]]) y features disponibles al momento de predecir.
 
@@ -204,6 +207,9 @@ Lo que los ejemplos de manual omiten y la operación real cobra:
 | **Recompensas diferidas** | La conversión llega días después del clic; el bandit decide con señal incompleta | Modelar la demora; usar proxies tempranos con cuidado |
 | **Winner-takes-all prematuro** | Un brazo con suerte inicial acapara el tráfico antes de tiempo | Priors adecuados; garantizar exploración mínima |
 | **Feedback loop** | El brazo más servido acumula más datos y se auto-refuerza | El mismo problema de los recomendadores ([[20-Sistemas-de-Recomendacion]]): vigilar exposición |
+| **Evaluar sin desplegar** | Quieres saber si una política nueva (otro algoritmo, otros priors) supera a la actual, pero el log solo muestra la recompensa del brazo que se sirvió | **Off-policy evaluation**: método *replay* (Li et al., 2011), **inverse propensity scoring** y estimadores **doubly robust** (Dudík et al., 2014). Requisito: **registrar la propensity** — la probabilidad con que se sirvió cada brazo — en cada decisión |
+
+Sin propensities registradas no hay evaluación offline honesta ni corrección del **feedback loop**: el log hereda las preferencias de la política que lo generó, y comparar contra él es comparar contra un espejo. La fila de no-estacionariedad también tiene nombre formal: las variantes **discounted UCB** y **sliding-window UCB** (Garivier & Moulines, 2011) son exactamente el «descuento» y la «ventana deslizante» de la tabla, con garantías de regret cuando el mejor brazo cambia.
 
 ## B.5 ¿Bandit o A/B test?
 
@@ -217,8 +223,8 @@ Audiencia: 🧭 👔
 | Duración / estacionalidad | Ventana fija, controla día-de-semana por diseño | Continuo; cuidar no-estacionariedad (B.4) |
 | Cuándo conviene | Decisiones estructurales de una vez (pricing de lista, rediseño) donde el TAMAÑO del efecto importa y alimentará causalidad ([[18-Causalidad-y-Uplift]]) | Optimización perpetua de piezas intercambiables (banners, asuntos de email, orden de ofertas) |
 
-> [!warning] ⚠️ El bandit optimiza, pero no te da un tamaño de efecto limpio
-> Como el bandit **cambia la asignación sobre la marcha**, no produce la estimación no sesgada del efecto que sí da un A/B con grupos fijos. Si necesitas responder *"¿cuánto exactamente mejora B sobre A?"* para alimentar una decisión causal ([[18-Causalidad-y-Uplift]]) o un caso de negocio, usa A/B. Si solo necesitas *"sírveme lo que mejor funcione ahora"*, usa bandit. Confundir los objetivos lleva a reportar "efectos" del bandit que no son válidos como inferencia.
+> [!warning] ⚠️ El bandit optimiza, pero el tamaño de efecto hay que ganárselo
+> Como el bandit **cambia la asignación sobre la marcha**, el promedio simple de cada brazo **no** es un estimador insesgado: la asignación adaptativa sesga hacia abajo a los brazos poco explorados (Nie et al., 2018) y los intervalos de confianza clásicos dejan de valer. La literatura reciente corrige el matiz: con las **propensities registradas** (B.4) y una exploración que nunca cae a cero, existen estimadores de ponderación adaptativa que recuperan intervalos válidos desde datos de bandit (Hadad et al., 2021). Regla: si necesitas responder *"¿cuánto exactamente mejora B sobre A?"* para alimentar una decisión causal ([[18-Causalidad-y-Uplift]]) o un caso de negocio, el A/B con grupos fijos ([[24-Experimentacion-AB]]) sigue siendo el camino simple y robusto. Si ya operas un bandit y quieres una cifra defendible, no reportes promedios crudos: usa esos estimadores o no reportes efecto. Si solo necesitas *"sírveme lo que mejor funcione ahora"*, usa bandit.
 
 **👔 En una frase para el negocio:** el A/B te compra una **verdad medible**; el bandit te compra **resultado mientras aprende** — usa el primero para decidir políticas y el segundo para operar el día a día.
 
@@ -235,6 +241,10 @@ Audiencia: 🧭 👔
 
 - (Kaplan & Meier, 1958) — el estimador de supervivencia. · (Cox, 1972) — riesgos proporcionales.
 - (Ishwaran et al., 2008) — Random Survival Forests. · (Harrell et al., 1982) — C-index.
+- (Graf et al., 1999) — Integrated Brier Score. · (Uno et al., 2011) — C-index con pesos IPCW y AUC dependiente del tiempo. · (Blanche, Kattan & Gerds, 2019) — el C-index no es propio para riesgos a t años. · (Haider et al., 2020) — calibración de distribuciones de supervivencia (D-calibration).
+- (Pölsterl, 2020) — scikit-survival. · (Barnwal, Cho & Hocking, 2022) — AFT en XGBoost. · (Katzman et al., 2018) — DeepSurv. · (Lee et al., 2018) — DeepHit.
+- (Li et al., 2011) — evaluación offline de bandits contextuales (replay). · (Dudík et al., 2014) — estimadores doubly robust para off-policy evaluation. · (Garivier & Moulines, 2011) — discounted y sliding-window UCB.
+- (Nie et al., 2018) — sesgo negativo de los datos recogidos adaptativamente. · (Hadad et al., 2021) — intervalos de confianza válidos en experimentos adaptativos.
 - (Fine & Gray, 1999) — competing risks (subdistribution hazard).
 - (Thompson, 1933) — el primer bandit bayesiano. · (Auer et al., 2002) — UCB. · (Li et al., 2010) — bandits contextuales.
 
@@ -242,6 +252,6 @@ Fichas completas en [[16-Bibliografia]].
 
 ---
 
-**Navegación:** [[00-MOC-Guia-Maestra|⬅ Volver al índice]] · Anterior: [[20-Sistemas-de-Recomendacion|20 · Sistemas de Recomendación]]
+**Navegación:** [[00-MOC-Guia-Maestra|⬅ Volver al índice]] · Anterior: [[20-Sistemas-de-Recomendacion|20 · Sistemas de Recomendación]] · Siguiente: [[22-Feature-Engineering-Avanzado|22 · Feature Engineering Avanzado ➡]]
 
 > 🏁 **Fin de la extensión aplicada (tomos 17–21) y de la Guía Maestra v6.** Vuelve al [[00-MOC-Guia-Maestra|índice maestro]] para navegar por perfil.

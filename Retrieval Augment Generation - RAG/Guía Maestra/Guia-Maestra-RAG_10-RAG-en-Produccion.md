@@ -3,8 +3,8 @@ title: "Tomo 10 — RAG en producción: observability, evaluación y security"
 tags: [rag, produccion, observability, tracing, opentelemetry, phoenix, arize, logging, custom-datasets, security, rbac, multi-tenancy, encryption]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 10
-version: 1.1
-updated: 2026-08-28
+version: 1.2
+updated: 2026-09-05
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -1057,6 +1057,8 @@ Audiencia: 🔧 🧭
 - *Moffatt v. Air Canada*, 2024 BCCRT 149 (Civil Resolution Tribunal of British Columbia, 14 de febrero de 2024), expediente SC-2023-005609. [canlii.org](https://www.canlii.org/en/bc/bccrt/doc/2024/2024bccrt149/2024bccrt149.html) — §1.2. ✅ *Verificada 2026-07-28. Hechos, cifras (812,02 CAD, de los cuales 650,88 en daños) y fundamento (negligent misrepresentation) confirmados por convergencia de fuentes legales; el documento primario en CanLII devuelve 403 a acceso automatizado, por lo que las **citas textuales del párrafo 27 convendría contrastarlas en un navegador** antes de reproducirlas fuera de esta guía.*
 - Morris, J. X., Kuleshov, V., Shmatikov, V., & Rush, A. M. (2023). "Text Embeddings Reveal (Almost) As Much As Text". *Proceedings of EMNLP 2023*, 12448–12460. DOI 10.18653/v1/2023.emnlp-main.765 — §6.4. ✅ *Verificada 2026-07-28 (ACL Anthology y arXiv:2310.06816 consultadas directamente). El método se distribuye como **Vec2Text**; ese nombre viene del repositorio, no del título del paper.*
 - Zhuang, S., Koopman, B., Chu, X., & Zuccon, G. (2024). "Understanding and Mitigating the Threat of Vec2Text to Dense Retrieval Systems". *SIGIR-AP '24*, Tokio. arXiv:2402.12784 — §6.4. ✅ *Verificada 2026-07-28 (arXiv consultado directamente; venue y DOI 10.1145/3673791.3698414 confirmados vía el listado de ACM DL, cuya página bloquea el acceso automatizado).*
+- Rebedea, T., Dinu, R., Sreedhar, M. N., Parisien, C., & Cohen, J. (2023). "NeMo Guardrails: A Toolkit for Controllable and Safe LLM Applications with Programmable Rails". *Proceedings of EMNLP 2023: System Demonstrations*, 431–445. DOI 10.18653/v1/2023.emnlp-demo.40 — §5 (tabla de herramientas de guardrails). ✅ *Verificada 2026-09-05 (ACL Anthology).*
+- Inan, H., Upasani, K., Chi, J., Rungta, R., Iyer, K., Mao, Y., Tontchev, M., Hu, Q., Fuller, B., Testuggine, D., & Khabsa, M. (2023). *Llama Guard: LLM-based Input-Output Safeguard for Human-AI Conversations*. arXiv:2312.06674 — §5. ✅ *Verificada 2026-09-05 (arXiv; preprint sin venue formal).*
 
 > [!note] Sobre la atribución del contenido satírico
 > La prensa atribuyó el contenido de "comer piedras" a un artículo de *The Onion*. **El post oficial de Google no lo menciona por nombre** — habla genéricamente de *"contenido satírico sobre este tema … republicado en el sitio de un proveedor de software geológico"*. Si se reproduce la atribución concreta, corresponde acreditarla a la cobertura periodística, no a Google.

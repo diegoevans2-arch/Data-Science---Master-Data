@@ -3,8 +3,8 @@ title: "Tomo 06 — Clustering: Aprendizaje No Supervisado"
 tags: [data-science, machine-learning, clustering, unsupervised, segmentacion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 06
-version: 6.1
-updated: 2026-07-29
+version: 6.2
+updated: 2026-09-06
 ---
 
 # 🧩 Tomo 06 — Clustering: Aprendizaje No Supervisado
@@ -58,7 +58,7 @@ Audiencia: 🔧 🧭 👔
 > [!tip] 💡 Analogía
 > Tienes 300 personas en un salón y quieres formar 5 grupos. Pones 5 banderas al azar. Cada persona camina a la bandera más cercana. Mueves cada bandera al centro de su grupo. Las personas se reagrupan. Repites hasta que nadie cambie de grupo. Las banderas son los **centroides**; las personas, tus datos.
 
-**🔧 Definición técnica:** algoritmo de Lloyd: (1) inicializar K centroides; (2) asignar cada punto al centroide más cercano (distancia euclídea); (3) recalcular cada centroide como la media de sus puntos; (4) repetir hasta convergencia (asignaciones estables o cambio < tol). **K-Means++** (Arthur & Vassilvitskii, 2007) mejora la inicialización eligiendo centroides iniciales con probabilidad proporcional a la distancia² al centroide ya elegido más cercano — menos iteraciones y mejor calidad; es el default de sklearn. Hiperparámetros: `n_clusters` (K), `init` ('k-means++' o 'random'), `n_init` (número de inicializaciones, default 10 — se queda con la mejor), `max_iter`, `tol`. **Inertia**: suma de distancias² de cada punto a su centroide; decrece siempre al aumentar K → sirve para el elbow, no como métrica absoluta.
+**🔧 Definición técnica:** algoritmo de Lloyd: (1) inicializar K centroides; (2) asignar cada punto al centroide más cercano (distancia euclídea); (3) recalcular cada centroide como la media de sus puntos; (4) repetir hasta convergencia (asignaciones estables o cambio < tol). **K-Means++** (Arthur & Vassilvitskii, 2007) mejora la inicialización eligiendo cada centroide inicial con probabilidad proporcional a la distancia² al centroide ya elegido más cercano — menos iteraciones y mejor calidad; es el default de scikit-learn, que implementa la variante *greedy k-means++* (varios candidatos por paso, se queda con el mejor). Hiperparámetros: `n_clusters` (K), `init` ('k-means++' o 'random'), `n_init` (número de inicializaciones; se conserva la de menor inertia), `max_iter`, `tol`. **Ojo con `n_init`:** desde scikit-learn 1.4 su default es `'auto'`, que ejecuta **una sola corrida** con k-means++ (y diez solo con inicialización aleatoria) — ya no son diez por defecto. Para datos dispersos o de alta dimensión, o cuando la segmentación alimenta decisiones de negocio, fija `n_init` explícitamente (diez o más) y comprueba que los clusters sean estables entre semillas. *(Corregido el 2026-09-06: decía «default 10».)* **Inertia**: suma de distancias² de cada punto a su centroide; decrece siempre al aumentar K → sirve para el elbow, no como métrica absoluta.
 
 **Supuestos y limitaciones:** clusters esféricos y de tamaño similar; sensible a la escala (**escalar siempre**, [[05-Escalado-de-Datos]]); sensible a outliers (arrastran centroides, [[03-Preparacion-de-Datos]]); falla con formas no convexas (lunas, anillos).
 
@@ -70,7 +70,7 @@ Audiencia: 🔧 🧭 👔
 
 Audiencia: 🔧
 
-**🔧 Definición técnica:** variante que usa mini-batches aleatorios en cada iteración en lugar del dataset completo. Drásticamente más rápido para N > 100K, con una pérdida de calidad leve. Mismo contrato que K-Means (`n_clusters`, escalado obligatorio).
+**🔧 Definición técnica:** variante (Sculley, 2010) que usa mini-batches aleatorios en cada iteración en lugar del dataset completo. Mucho más rápido en datasets grandes (N > 100K), con una pérdida de calidad leve. Mismo contrato que K-Means (`n_clusters`, escalado obligatorio).
 
 **🧭 Cuándo usarlo:** datasets masivos o pipelines con restricción de tiempo; validar contra K-Means estándar en una muestra.
 
@@ -81,9 +81,9 @@ Audiencia: 🔧 🧭
 > [!tip] 💡 Analogía
 > En vez de plantar una bandera en el "centro promedio" (que puede caer en medio de la nada), eliges como representante a **una persona real del grupo** — el delegado más central. Si un millonario excéntrico entra al grupo, el delegado sigue siendo alguien típico; el promedio, en cambio, se habría ido detrás del millonario.
 
-**🔧 Definición técnica:** Partitioning Around Medoids: usa **medoids** (puntos reales que minimizan la distancia total al resto de su cluster) en lugar de centroides; intercambia iterativamente medoids con no-medoids aceptando el cambio si reduce el costo total. Ventajas sobre K-Means: robusto a outliers, funciona con **cualquier** métrica de distancia (no solo euclídea), y el "caso representativo" es un registro real e interpretable. Implementación: `KMedoids` en scikit-learn-extra; **CLARA** aplica PAM sobre muestras para escalar a datasets grandes.
+**🔧 Definición técnica:** Partitioning Around Medoids: usa **medoids** (puntos reales que minimizan la distancia total al resto de su cluster) en lugar de centroides; intercambia iterativamente medoids con no-medoids aceptando el cambio si reduce el costo total. Ventajas sobre K-Means: robusto a outliers, funciona con **cualquier** métrica de distancia (no solo euclídea), y el "caso representativo" es un registro real e interpretable. Implementación: `KMedoids` en scikit-learn-extra (última versión 0.3.0, de marzo de 2023: comprobar la compatibilidad con tu scikit-learn); **CLARA** aplica PAM sobre muestras para escalar a datasets grandes.
 
-**🧭 Cuándo usarlo:** cuando necesitas mostrar "el cliente típico de cada segmento" como caso real, cuando la distancia natural no es euclídea (Gower para mixtos, coseno para texto), o cuando los outliers contaminan los centroides.
+**🧭 Cuándo usarlo:** cuando necesitas mostrar "el cliente típico de cada segmento" como caso real, cuando la distancia natural no es euclídea (Gower para datos mixtos — Gower, 1971 —, coseno para texto; para mixtos existe además **k-prototypes**, que combina medias para lo numérico y modas para lo categórico, Huang, 1998), o cuando los outliers contaminan los centroides.
 
 **👔 En una frase para el negocio:** cada segmento queda representado por un caso real que el equipo comercial puede mirar y entender — no por un promedio abstracto que no existe.
 
@@ -100,7 +100,7 @@ Audiencia: 🔧 🧭 👔
 > [!tip] 💡 Analogía
 > Estás en un parque mirando grupos de personas. Un "grupo" es una zona donde hay mucha gente junta: DBSCAN dice "si encuentro al menos 5 personas dentro de 10 metros, esto es un grupo". Las personas solas en un rincón son **ruido** (outliers). Y lo mejor: no necesitas decirle cuántos grupos hay.
 
-**🔧 Definición técnica:** (Ester et al., 1996) define clusters como regiones de alta densidad: un **core point** tiene ≥ `min_samples` puntos dentro de su radio `eps`; los puntos alcanzables desde un core pertenecen al cluster; los no alcanzables quedan como ruido (etiqueta −1). Parámetros: `eps` (crítico y sensible) y `min_samples` (regla práctica: ≈ 2×D, con D = dimensionalidad). Estrategia para eps: **k-distance plot** — ordenar las distancias al k-ésimo vecino y buscar el "codo".
+**🔧 Definición técnica:** (Ester et al., 1996) define clusters como regiones de alta densidad: un **core point** tiene ≥ `min_samples` puntos dentro de su radio `eps`; los puntos alcanzables desde un core pertenecen al cluster; los no alcanzables quedan como ruido (etiqueta −1). Parámetros: `eps` (crítico y sensible) y `min_samples` (regla práctica: ≈ 2×D, con D = dimensionalidad). Estrategia para eps: **k-distance plot** — ordenar las distancias al k-ésimo vecino y buscar el "codo". Estas heurísticas, y la discusión de la complejidad real de DBSCAN — O(N²) sin índice, mucho menos con índices espaciales —, están en Schubert et al. (2017).
 
 **Ventajas:** formas arbitrarias, outliers gratis, sin K. **Limitaciones:** muy sensible a eps; falla con densidades muy distintas entre clusters; sufre en alta dimensión (las distancias se degradan, [[03-Preparacion-de-Datos]]); O(N²) sin indexación espacial.
 
@@ -115,11 +115,13 @@ Audiencia: 🔧 🧭 👔
 > [!tip] 💡 Analogía
 > Es DBSCAN con un dron: en vez de mirar el parque desde una sola altura (un solo eps), el dron sube lentamente y observa cómo los grupos se forman, fusionan y separan **a cada altitud**, quedándose con los grupos que se mantienen estables en un rango amplio. Ve la estructura completa, no una foto a una sola escala.
 
-**🔧 Definición técnica:** (Campello et al., 2013) extiende DBSCAN construyendo la jerarquía de densidad completa: (1) distancias de alcanzabilidad mutua; (2) Minimum Spanning Tree; (3) dendrograma de clusters; (4) extracción de los clusters **estables** (los que persisten en un rango amplio de densidades) desde el árbol condensado. Parámetro principal: `min_cluster_size` — mucho más intuitivo que eps. Salidas extra: `probabilities_` (confianza de asignación por punto), `outlier_scores_` (grado de anomalía), `condensed_tree_` (visualización de la jerarquía). Disponible en scikit-learn-contrib y, desde sklearn 1.3, como `HDBSCAN` nativo.
+**🔧 Definición técnica:** (Campello et al., 2013) extiende DBSCAN construyendo la jerarquía de densidad completa: (1) distancias de alcanzabilidad mutua; (2) Minimum Spanning Tree; (3) dendrograma de clusters; (4) extracción de los clusters **estables** (los que persisten en un rango amplio de densidades) desde el árbol condensado. Parámetro principal: `min_cluster_size` — mucho más intuitivo que eps. Implementaciones — y esto importa: la librería `hdbscan` (McInnes, Healy & Astels, 2017) es la referencia completa: además de las etiquetas entrega `probabilities_` (confianza de asignación por punto), `outlier_scores_` — el score **GLOSH** de Campello et al. (2015), que mide el grado de anomalía de cada punto —, el árbol condensado para visualizar la jerarquía, soft clustering y predicción aproximada para puntos nuevos. La versión nativa de scikit-learn (`HDBSCAN` en `sklearn.cluster`, desde la 1.3) cubre el núcleo del algoritmo — etiquetas, probabilidad de pertenencia y, opcionalmente, centroides o medoids por cluster — pero **no** expone los outlier scores, el árbol condensado ni la predicción de puntos nuevos. Regla práctica: si necesitas el grado de anomalía por punto (como el grupo «ruido» del caso retail) o inspeccionar la jerarquía, usa la librería externa; si solo necesitas etiquetas y probabilidades dentro de un pipeline estándar, la nativa basta y evita una dependencia. *(Corregido el 2026-09-06: la guía atribuía las tres salidas extra a ambas implementaciones.)*
 
 **Ventajas sobre DBSCAN:** sin eps que tunear, maneja **densidad variable**, soft clustering vía probabilidades, selección automática del número de clusters, más estable en datos reales.
 
 **🧭 Cuándo usarlo:** el default moderno para clustering exploratorio en datos reales, especialmente combinado con UMAP como reducción previa ([[03-Preparacion-de-Datos]]).
+
+**🔧 UMAP → HDBSCAN, con dos precauciones.** El patrón es hoy el estándar de facto para clustering exploratorio de embeddings y datos de alta dimensión — es, por ejemplo, el núcleo de BERTopic (Grootendorst, 2022) —, pero la propia documentación de UMAP (McInnes, Healy & Melville, 2018) pide dos cuidados. Primero: UMAP no preserva completamente la densidad y puede crear «falsos cortes» que parten un cluster real en varios, así que parte de los grupos que ves puede ser un artefacto de la proyección. Segundo: no reutilices la proyección 2D de visualización para clusterizar; para ese fin UMAP recomienda más vecinos (`n_neighbors` ≈ 30 en vez de 15, para no ajustar ruido local), `min_dist` = 0 (compactar los puntos) y entre 2 y 10 dimensiones de salida. Contrasta siempre con un clustering sobre los datos originales o sobre PCA ([[03-Preparacion-de-Datos]]): si los segmentos solo aparecen después de UMAP, sospecha de ellos.
 
 **👔 En una frase para el negocio:** el algoritmo que menos supuestos te obliga a inventar: encuentra los grupos que existen, con la forma y densidad que tengan, y te dice qué tan confiable es cada asignación.
 
@@ -225,27 +227,27 @@ Audiencia: 🔧 🧭
 
 | Métrica | Fórmula / Definición | Rango | Mejor valor | ¿Requiere etiquetas reales? | Notas |
 |---|---|---|---|---|---|
-| Inertia (WCSS) | `Σ dist²` de cada punto a su centroide | 0 a ∞ | Menor (relativo) | No | Decrece siempre con K → solo para elbow method |
-| Silhouette Score | `(b − a) / max(a, b)`: a = distancia media intra-cluster, b = al cluster vecino más cercano; promedio global | −1 a +1 | +1 | No | El más informativo sin etiquetas; > 0.5 es bueno; caro para N grande |
+| Inertia (WCSS) | `Σ dist²` de cada punto a su centroide | 0 a ∞ | Menor (relativo) | No | Decrece siempre con K; el «codo» es poco fiable como criterio (Schubert, 2023) |
+| Silhouette Score (Rousseeuw, 1987) | `(b − a) / max(a, b)`: a = distancia media intra-cluster, b = al cluster vecino más cercano; promedio global | −1 a +1 | +1 | No | El más informativo sin etiquetas; > 0.5 suele leerse como estructura razonable (regla de bolsillo); caro para N grande |
 | Davies-Bouldin | Promedio del peor ratio `(σᵢ + σⱼ) / dist(cᵢ, cⱼ)` por cluster | 0 a ∞ | Menor (0 = ideal) | No | Penaliza clusters dispersos con centroides cercanos |
 | Calinski-Harabasz (VRC) | Varianza entre-clusters / intra-clusters, escalada por N y K | 0 a ∞ | Mayor | No | Rápida; favorece clusters compactos y separados |
 | Rand Index | Proporción de pares de puntos con asignación concordante | 0 a 1 | 1 | Sí | Optimista con muchos clusters (acierta "por pares fáciles") |
 | Adjusted Rand Index (ARI) | Rand corregido por el acuerdo esperado al azar | −1 a +1 | 1 | Sí | 0 = asignación aleatoria; el estándar con etiquetas |
 | NMI (Normalized Mutual Info) | Información mutua normalizada entre particiones | 0 a 1 | 1 | Sí | Robusta a permutaciones de labels |
 | V-measure | Media armónica de homogeneidad (cada cluster, una sola clase) y completitud (cada clase, un solo cluster) | 0 a 1 | 1 | Sí | Descompone el error en dos partes interpretables |
-| Gap Statistic | Inertia observada vs esperada bajo referencia uniforme (sin estructura) | 0 a ∞ | Mayor gap | No | El K óptimo maximiza el gap; costosa de calcular |
+| Gap Statistic (Tibshirani, Walther & Hastie, 2001) | Inertia observada vs esperada bajo referencia uniforme (sin estructura) | 0 a ∞ | Ver regla | No | Regla original: el **menor** K tal que Gap(K) ≥ Gap(K+1) − s(K+1), no el gap máximo; costosa (B datasets de referencia). *(Corregido el 2026-09-06: decía «maximiza el gap».)* |
 
 > [!warning] ⚠️ Estrategia práctica para elegir K
-> (1) **Elbow** con inertia: buscar el codo. (2) **Silhouette** sobre los K candidatos del codo. (3) **Davies-Bouldin** como confirmación. (4) Si existen etiquetas de referencia (aunque parciales), **ARI**. (5) Y siempre: inspección visual (UMAP 2D, [[03-Preparacion-de-Datos]]) + **sentido de negocio** — un K=7 estadísticamente óptimo que marketing no puede accionar vale menos que un K=4 útil.
+> El **elbow** con inertia es el criterio más usado y el menos fiable: su lectura es subjetiva y «es muy fácil sacar conclusiones pobres» de él, porque «carece gravemente de sustento teórico» (Schubert, 2023). Úsalo, si acaso, para acotar el rango de K; nunca como decisión. Estrategia: (1) **Silhouette** (Rousseeuw, 1987) y **Calinski-Harabasz** sobre un rango amplio de K; (2) **Gap statistic** (Tibshirani, Walther & Hastie, 2001): el menor K tal que Gap(K) ≥ Gap(K+1) − s(K+1), no el gap máximo; (3) en GMM, **BIC** ([[08-Metricas-de-Evaluacion]] §8); (4) **estabilidad**: repite con otras semillas y submuestras — un K cuyos clusters cambian entre corridas no existe; (5) con etiquetas parciales, **ARI**; (6) inspección visual (UMAP 2D, [[03-Preparacion-de-Datos]]) y **sentido de negocio** — un K=7 estadísticamente óptimo que marketing no puede accionar vale menos que un K=4 útil. Advertencia: silhouette, Davies-Bouldin y Calinski-Harabasz la guía de usuario de scikit-learn advierte que son «generalmente más altos para clusters convexos» que para los de densidad como los de DBSCAN; no sirven para comparar K-Means con DBSCAN/HDBSCAN ni para evaluar clusters de densidad — ahí mandan la estabilidad y la validación de negocio.
 
 ```
  inertia │●                          silhouette │      ●
          │ ●                                    │    ●   ●
          │  ●                                   │  ●       ●
-         │   ●___ codo (K≈4)                    │ ●          ●
+         │   ●___ codo: K≈4?                    │ ●          ●
          │       ●────●────●                    └─┬──┬──┬──┬──┬── K
          └────┬────┬────┬───── K                  2  3  4  5  6
-              2    4    6                         máximo en K=4 → confirma
+              2    4    6                         máximo en K=4 → decide
 ```
 
 ---
@@ -277,6 +279,10 @@ Audiencia: 🧭
 - (Arthur & Vassilvitskii, 2007) — K-Means++.
 - (Ester et al., 1996) — DBSCAN.
 - (Campello et al., 2013) — HDBSCAN.
+- (Campello et al., 2015) — jerarquía de densidad, visualización y el outlier score GLOSH. · (McInnes, Healy & Astels, 2017) — la librería `hdbscan`. · (McInnes, Healy & Melville, 2018) — UMAP ([[03-Preparacion-de-Datos]]). · (Grootendorst, 2022) — BERTopic ([[19-NLP-y-LLMs]]).
+- (Sculley, 2010) — Mini-Batch K-Means. · (Schubert et al., 2017) — *DBSCAN Revisited, Revisited*: heurísticas de parámetros y complejidad real. · (Gower, 1971) — el coeficiente de similitud para datos mixtos. · (Huang, 1998) — k-prototypes.
+- (Rousseeuw, 1987) — silhouette. · (Tibshirani, Walther & Hastie, 2001) — gap statistic y su regla de decisión. · (Schubert, 2023) — por qué dejar de usar el codo.
+- Documentación oficial (scikit-learn: `KMeans` y `HDBSCAN`; umap-learn: «Using UMAP for Clustering»; PyPI: scikit-learn-extra) → [[16-Bibliografia]] §13.
 - (Hastie et al., 2009) y (Géron, 2022) — clustering en el contexto del aprendizaje estadístico y su práctica.
 
 Fichas completas con datos de publicación en [[16-Bibliografia]].

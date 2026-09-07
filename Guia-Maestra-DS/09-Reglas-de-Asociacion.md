@@ -3,8 +3,8 @@ title: "Tomo 09 — Reglas de Asociación"
 tags: [data-science, machine-learning, association-rules, market-basket]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 09
-version: 6.2
-updated: 2026-08-28
+version: 6.3
+updated: 2026-09-06
 ---
 
 # 🛒 Tomo 09 — Reglas de Asociación
@@ -62,8 +62,10 @@ Audiencia: 🔧 🧭
 | **Lift** | `Confidence(A→B) / Support(B)` = `Support(A∪B) / (Support(A)·Support(B))` | [0,∞) | > 1: co-ocurren más de lo esperado al azar (relación real); = 1: independientes; < 1: se repelen | Puede dispararse con ítems muy raros aunque la asociación sea frágil (pocas observaciones) |
 | Conviction | `(1 − Support(B)) / (1 − Confidence(A→B))` | [0,∞) | Cuánto "depende del azar" la regla: ∞ = regla perfecta; 1 = independencia | Asimétrica: Conviction(A→B) ≠ Conviction(B→A) |
 | Leverage | `Support(A∪B) − Support(A)·Support(B)` | [−1,1] | Diferencia absoluta entre co-ocurrencia observada y esperada; 0 = independencia | Escala absoluta: favorece ítems frecuentes y opaca patrones raros valiosos |
-| Zhang's metric | Normalización de leverage | [−1,1] | +1 dependencia perfecta; −1 exclusión mutua; simétrica (considera A→B y B→A) | Menos conocida: cuidado al comunicarla sin explicación |
+| Zhang's metric | `leverage / max(supp(A∪B)·(1−supp(A)), supp(A)·(supp(B)−supp(A∪B)))` | [−1,1] | +1 dependencia perfecta; 0 independencia; −1 exclusión mutua. Mide asociación y disociación en una sola escala | **Direccional**: Zhang(A→B) ≠ Zhang(B→A) en general (el denominador depende de cuál es el antecedente); solo su numerador, el leverage, es simétrico. Menos conocida: acompáñala de una explicación al comunicarla. *(Corregido el 2026-09-06: decía «simétrica».)* |
 | Jaccard | `freq(A∪B) / (freq(A)+freq(B)−freq(A∪B))` | [0,1] | Similitud entre los conjuntos de transacciones de A y de B | Ignora la direccionalidad de la regla |
+
+**🔧 Nota de librería:** `association_rules` de mlxtend entrega además *certainty*, *kulczynski* y *representativity* (esta última pensada para datos con valores faltantes), y su código es la referencia operativa de la fórmula de Zhang (documentación y código fuente de mlxtend, consultados el 2026-09-06; [[16-Bibliografia]] §13). Ninguna sustituye al trío support/confidence/lift; sirven para desempatar reglas con lift similar.
 
 > [!warning] ⚠️ El trío mínimo de lectura
 > Ninguna métrica basta sola: una regla útil necesita **support razonable** (ocurre lo suficiente para accionar), **confidence decente** (la implicación es fiable) y **lift > 1 con holgura** (no es un espejismo de popularidad). Reglas con lift ≤ 1 se descartan sin duelo.
@@ -92,7 +94,7 @@ Audiencia: 🔧 🧭
 > [!tip] 💡 Analogía
 > En vez de releer todas las boletas una y otra vez, arma un **mapa mental comprimido** de todas las compras (el FP-Tree) en solo dos lecturas, y después explora ese mapa en memoria. Como resumir un libro en un esquema y estudiar del esquema.
 
-**🔧 Definición técnica:** (Han et al., 2000). Solo **2 pasadas** sobre los datos: (1) construir el FP-Tree — árbol comprimido en memoria que codifica las transacciones ordenadas por frecuencia; (2) minarlo recursivamente vía conditional pattern bases. No genera candidatos explícitos. **Ventaja:** típicamente 10–100× más rápido que Apriori; el FP-Tree suele caber en memoria. Implementación: `mlxtend.frequent_patterns.fpgrowth()`; PyFIM para volúmenes masivos.
+**🔧 Definición técnica:** (Han et al., 2000). Solo **2 pasadas** sobre los datos: (1) construir el FP-Tree — árbol comprimido en memoria que codifica las transacciones ordenadas por frecuencia; (2) minarlo recursivamente vía conditional pattern bases. No genera candidatos explícitos. **Ventaja:** alrededor de un orden de magnitud más rápido que Apriori en las pruebas del paper original (Han et al., 2000); el FP-Tree suele caber en memoria. *(Ajustado el 2026-09-06: decía «10–100×», cifra sin fuente.)* Implementación: `mlxtend.frequent_patterns.fpgrowth()`; PyFIM para volúmenes masivos.
 
 **🧭 Dataset ideal y caso de uso:** datasets grandes (millones de boletas, clickstream de e-commerce); el default de producción.
 
@@ -172,6 +174,8 @@ Audiencia: 🔧 🧭
 - (Zaki, 2000) — Eclat.
 - (Srikant & Agrawal, 1996) — *Mining Sequential Patterns: Generalizations and Performance Improvements*. EDBT.
 - (Pei et al., 2001) — *PrefixSpan: Mining Sequential Patterns Efficiently by Prefix-Projected Pattern Growth*. ICDE.
+- (Zaki, 2001) — SPADE, minería de secuencias frecuentes (tabla de §5).
+- Documentación oficial: mlxtend `association_rules` (fórmula de la métrica de Zhang; métricas certainty, kulczynski y representativity) → [[16-Bibliografia]] §13.
 
 Fichas completas con datos de publicación en [[16-Bibliografia]].
 

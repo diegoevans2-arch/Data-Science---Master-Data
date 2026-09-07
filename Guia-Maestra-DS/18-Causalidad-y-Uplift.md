@@ -3,8 +3,8 @@ title: "Tomo 18 — Causalidad y Uplift Modeling"
 tags: [data-science, machine-learning, causalidad, uplift, experimentacion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 18
-version: 6.2
-updated: 2026-07-29
+version: 6.3
+updated: 2026-09-06
 ---
 
 # 🎯 Tomo 18 — Causalidad y Uplift Modeling
@@ -153,10 +153,10 @@ Audiencia: 🔧 🧭
 | Método | Idea | Supuesto clave (el precio) | Cuándo conviene |
 |---|---|---|---|
 | Matching / Propensity Score | Emparejar tratados con no tratados de igual probabilidad de tratamiento `e(x) = P(T=1│X)` (Rosenbaum & Rubin, 1983) | **Ignorabilidad**: no hay confounders NO observados | Muchos controles disponibles y buenos covariables observados |
-| Diff-in-Diff (DiD) | Comparar el cambio antes/después del grupo tratado contra el cambio del grupo no tratado | **Tendencias paralelas**: sin el tratamiento, ambos grupos habrían evolucionado igual | Políticas aplicadas a una región/tienda/segmento con comparables |
+| Diff-in-Diff (DiD) | Comparar el cambio antes/después del grupo tratado contra el cambio del grupo no tratado | **Tendencias paralelas**: sin el tratamiento, ambos grupos habrían evolucionado igual | Políticas aplicadas a una región/tienda/segmento con comparables. Con adopción escalonada (varias fechas de inicio), usar un estimador robusto — ver callout |
 | Regresión Discontinua (RDD) | Comparar justo a ambos lados de un umbral arbitrario (puntaje de corte para beca/crédito) | Alrededor del corte, caer a un lado u otro es "casi azar" | Existe una regla de asignación con umbral nítido |
 | Variables Instrumentales (IV) | Usar una variable que mueve el tratamiento pero NO el outcome directamente | Exclusión: el instrumento solo actúa vía el tratamiento (difícil de defender) | Confounders no observados + un instrumento creíble |
-| Synthetic Control | Construir un "clon sintético" del tratado como combinación ponderada de no tratados | El clon replica bien la trayectoria pre-tratamiento | Pocas unidades grandes (una ciudad, una marca) |
+| Synthetic Control (Abadie, Diamond & Hainmueller, 2010; guía práctica: Abadie, 2021) | Construir un "clon sintético" del tratado como combinación ponderada de no tratados | El clon replica bien la trayectoria pre-tratamiento | Pocas unidades grandes (una ciudad, una marca) |
 | Double / Debiased ML | ML flexible para modelar tratamiento y outcome, con ortogonalización y cross-fitting para estimar el efecto (Chernozhukov et al., 2018) | Ignorabilidad + buenos modelos de nuisance | Muchos covariables, relaciones no lineales; el puente moderno ML↔causalidad |
 
 > [!tip] 💡 La joya escondida: Diff-in-Diff en una imagen
@@ -176,6 +176,12 @@ Audiencia: 🔧 🧭
 >   antes, el supuesto falla y el número miente.
 > ```
 
+> [!warning] ⚠️ DiD con adopción escalonada: el 2×2 no escala solo
+> En la práctica la política rara vez llega a todos a la vez: se despliega por tiendas, regiones o cohortes en fechas distintas (*staggered adoption*). La extensión «natural» — una regresión con efectos fijos de unidad y de período (*two-way fixed effects*, TWFE) — **no** es un DiD promedio inocente: es un promedio ponderado de todos los 2×2 posibles, incluyendo comparaciones que usan a unidades ya tratadas como «control» de las recién tratadas (Goodman-Bacon, 2021). Si el efecto cambia con el tiempo o difiere entre cohortes, algunos pesos son negativos y el coeficiente puede tener el signo contrario al de todos los efectos reales (de Chaisemartin & D'Haultfœuille, 2020). El estándar actual es estimar el efecto por cohorte y período y agregarlo explícitamente (Callaway & Sant'Anna, 2021; Sun & Abraham, 2021); la síntesis para practicantes es Roth et al. (2023). Regla operativa: si tu tratamiento tiene más de una fecha de inicio, TWFE es la hipótesis a refutar, no el resultado.
+
+> [!tip] 💡 Synthetic control: cuándo creerle y su puente con DiD
+> El clon sintético solo es creíble si se cumplen condiciones que Abadie (2021) recomienda revisar antes de estimar: un *donor pool* de unidades comparables no afectadas por la política (sin spillover), sin anticipación del tratamiento, un período pre suficientemente largo para que el ajuste no sea casualidad, y una unidad tratada que quede «dentro del rango» de los donantes — los pesos son no negativos y suman uno, así que el método no extrapola. La inferencia no usa p-valores clásicos sino **placebos en el espacio**: se estima el «efecto» para cada donante como si hubiera sido el tratado y se mira si el real destaca entre ellos (Abadie, Diamond & Hainmueller, 2010). Cuando el ajuste pre no es perfecto, el **synthetic difference-in-differences** (Arkhangelsky et al., 2021) combina ambas ideas — pesos de unidad y de tiempo más efectos fijos — y resulta más robusto que DiD o synthetic control por separado.
+
 **👔 En una frase para el negocio:** sin experimento igual se puede estimar impacto — pero cada método compra su conclusión con un supuesto que debe explicitarse y defenderse; pregunta siempre *cuál es el supuesto y qué pasa si falla*.
 
 ---
@@ -190,15 +196,18 @@ Como la ignorabilidad no se puede testear (sección 1.1), un análisis observaci
 |---|---|---|
 | **Placebo test** | Aplicar el método a un período/grupo donde el efecto DEBERÍA ser cero | Si "detecta" un efecto donde no puede haberlo, el método está sesgado |
 | **Negative control** | Un outcome que el tratamiento no puede causar | Si aparece afectado, hay un confounder acechando |
-| **Tendencias pre-tratamiento** | En DiD, verificar que los grupos venían paralelos ANTES | Sostiene (o derriba) el supuesto de paralelismo |
-| **Sensibilidad a confounders ocultos** | ¿Cuán fuerte tendría que ser un confounder no medido para anular el efecto? (E-value; Rosenbaum bounds) | Cuantifica cuán frágil es la conclusión |
+| **Tendencias pre-tratamiento** | En DiD, verificar que los grupos venían paralelos ANTES | Un pre-trend visible derriba el supuesto; uno «no significativo» NO lo confirma — ver callout |
+| **Sensibilidad a confounders ocultos** | ¿Cuán fuerte tendría que ser un confounder no medido para anular el efecto? (E-value; Rosenbaum bounds; robustness value de Cinelli & Hazlett, 2020) | Cuantifica cuán frágil es la conclusión |
 | **Refutación por placebo de tratamiento** | Reasignar el tratamiento al azar y confirmar que el efecto desaparece | El efecto no era un artefacto del método (DoWhy lo automatiza) |
+
+> [!warning] ⚠️ El pre-trend test no es un certificado de tendencias paralelas
+> Mirar cómo venían los grupos antes sigue siendo obligatorio, pero con dos matices que la literatura reciente estableció. Primero, los tests de pre-tendencias suelen tener **poca potencia**: no rechazar no equivale a «paralelas confirmadas». Segundo, condicionar el análisis a haber «pasado» el test distorsiona la estimación y la cobertura de los intervalos de confianza (Roth, 2022). La respuesta moderna es cambiar el test binario por un **análisis de sensibilidad**: acotar cuánto podría desviarse la tendencia post-tratamiento respecto de la mayor desviación observada en el período pre (por ejemplo, «a lo más M veces esa diferencia») y reportar el rango de efectos compatible con cada cota (Rambachan & Roth, 2023). Un hallazgo es defendible si sobrevive a violaciones del tamaño de las que ya se vieron antes del tratamiento; si solo sobrevive con paralelismo exacto, es frágil y hay que decirlo.
 
 > [!tip] 💡 Analogía
 > Una afirmación causal seria se parece a un puente: no basta con que se vea firme, hay que **cargarlo a propósito** para ver si aguanta. Los placebo tests y los controles negativos son los camiones que subes al puente antes de abrirlo al público. Si el analista no intentó tumbar su propio hallazgo, alguien lo hará después — y más caro.
 
 > [!danger] 🚨 La pregunta que desarma el 80% de los "hallazgos causales"
-> *"¿Qué confounder no medido explicaría este resultado, y cuán grande tendría que ser?"* Si la respuesta es "uno pequeño y plausible bastaría" (por ejemplo: la motivación del cliente, que nunca mides), la conclusión es frágil por más sofisticado que haya sido el modelo. El **E-value** (VanderWeele & Ding, 2017) pone número exacto a esa fragilidad.
+> *"¿Qué confounder no medido explicaría este resultado, y cuán grande tendría que ser?"* Si la respuesta es "uno pequeño y plausible bastaría" (por ejemplo: la motivación del cliente, que nunca mides), la conclusión es frágil por más sofisticado que haya sido el modelo. El **E-value** (VanderWeele & Ding, 2017) traduce esa fragilidad a un número: la asociación mínima (en escala de risk ratio) que un confounder tendría que tener, a la vez con el tratamiento y con el outcome, para anular el efecto. Úsalo con dos advertencias: es una cota bajo supuestos, no una medición, y es una función monótona del propio estimado, así que no aporta información nueva ni existe un umbral universal de «E-value suficiente» (Ioannidis, Tan & Blum, 2019 — una crítica breve y debatida, no un consenso). Para modelos de regresión, el complemento hoy habitual es el **robustness value** de Cinelli & Hazlett (2020): la fuerza mínima de asociación (en R² parcial con tratamiento y outcome) que necesitaría un confounder no observado para cambiar la conclusión, calculable con la salida estándar de la regresión y comparable contra covariables ya observadas («¿tendría que ser más fuerte que la edad?»). Esa comparación con variables conocidas es lo que convierte la sensibilidad en argumento de dominio y no en un número suelto.
 
 **👔 En una frase para el negocio:** exige que quien te trae un número causal te muestre **cómo intentó refutarlo**; un efecto que nadie trató de tumbar no está validado, solo está sin auditar.
 
@@ -252,9 +261,13 @@ Audiencia: 🔧 🧭 👔
 | **T-learner** | Dos modelos separados (tratados y controles), se restan | Flexible; más **varianza**, sobre todo con grupos chicos |
 | **X-learner** | Cruza imputaciones de efecto y pondera por propensity | Fuerte con **grupos desbalanceados** (control pequeño) |
 | **Uplift trees** | Árboles que hacen split por diferencia de uplift, no de pureza | Interpretables; directos al objetivo causal |
+| **R-learner** | Residualiza outcome y tratamiento contra X (como Double ML) y ajusta el CATE sobre los residuos (Nie & Wager, 2021) | Robusto a errores moderados en los modelos de nuisance; cualquier learner en ambas etapas |
+| **Causal forest / GRF** | Random forest cuyos splits buscan heterogeneidad del efecto, con *honest splitting* (Wager & Athey, 2018; Athey, Tibshirani & Wager, 2019) | CATE con intervalos de confianza; estimador por defecto en grf y EconML |
 
 > [!warning] ⚠️ El uplift no se evalúa como un clasificador
 > No existe ground truth individual del efecto (nunca ves los dos mundos de una persona — sección 1). Por eso **no hay AUC de uplift al estilo clásico**. Se usa la **curva de uplift / coeficiente Qini** (Radcliffe, 2007): ordenar por uplift predicho y medir la ganancia incremental acumulada frente a targeting aleatorio — es el "AUC del mundo causal". Métricas complementarias: uplift@k (efecto en el top k% al que sí contactarías). **Librerías:** causalml (Uber), EconML (Microsoft), DoWhy (grafos, supuestos y refutación).
+>
+> **Dos matices actuales sobre la evaluación.** (1) La curva Qini clásica supone tratamiento aleatorizado; con datos observacionales, ordenar por uplift y comparar tasas crudas mezcla efecto con selección: hay que construirla con *doubly robust scores* (propensity más modelos de outcome). (2) Más allá de Qini, el **RATE** (*rank-weighted average treatment effect*; Yadlowsky et al., 2025) generaliza la curva: pondera el efecto acumulado por rango con pesos Qini o **AUTOC** y aporta un teorema del límite central para **testear** si la regla de priorización supera al azar. AUTOC tiene más potencia cuando pocos individuos concentran el efecto; Qini, cuando la heterogeneidad es difusa. Nota de ecosistema: EconML forma parte hoy de PyWhy.
 
 **🧭 Cuándo usarlo:** retención, cross-sell, cobranza, pricing promocional — toda acción cara dirigida a personas donde parte del resultado ocurriría solo. Prerrequisito: haber corrido (o poder correr) un experimento con grupo de control para entrenar.
 
@@ -283,7 +296,7 @@ Síntesis operativa del tomo — de la pregunta a la herramienta:
 | Una política llegó a un grupo con comparables | **Diff-in-Diff** | Verifica tendencias paralelas pre-tratamiento |
 | Hay una regla de corte nítida (umbral) | **RDD** | Solo estima el efecto CERCA del umbral |
 | Confounders no observados + un instrumento creíble | **Variables instrumentales** | El supuesto de exclusión es el talón de Aquiles |
-| Una sola unidad grande tratada (una ciudad) | **Synthetic control** | Necesita buen ajuste pre-tratamiento |
+| Una sola unidad grande tratada (una ciudad) | **Synthetic control** | Necesita buen ajuste pre y un donor pool comparable; si el ajuste no es perfecto, Synthetic DiD (Arkhangelsky et al., 2021) |
 | **En todos los casos** | **Dibuja el DAG y explicita los supuestos** | Y pregunta cómo se intentó refutar el hallazgo |
 
 > [!tip] 🧭 El orden correcto de trabajo
@@ -298,6 +311,11 @@ Síntesis operativa del tomo — de la pregunta a la herramienta:
 - (Hernán & Robins, 2020) — *Causal Inference: What If*, el manual moderno abierto.
 - (Chernozhukov et al., 2018) — Double/Debiased ML. · (Künzel et al., 2019) — metalearners. · (Radcliffe, 2007) — Qini y evaluación de uplift.
 - (Simpson, 1951) — la paradoja de Simpson. · (VanderWeele & Ding, 2017) — E-value y sensibilidad a confounders no medidos.
+- (Callaway & Sant'Anna, 2021) · (Goodman-Bacon, 2021) · (Sun & Abraham, 2021) · (de Chaisemartin & D'Haultfœuille, 2020) — DiD con adopción escalonada y el problema de TWFE. · (Roth et al., 2023) — síntesis de la literatura reciente de DiD.
+- (Roth, 2022) — pre-trend tests: poca potencia y distorsión por condicionar. · (Rambachan & Roth, 2023) — análisis de sensibilidad a violaciones de tendencias paralelas.
+- (Cinelli & Hazlett, 2020) — robustness value y sensibilidad a confounders omitidos. · (Ioannidis, Tan & Blum, 2019) — límites del E-value.
+- (Abadie, Diamond & Hainmueller, 2010) — synthetic control. · (Abadie, 2021) — cuándo usar synthetic controls. · (Arkhangelsky et al., 2021) — synthetic difference-in-differences.
+- (Wager & Athey, 2018) — causal forests. · (Athey, Tibshirani & Wager, 2019) — generalized random forests. · (Nie & Wager, 2021) — R-learner. · (Yadlowsky et al., 2025) — RATE / AUTOC para evaluar reglas de priorización.
 
 Fichas completas en [[16-Bibliografia]].
 

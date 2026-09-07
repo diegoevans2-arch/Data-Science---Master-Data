@@ -3,8 +3,8 @@ title: "Tomo 14 — Anexo: Cómo Interpretar Resultados (para no técnicos)"
 tags: [data-science, machine-learning, ejecutivo, interpretacion, anexo]
 audiencias: [ejecutivo, puente]
 tomo: 14
-version: 6.1
-updated: 2026-08-28
+version: 6.2
+updated: 2026-09-06
 ---
 
 # 👓 Tomo 14 — Anexo: Cómo Interpretar Resultados (para no técnicos)
@@ -103,7 +103,10 @@ Audiencia: 👔 🧭
 - **Una variable que domina aplastantemente es bandera roja:** puede ser información filtrada del futuro (leakage, [[10-Validacion-y-Leakage]]) — el modelo "adivina" porque le soplaron la respuesta.
 - **En un SHAP summary**, cada punto es un cliente: el color indica si su valor en esa variable es alto o bajo, y el lado (izquierda/derecha) hacia dónde empujó su predicción. Busca coherencia: "muchos meses sin comprar" (alto) debería empujar hacia "riesgo de fuga", no al revés.
 
-**Preguntas de ejecutivo ante un feature importance:** ¿las variables top estaban disponibles ANTES del momento de la decisión? · ¿alguna es un proxy de género/edad/zona que nos exponga a discriminación? ([[13-MLOps-XAI-Etica]]) · ¿qué pasa con el modelo si mañana dejamos de tener una de estas variables?
+> [!warning] ⚠️ El ranking no es único ni es causalidad
+> No existe *el* ranking: hay varios métodos y no siempre coinciden. La importancia «por impureza» que traen de fábrica los modelos de árboles favorece a las variables con muchos valores distintos y se mide sobre los datos de entrenamiento; la *permutation importance* y SHAP (Lundberg & Lee, 2017) corrigen eso, pero cuando dos variables cuentan la misma historia (ingreso y saldo, por ejemplo) se reparten el crédito o ambas parecen irrelevantes (Strobl et al., 2008; Hooker et al., 2021). Y ninguna mide causalidad: describen qué usa *este* modelo, no qué mueve el negocio ([[18-Causalidad-y-Uplift]]). Si cambiar de método reordena el top 3, no es un error: es la huella de variables correlacionadas.
+
+**Preguntas de ejecutivo ante un feature importance:** ¿las variables top estaban disponibles ANTES del momento de la decisión? · ¿alguna es un proxy de género/edad/zona que nos exponga a discriminación? ([[13-MLOps-XAI-Etica]]) · ¿qué pasa con el modelo si mañana dejamos de tener una de estas variables? · ¿con qué método calcularon la importancia, y cambia el top 3 si lo calculan de otra forma?
 
 ---
 
@@ -209,6 +212,13 @@ Audiencia: 👔
 
 > [!warning] ⚠️ La regla de oro del ejecutivo
 > No necesitas entender el algoritmo; necesitas entender **el error**: cuánto cuesta, quién lo paga y cómo se vigila. Todo lo demás es implementación.
+
+## 📖 Referencias de este anexo
+
+- (Lundberg & Lee, 2017) — SHAP. · (Strobl et al., 2008) — el sesgo de la importancia con predictores correlacionados. · (Hooker et al., 2021) — por qué permutar fuerza al modelo a extrapolar.
+- Documentación oficial de scikit-learn, «Permutation feature importance» («does not reflect the intrinsic predictive value of a feature by itself but how important this feature is for a particular model») → [[16-Bibliografia]] §13.
+
+Fichas completas con datos de publicación en [[16-Bibliografia]].
 
 ---
 

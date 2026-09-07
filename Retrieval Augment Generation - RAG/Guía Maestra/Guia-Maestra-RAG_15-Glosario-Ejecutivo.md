@@ -3,7 +3,8 @@ title: "Tomo 15 — Glosario ejecutivo"
 tags: [rag, glosario, ejecutivo, vocabulario, transversal, referencia]
 audiencias: [ejecutivo, puente, tecnico]
 tomo: 15
-version: 1.0
+version: 1.1
+updated: 2026-09-05
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -13,7 +14,7 @@ author: El Egypcio
 # Tomo 15 — Glosario ejecutivo
 
 > [!info] Navegación
-> [[Guia-Maestra-RAG_00-MOC-Guia-Maestra-RAG|🗺️ Volver al índice]] · Anterior → [[Guia-Maestra-RAG_13-Frameworks-LangChain-LlamaIndex|Tomo 13 · ⭐ Complemento: frameworks]] · Siguiente → [[Guia-Maestra-RAG_16-Bibliografia|Tomo 16 · Bibliografía]]
+> [[Guia-Maestra-RAG_00-MOC-Guia-Maestra-RAG|🗺️ Volver al índice]] · Anterior → [[Guia-Maestra-RAG_14-Structured-Data-RAG|Tomo 14 · ⭐ Complemento: structured data RAG]] · Siguiente → [[Guia-Maestra-RAG_16-Bibliografia|Tomo 16 · Bibliografía]]
 >
 > *(Los Tomos 12 y 13 son complementos de vanguardia aún pendientes. Este tomo se lee perfectamente sin ellos.)*
 
@@ -480,4 +481,4 @@ Los **154 términos** de la guía, con el tomo donde se define a fondo. Los marc
 ---
 
 > [!info] Navegación
-> [[Guia-Maestra-RAG_00-MOC-Guia-Maestra-RAG|🗺️ Volver al índice]] · Anterior → [[Guia-Maestra-RAG_13-Frameworks-LangChain-LlamaIndex|Tomo 13 · ⭐ Complemento: frameworks]] · Siguiente → [[Guia-Maestra-RAG_16-Bibliografia|Tomo 16 · Bibliografía]]
+> [[Guia-Maestra-RAG_00-MOC-Guia-Maestra-RAG|🗺️ Volver al índice]] · Anterior → [[Guia-Maestra-RAG_14-Structured-Data-RAG|Tomo 14 · ⭐ Complemento: structured data RAG]] · Siguiente → [[Guia-Maestra-RAG_16-Bibliografia|Tomo 16 · Bibliografía]]
