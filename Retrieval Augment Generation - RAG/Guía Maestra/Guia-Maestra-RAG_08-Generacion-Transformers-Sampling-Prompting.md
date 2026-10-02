@@ -3,7 +3,8 @@ title: "Tomo 08 — Generación: transformers, sampling y prompt engineering"
 tags: [rag, transformer, attention, sampling, temperature, top-p, top-k, prompt-engineering, reasoning-models, benchmarks]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 08
-version: 1.0
+version: 1.1
+updated: 2026-10-02
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -49,9 +50,9 @@ Audiencia: 🔧 🧭
 ```
 
 > [!important] Por qué esto importa para RAG
-> **La mayoría de los LLMs solo incluye el segundo componente, el decoder**, porque lo único que les interesa es generar texto. Los **transformers completos** se usan típicamente **dentro de los embedding models**, cuyo objetivo es construir representaciones semánticas ricas.
+> **La mayoría de los LLMs solo incluye el segundo componente, el decoder**, porque lo único que les interesa es generar texto. Y su atención es **causal**: cada token solo puede mirar a los anteriores, nunca a los que vienen después (Vaswani et al., 2017). Los **embedding models**, cuyo objetivo es construir representaciones semánticas ricas, suelen usar el otro componente, el **encoder**, con atención bidireccional: aquí sí, cada token mira a todos los demás. El `bge-base-en-v1.5` del curso, por ejemplo, es un modelo tipo BERT (`BertModel`, según su `config.json`). El transformer completo (encoder + decoder) queda para tareas como la traducción del paper original *(corregido el 2026-10-02: decía que los embedding models usan «el transformer completo» y que en un LLM cada token mira a «todos los demás»)*.
 >
-> Es decir: el embedding model del [[Guia-Maestra-RAG_04-Semantic-Search-y-Embeddings|Tomo 04]] y el LLM que genera la respuesta son **dos usos distintos de la misma familia de arquitectura**. Una comprime significado; la otra produce texto.
+> Es decir: el embedding model del [[Guia-Maestra-RAG_04-Semantic-Search-y-Embeddings|Tomo 04]] y el LLM que genera la respuesta son **dos usos distintos de la misma familia de arquitectura**. Una comprime significado (encoder); la otra produce texto (decoder).
 
 ### 1.1 El viaje de un prompt
 
@@ -79,10 +80,10 @@ Audiencia: 🔧 🧭
         │
         ▼
    ④ ATTENTION  ◄─────────────────────────┐
-      Cada token mira a TODOS los demás:   │
-      ve su significado y su posición, y   │
-      decide a cuáles prestar atención.    │  se repite
-        │                                  │  8 – 64 veces
+      Cada token mira a los ANTERIORES     │
+      (atención causal) y decide a         │  se repite
+      cuáles prestar atención.             │  8 – 64 veces
+        │                                  │
         ▼                                  │
    ⑤ FEEDFORWARD                           │
       La parte más grande del modelo (la   │
@@ -146,7 +147,7 @@ El curso cierra la lección conectando la arquitectura con el diseño del sistem
 |---|---|---|
 | 1 | **Explica por qué RAG funciona en primer lugar** | Los LLMs pueden entender profundamente el significado y la relevancia de la información añadida al prompt — gracias al procesamiento del attention y al conocimiento del mundo contenido en las capas feedforward |
 | 2 | **Los LLMs siguen siendo inherentemente aleatorios** | Aunque inyectes información significativa en el prompt, el modelo **puede elegir al azar no generar texto basado en ella**. Controlar esa aleatoriedad y confirmar el grounding sigue siendo necesario |
-| 3 | **Un LLM es computacionalmente carísimo** | Generar **un solo token** exige muchísimo procesamiento, y el costo **crece con el largo** del prompt y de la completion: cada token debe mirar a todos los demás |
+| 3 | **Un LLM es computacionalmente carísimo** | Generar **un solo token** exige muchísimo procesamiento, y el costo **crece con el largo** del prompt y de la completion: cada token debe mirar a todos los anteriores |
 
 > [!abstract] 👔 De dónde viene la factura
 > La consecuencia nº3 tiene una traducción directa: *"la mayor parte de los costos de operar un sistema RAG viene de correr estos modelos transformer, potentes pero caros"*. No viene de la vector database, ni del índice, ni del almacenamiento. **Viene de los tokens.** Y por eso todo lo que reduzca el largo del prompt —mejor chunking, mejor re-ranking, context pruning (sección 5.4)— es también una decisión de presupuesto.
@@ -219,7 +220,7 @@ Y la **forma** de esa curva es interpretable:
                        █ █ █ █ █            aunque no tengan sentido
 ```
 
-> [!note] Dos precisiones sobre temperature
+> [!note] Tres precisiones sobre temperature
 > - **El orden de los tokens no cambia**, solo sus probabilidades. Temperature no reordena: reescala.
 > - **`temperature = 1` NO es determinista.** El lab lo marca como punto importante y conviene subrayarlo: la distribución original sigue teniendo cola, y el modelo puede elegir de ahí. El único valor determinista es **0**.
 > - **No tiene tope teórico** (cualquier positivo), aunque los proveedores suelen imponer un límite. `top_p`, en cambio, está acotado a [0, 1].
@@ -802,7 +803,7 @@ Audiencia: 👔 💡
 
 Audiencia: 🔧 🧭 👔
 
-- [ ] Sé por qué los LLMs son solo el decoder y los embedding models usan el transformer completo.
+- [ ] Sé por qué los LLMs son solo el decoder (atención causal) y los embedding models suelen ser solo el encoder (atención bidireccional), no el transformer completo.
 - [ ] Puedo describir el viaje de un prompt: tokenización → embedding → posición → attention → feedforward → repetir → distribución → sorteo.
 - [ ] Entiendo qué es un attention head y por qué hay decenas o cientos.
 - [ ] Sé enunciar las tres consecuencias de la arquitectura para RAG, y que **el costo viene de los tokens**.

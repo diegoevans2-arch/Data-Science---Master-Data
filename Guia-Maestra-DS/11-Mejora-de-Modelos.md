@@ -3,8 +3,8 @@ title: "Tomo 11 — Técnicas de Mejora de Modelos"
 tags: [data-science, machine-learning, hiperparametros, ensembles, regularizacion, calibracion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 11
-version: 6.4
-updated: 2026-09-06
+version: 6.5
+updated: 2026-10-02
 ---
 
 # 🚀 Tomo 11 — Técnicas de Mejora de Modelos
@@ -233,7 +233,7 @@ Audiencia: 🔧 🧭
 **🔧 Conexiones:**
 - Interpretabilidad completa (SHAP, LIME, PDP) → [[13-MLOps-XAI-Etica]]
 - Feature selection y engineering → [[03-Preparacion-de-Datos]]
-- Detección de leakage: una feature con importancia desproporcionada (>50% del total) es sospechosa → auditar disponibilidad temporal ([[10-Validacion-y-Leakage]])
+- Detección de leakage: una feature con importancia desproporcionada es sospechosa → auditar disponibilidad temporal ([[10-Validacion-y-Leakage]]). Reglas de bolsillo: > 10 % del total en una sola feature merece una mirada (ver [[13-MLOps-XAI-Etica]]); > 50 % es alarma fuerte.
 
 **🧭 Cuándo usarlo:** después del primer modelo entrenado, **antes** de tunear hiperparámetros. Eliminar features inútiles y crear features derivadas de las importantes suele mover más la métrica que semanas de tuning.
 

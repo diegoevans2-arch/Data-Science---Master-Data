@@ -3,8 +3,8 @@ title: "Tomo 00 — MOC · Guía Maestra de RAG"
 tags: [rag, moc, indice, guia-maestra]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 00
-version: 2.3
-updated: 2026-09-05
+version: 2.4
+updated: 2026-10-02
 status: in-progress
 type: vault-index
 project: guia-maestra-rag
@@ -60,6 +60,7 @@ author: El Egypcio
 > 2. **El Tomo 07 amplió su alcance** para recibir las tres lecciones de *query time* del M3 (query parsing + arquitecturas + re-ranking). Su título visible cambió a *"Query parsing, arquitecturas de scoring y re-ranking"*; **el nombre de archivo se mantiene** (`...07-Reranking-Cross-Encoders-y-ColBERT`) para no romper los wikilinks que ya lo apuntan desde los Tomos 02–06.
 
 > [!note] Revisiones de tomos ya publicados
+> - **Tomos 01, 03–14 → correcciones de contenido (2026-10-02).** Al verificar los prompts de podcast contra sus tomos aparecieron errores **en los tomos mismos**; se corrigieron los 37 mapeados, cada uno contrastado con su fuente (texto del paper, código fuente, archivo de configuración, salida real del notebook). Lo más relevante: **T05** — `flat_search_cutoff` aplica a búsquedas con filtro, no al tamaño de la colección (código de Weaviate); **T07** — el hybrid del assignment no usa RRF sino relativeScoreFusion (default desde Weaviate 1.24) y el orden de prioridades quedó único; **T01** — las dos salidas del experimento se cortan en el mismo límite de tokens, así que «más larga» no se sostiene; **T03/T10** — el metadata filtering personaliza, no es una frontera de seguridad; **T08** — atención causal en los LLM y encoders en los embedding models; **T11** — las cifras de binary de la tabla incluyen rescoring y las de int8 no; **T13** — el cero de frameworks es del material del curso, y RAGFlow no supera a los otros cuatro «juntos»; **T14** — los validadores SQL se probaron: `execute_sql_safe` dejaba pasar `SELECT 1;DROP TABLE x`, y el bloque pandas no era un sandbox y fallaba por un `import numpy` faltante. El T10 renumeró su segundo «§5» como §10. Tomo 16 → v1.2 (+8 fichas, 127). Detalle en `CONTEXT.md` §10.
 > - **Tomos 04, 05, 06 y 07 → nivelación de casos de negocio (2026-07-25).** Una auditoría contra el checklist §12 de [[Instrucciones|📖 Instrucciones]] detectó que estos cuatro tomos **no tenían el callout `[!example]` 📊 de caso de negocio**, mientras los Tomos 01–03 sí. La plantilla lo define como discrecional (*"solo en secciones grandes donde valga la pena"*), pero cuatro de siete sin él era una deriva — y justo en el bloque que le habla al perfil ejecutivo 👔. Se agregó uno por tomo, con industria fresca (ya estaban usadas retail, telco y banca) y mostrando la técnica propia de cada tomo: **T04 seguros** (hybrid search y el vocabulary mismatch de las pólizas), **T05 medios** (el archivo de 12 M de piezas donde el prototipo kNN colapsó), **T06 salud** (el protocolo clínico cortado a mitad de dosis), **T07 legal** (los documentos que se recuperaban pero llegaban en el puesto 14). **Los 7 tomos tienen ahora su caso de negocio.**
 > - **Tomo 04 → v1.2 (2026-07-25).** Se agregó la reconciliación **`alpha` ≡ `beta`**: la clase teórica del M2 llama `beta` al peso del lado semántico en hybrid search, pero el parámetro real en Weaviate (y el estándar de facto) se llama **`alpha`**. Incluye la advertencia de que algunas implementaciones **invierten el sentido** y de verificar con un caso extremo (`alpha=0` / `alpha=1`) antes de tunear.
 > - **Tomo 03 → v1.2 (2026-07-18).** Se indexaron las láminas *BM25 Scoring* y *BM25 Tunable Parameters*. **La fórmula de BM25 del tomo coincide exactamente con la del curso** — quedaba como el único punto donde la guía podía contradecir a la fuente primaria, y queda cerrado. Se afinaron los rangos de `k1` (1.2–2.0) y `b` (0–1) con la redacción de la lámina.
@@ -116,7 +117,7 @@ Plan realineado al temario real de los 5 módulos del curso. Los tomos 01–11 s
 > El plan lo describía como *"técnicas avanzadas que son práctica estándar en producción"*. Al ser el primer tomo **sin fuente primaria**, se verificó toda la bibliografía **antes** de escribir — y la búsqueda de evaluaciones comparativas devolvió lo contrario de lo esperado:
 > - **Query rewriting y query decomposition empeoran el retrieval** en consultas de un salto, a 3× y 5,7× la latencia (Wang et al., EMNLP 2024). Cuatro evaluaciones independientes coinciden.
 > - **Multi-query / RAG-Fusion no tiene paper fundacional** (es folclore de framework, popularizado por un post de LangChain de oct-2023) **y** la evidencia que existe es negativa: Hit@10 de 0,51 → 0,48.
-> - **GraphRAG cuesta ~350× más tokens** que RAG vainilla y pierde contra él en tareas simples. Su paper sigue siendo preprint tras dos años, mientras **todas sus alternativas están publicadas** (RAPTOR/ICLR, HippoRAG/NeurIPS, HippoRAG 2/ICML, LightRAG/Findings-EMNLP).
+> - **GraphRAG cuesta ~350–380× más tokens** que RAG vainilla y pierde contra él en tareas simples. Su paper sigue siendo preprint tras dos años, mientras **todas sus alternativas están publicadas** (RAPTOR/ICLR, HippoRAG/NeurIPS, HippoRAG 2/ICML, LightRAG/Findings-EMNLP).
 > - Lo que **sí** paga: reranking, hybrid search, y —lo más rentable de todo— **un clasificador que decida no recuperar**: solo el 27,8 % de las consultas reales necesitan aumentación (Hussain & Nielbo, 2026, sobre 20.000 consultas de producción).
 >
 > **El tomo se escribió como mapa de "qué paga y qué no", no como catálogo.** Es más útil así, y es lo que la evidencia sostiene.

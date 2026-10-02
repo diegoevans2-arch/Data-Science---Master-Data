@@ -3,8 +3,8 @@ title: "Tomo 12 — ⭐ Técnicas avanzadas de query: decomposition, multi-query
 tags: [rag, complemento, vanguardia, query-decomposition, multi-query, graphrag, raptor, self-rag, ircot, step-back, hyde]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 12
-version: 1.2
-updated: 2026-09-05
+version: 1.3
+updated: 2026-10-02
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -39,7 +39,7 @@ author: El Egypcio
 
 > [!abstract] 👔 Impacto ejecutivo
 > - **Decisiones que habilita:** rechazar con evidencia una propuesta de "vamos a añadir GraphRAG"; distinguir la técnica que resuelve tu problema real de la que solo suena avanzada; saber cuándo la respuesta correcta es **arreglar lo básico** en vez de añadir una capa.
-> - **Costo o riesgo de hacerlo mal:** adoptar por moda una técnica que multiplica el costo por 350 y **pierde calidad** en tus consultas reales. Es un riesgo documentado, no hipotético.
+> - **Costo o riesgo de hacerlo mal:** adoptar por moda una técnica que multiplica el costo por más de 350 y **pierde calidad** en tus consultas reales. Es un riesgo documentado, no hipotético.
 > - **Pregunta que responde:** *"todo el mundo habla de esto — ¿lo necesitamos nosotros?"*
 
 ---
@@ -474,7 +474,7 @@ Lo cuantificaron otros — incluida **Microsoft misma**:
 | Fuente | Dato |
 |---|---|
 | **Microsoft**, al lanzar *LazyGraphRAG* (7 meses después) | El indexado de LazyGraphRAG cuesta *"**0,1 % of the costs of full GraphRAG**"* → implica **~1.000×**. Y describe los costos del original como *"**prohibitive** for some users and use cases"* |
-| **GraphRAG-Bench**, evaluación independiente | MS-GraphRAG global: **~331.000 tokens/consulta** frente a **~879** de RAG vainilla → **~350×** |
+| **GraphRAG-Bench**, evaluación independiente | MS-GraphRAG global: **~331.000 tokens/consulta** frente a **~879** de RAG vainilla (**~954** en la tabla de la §7.4, del mismo trabajo) → **~350–380×** *(corregido el 2026-10-02: decía «~350×» con 879, y 331.000/879 ≈ 377)* |
 | **Han et al.** | Construcción del índice: **5.560 s vs 135 s** de RAG → **41×** |
 | **LightRAG** | Actualización incremental: **~14M tokens** para regenerar las comunidades. **No hay forma barata de añadir documentos** |
 
@@ -507,7 +507,7 @@ Y en el propio paper, un dato que la narrativa omite: de las cuatro métricas ev
 \* GraphRAG-Bench (Xiang et al.)
 
 > [!important] 🎯 El patrón que ordena toda esta sección
-> **El único trabajo que no pasó revisión por pares es el canónico.** GraphRAG lleva más de dos años como preprint con ~1.800 citas, mientras que **las cuatro alternativas están publicadas en ICLR, NeurIPS, ICML y EMNLP**.
+> **El único trabajo que no pasó revisión por pares es el canónico.** GraphRAG lleva más de dos años como preprint con ~1.800 citas, mientras que **las cuatro alternativas están publicadas en ICLR, NeurIPS, ICML y *Findings* de EMNLP** (LightRAG es Findings, no la conferencia principal) *(corregido el 2026-10-02)*.
 >
 > Y la frontera ya se movió: **HippoRAG 2 alcanza ~1.000 tokens por consulta —nivel RAG vainilla— ganando en multi-hop.** Si el problema que tienes es el que GraphRAG ataca, hoy hay opciones dos órdenes de magnitud más baratas.
 >
@@ -546,7 +546,7 @@ Audiencia: 🔧 🧭 👔
 | **Multi-query / RAG-Fusion** | ❌ **No** | Sin paper fundacional **y** con evidencia negativa: Hit@10 de 0,51 → 0,48 (§4.3) | N llamadas + fusión |
 | **Self-RAG** | ⚠️ Discutido | ICLR Oral, pero por debajo del RAG estándar en evaluación unificada | **Requiere entrenar el modelo** |
 | **CRAG** | ⚠️ Prometedor | Preprint; reproducción favorable pero débil | Evaluador + web search |
-| **GraphRAG (MS)** | ❌ **No como default** | Pierde contra RAG vainilla en tareas simples | **~350×** tokens |
+| **GraphRAG (MS)** | ❌ **No como default** | Pierde contra RAG vainilla en tareas simples | **~350–380×** tokens |
 | **RAPTOR / HippoRAG 2** | ✅ Si necesitas jerarquía | ICLR 2024 / ICML 2025 | ~3.400 / **~1.000** tokens |
 
 > [!important] 🎯 El patrón, en una línea

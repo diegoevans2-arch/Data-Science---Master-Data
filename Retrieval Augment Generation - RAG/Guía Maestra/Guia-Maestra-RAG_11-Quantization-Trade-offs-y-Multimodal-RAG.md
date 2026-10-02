@@ -3,7 +3,8 @@ title: "Tomo 11 — Quantization, trade-offs de cost/latency y multimodal RAG"
 tags: [rag, quantization, int8, binary-quantization, matryoshka, cost, latency, caching, multi-tenancy, multimodal, vision-language-model, colpali]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 11
-version: 1.0
+version: 1.1
+updated: 2026-10-02
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -111,6 +112,8 @@ Audiencia: 🔧 🧭 👔
 >
 > **Matiz ③ — y este es el importante:** la compresión de 4× y de 32× es un **hecho aritmético**; el costo en calidad **no lo es**. Un embedding entrenado sin conciencia de cuantización puede degradarse mucho más de lo que sugiere el promedio. La única cifra que puedes dar por segura sin medir es la del tamaño.
 >
+> **Matiz ④ — qué incluye cada columna de la tabla.** Según el propio blog, la columna **binary** está calculada **con rescoring** (top-100 con `rescore_multiplier` = 4) y la de **int8** **sin** rescoring. Sin rescoring, `mxbai-embed-large-v1` con binary retiene **92,53 %**, no 96,45 % (ver el patrón de dos fases en §1.3). Por eso las cifras de binary y de int8 de la tabla no se comparan en igualdad de condiciones *(aclarado el 2026-10-02)*.
+>
 > Velocidad medida en el mismo trabajo (búsqueda exacta en CPU): int8 ≈ **3,66×** más rápido; binary ≈ **24,76×** (hasta 45×).
 
 ### 1.3 Binary quantization: el extremo
@@ -123,7 +126,7 @@ Audiencia: 🔧 🧭 👔
    VECTOR ORIGINAL (float32)      →   BINARIO (1 bit)
    [ 0.42, -0.13,  0.87, -0.55 ]  →   [ 1, 0, 1, 0 ]
    
-   128 bytes (4 dims × 32 bits)   →   4 bits
+   16 bytes (4 dims × 32 bits)    →   4 bits   (32× menos)
 ```
 
 > [!warning] ⚠️ Aquí la pérdida SÍ se nota — y depende del modelo mucho más de lo que parece
@@ -131,7 +134,7 @@ Audiencia: 🔧 🧭 👔
 >
 > La contrapartida: *"la quantization de 1 bit resulta en retrieval basado en vectores significativamente más pequeño y más rápido."*
 >
-> **El dato externo que hay que tener presente:** en la tabla de §1.2, binary retiene un **96,45 %** con `mxbai-embed-large-v1` pero solo un **74,77 %** con `e5-base-v2` — veinticinco puntos de diferencia **con la misma técnica**. La compresión de 32× está garantizada; la calidad resultante no. **Binary quantization no es una decisión que se tome leyendo un blog: se toma midiendo sobre tu propio corpus y tu propio modelo.**
+> **El dato externo que hay que tener presente:** en la tabla de §1.2, binary (con rescoring) retiene un **96,45 %** con `mxbai-embed-large-v1` pero solo un **74,77 %** con `e5-base-v2` — más de veinte puntos de diferencia (21,7) **con la misma técnica** *(corregido el 2026-10-02: decía «veinticinco puntos»)*. La compresión de 32× está garantizada; la calidad resultante no. **Binary quantization no es una decisión que se tome leyendo un blog: se toma midiendo sobre tu propio corpus y tu propio modelo.**
 
 **🔧 El patrón que rescata la calidad — retrieval en dos fases:**
 
@@ -542,6 +545,8 @@ Eso **no es JSON válido** (JSON no tiene sets), y el prompt afirma que lo es. P
 | `simplified=False` | **Camisa + corbata** (John Players Men Teal Shirt + Provogue Men Pink Tie) — un "look" plausible |
 | `simplified=True` | **Zapatos + pack de corbata**, sin ninguna prenda superior. El propio modelo se disculpa en la respuesta: *"aunque el producto está categorizado en temporada Fall"* y *"el zapato negro es el único ítem específicamente etiquetado para uso nocturno"* |
 
+(Ojo: la misma consulta, en el assignment del Módulo 4 —[[Guia-Maestra-RAG_09-Hallucinations-Evaluacion-y-Agentic-RAG|Tomo 09]]—, devuelve zapatos + corbata por el bug de relajación de filtros de ese notebook; aquí la línea base es la versión del Módulo 5, que sí devuelve camisa + corbata. Son notebooks distintos, con versiones distintas del pipeline.)
+
 El notebook imprime ambas respuestas, **no comenta la degradación**, y concluye: *"¡Y el total de tokens usados en una query fue mucho más bajo que antes!"*
 
 > [!warning] ⚠️ Cómo leer esto sin descartar el assignment
@@ -819,4 +824,4 @@ Audiencia: 🧭 👔
 > [!info] Navegación
 > [[Guia-Maestra-RAG_00-MOC-Guia-Maestra-RAG|🗺️ Volver al índice]] · Anterior → [[Guia-Maestra-RAG_10-RAG-en-Produccion|Tomo 10 · Producción: observability, evaluación y security]] · Siguiente → [[Guia-Maestra-RAG_12-Query-Decomposition-Multi-Query-y-GraphRAG|Tomo 12 · ⭐ Complemento: técnicas avanzadas de query]]
 
-> 🏁 **Fin del contenido del curso.** Con este tomo se cierran los cinco módulos del curso *Retrieval Augmented Generation* de DeepLearning.AI. Lo que sigue —Tomos 12 y 13— son **complementos de vanguardia** construidos con bibliografía externa: técnicas que el curso no cubre (query decomposition, multi-query, GraphRAG) y frameworks de orquestación (LangChain, LlamaIndex).
+> 🏁 **Fin del contenido del curso.** Con este tomo se cierran los cinco módulos del curso *Retrieval Augmented Generation* de DeepLearning.AI. Lo que sigue —Tomos 12, 13 y 14— son **complementos de vanguardia** construidos con bibliografía externa: técnicas que el curso no cubre (query decomposition, multi-query, GraphRAG), frameworks de orquestación (LangChain, LlamaIndex) y RAG sobre datos estructurados (Text2SQL).

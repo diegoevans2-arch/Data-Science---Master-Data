@@ -3,8 +3,8 @@ title: "Tomo 10 — RAG en producción: observability, evaluación y security"
 tags: [rag, produccion, observability, tracing, opentelemetry, phoenix, arize, logging, custom-datasets, security, rbac, multi-tenancy, encryption]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 10
-version: 1.2
-updated: 2026-09-05
+version: 1.3
+updated: 2026-10-02
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -72,7 +72,7 @@ El curso agrupa los desafíos en cinco categorías. Vale la pena leerlas como un
 **🔧 El curso usa casos reales**, y conviene conservarlos porque son el argumento más eficaz frente a un comité que considera la observability un lujo:
 
 - **Google AI Overviews (2024).** El sistema respondió a un prompt aconsejando *"comer piedras por los beneficios nutricionales que aportaban"*. Al investigar, resultó que un usuario había preguntado *"¿cuántas piedras debería comer?"* — una pregunta, en palabras del curso, *"reconocidamente tonta y difícil de predecir"*. El sistema recuperó artículos y conversaciones de foros que eran **cómicos**, y *"falló en reconocer ese hecho"*. Google corrigió el problema y publicó un post explicando el origen del bug (Reid, 2024).
-- **Chatbots de aerolíneas** que *"han prometido a clientes bienintencionados descuentos que en realidad no existen"*. El caso documentado es *Moffatt v. Air Canada* (2024) — ver §1.2.
+- **Chatbots de aerolíneas** que *"han prometido a clientes bienintencionados descuentos que en realidad no existen"*. El caso documentado es *Moffatt v. Air Canada* (2024) — ver §1.2. Un matiz: la tarifa de duelo sí existía; lo que la política no permitía era pedirla retroactivamente, que es lo que el chatbot le dijo al cliente *(precisado el 2026-10-02)*.
 - **Actores maliciosos** que *"intentarán engañar a tu sistema RAG para que les venda tu producto gratis o revele información secreta"*.
 
 > [!danger] 🚨 El patrón común de los tres
@@ -727,7 +727,7 @@ Y el foco: **proteger la información de la knowledge base.**
 >
 > *"Aunque en teoría podrías mantener todos los documentos en un solo tenant y usar **metadata filters** para determinar a qué documentos debería tener acceso un usuario, en la práctica esta técnica es **demasiado propensa a fallos**. El metadata filtering se usa mejor para **personalización**, pero no para seguridad. Para seguridad, tener múltiples tenants almacenados por separado es un enfoque mucho más confiable."*
 >
-> El [[Guia-Maestra-RAG_03-Keyword-Search-TF-IDF-y-BM25|Tomo 03]] presentó el metadata filtering como herramienta de precisión del retrieval. **Aquí se le pone el límite:** es un filtro de relevancia, no una frontera de seguridad. Un bug en la construcción del filtro, un campo mal poblado o una query que lo omite, y el documento restringido entra al contexto. Con tenants separados, ese documento **no está en el índice que se consulta**.
+> El [[Guia-Maestra-RAG_03-Keyword-Search-TF-IDF-y-BM25|Tomo 03]] presentó el metadata filtering como la capa que personaliza lo que cada perfil ve. **Aquí se le pone el límite:** es un filtro de relevancia y personalización, no una frontera de seguridad. Un bug en la construcción del filtro, un campo mal poblado o una query que lo omite, y el documento restringido entra al contexto. Con tenants separados, ese documento **no está en el índice que se consulta**.
 >
 > La diferencia es la de siempre en seguridad: *filtrar lo que no debe verse* frente a *no tenerlo delante*.
 
@@ -888,7 +888,7 @@ Audiencia: 🧭 👔
 
 ---
 
-## 5. 🛡️ Guardrails y caching semántico
+## 10. 🛡️ Guardrails y caching semántico
 
 Audiencia: 🔧 🧭 👔
 
@@ -899,10 +899,10 @@ Audiencia: 🔧 🧭 👔
 > Un guardrail que rechaza una respuesta insegura cuesta centavos. Una respuesta insegura que llega al usuario puede costar una demanda, un titular, o la confianza del cliente.
 >
 > - **Decisiones que habilita:** definir qué es "aceptable" antes del deployment, no después del incidente; dimensionar el equipo de moderación humana al mínimo real necesario; cumplir con regulaciones (EU AI Act) que exigen controles de output.
-> - **Costo de hacerlo mal:** el chatbot que promete descuentos inexistentes (*Moffatt v. Air Canada*), el asistente que filtra datos de otros clientes, el sistema que genera contenido tóxico cuando lo provocan.
+> - **Costo de hacerlo mal:** el chatbot que promete un descuento retroactivo que la política no permitía (*Moffatt v. Air Canada*), el asistente que filtra datos de otros clientes, el sistema que genera contenido tóxico cuando lo provocan.
 > - **Pregunta ejecutiva que responde:** *"¿qué pasa cuando el sistema NO sabe o NO debería responder — y quién se entera?"*
 
-### 5.1 Input guardrails — filtrar antes de procesar
+### 10.1 Input guardrails — filtrar antes de procesar
 
 Audiencia: 🔧 🧭
 
@@ -918,7 +918,7 @@ Audiencia: 🔧 🧭
 - Prompt injection: **siempre** si el sistema tiene acceso a datos sensibles o puede ejecutar acciones.
 - PII detection: **obligatorio** en sectores regulados (salud, finanzas, educación).
 
-### 5.2 Output guardrails — filtrar antes de entregar
+### 10.2 Output guardrails — filtrar antes de entregar
 
 Audiencia: 🔧 🧭 👔
 
@@ -942,7 +942,7 @@ Audiencia: 🔧 🧭 👔
 | **LlamaGuard** (Meta, Inan et al., 2023) | Clasificador de safety basado en Llama, fine-tuneado para content moderation | Rápido (un forward pass); taxonomy de riesgos clara (S1–S6) | Solo safety/toxicity — no cubre groundedness ni topic control |
 | **Custom prompt-based** | Un LLM con prompt que evalúa la respuesta antes de entregarla | El más simple de implementar; flexible | Latencia doble (genera + evalúa); inconsistente si el prompt es débil |
 
-### 5.3 Semantic caching — no repetir lo que ya se computó
+### 10.3 Semantic caching — no repetir lo que ya se computó
 
 Audiencia: 🔧 🧭
 
@@ -990,7 +990,7 @@ Audiencia: 🔧 🧭
 
 **👔 En una frase para el negocio:** el semantic cache puede reducir 60–80% de las llamadas al LLM en escenarios FAQ — eso es 60–80% menos de costo variable, con latencia de respuesta de milisegundos en vez de segundos.
 
-### 5.4 Streaming y UX — el trade-off con guardrails
+### 10.4 Streaming y UX — el trade-off con guardrails
 
 Audiencia: 🔧 🧭
 
@@ -1046,7 +1046,7 @@ Audiencia: 🔧 🧭
 
 **Herramientas citadas por el curso**
 - **OpenTelemetry** — estándar de instrumentación usado en el lab: [opentelemetry.io](https://opentelemetry.io)
-- **Arize Phoenix** — plataforma open-source de observabilidad y evaluación de LLMs: [phoenix.arize.com](https://phoenix.arize.com)
+- **Arize Phoenix** — plataforma *source-available* (licencia Elastic-2.0, no aprobada por la OSI; ver la nota de la §3) de observabilidad y evaluación de LLMs: [phoenix.arize.com](https://phoenix.arize.com)
 - **OpenInference** — convenciones semánticas para spans de aplicaciones LLM (`retrieval.documents.*`, `llm.token_count.*`). ⚠️ *Nota verificada 2026-07-29: las convenciones **`gen_ai.*` de OpenTelemetry** —el estándar equivalente y no propietario— siguen marcadas como **`Status: Development`**. A julio de 2026 **no existe un estándar estable de tracing para GenAI**; OpenInference es la convención de facto mientras tanto.*
 - **Datadog** y **Grafana** — monitoring clásico de infraestructura, recomendados por el curso para lo que Phoenix no cubre (uso de cómputo y memoria de la vector database)
 - **RAGAS** — métricas de evaluación específicas de RAG, integrables con Phoenix. Desarrollada en el [[Guia-Maestra-RAG_09-Hallucinations-Evaluacion-y-Agentic-RAG|Tomo 09 §4]]

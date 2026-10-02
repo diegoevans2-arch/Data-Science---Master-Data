@@ -3,8 +3,8 @@ title: "Tomo 17 — Series de Tiempo y Forecasting"
 tags: [data-science, machine-learning, time-series, forecasting]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 17
-version: 6.3
-updated: 2026-09-06
+version: 6.4
+updated: 2026-10-02
 ---
 
 # 📈 Tomo 17 — Series de Tiempo y Forecasting
@@ -188,8 +188,7 @@ Audiencia: 🔧 🧭
 > **ETS** (Error-Trend-Seasonal) describe la serie por sus **componentes** (¿la tendencia es aditiva o amortiguada?, ¿la estacionalidad crece con el nivel?). **ARIMA** la describe por su **estructura de autocorrelación**. Muchas series se modelan bien con cualquiera de los dos; hay familias de ETS que tienen un ARIMA equivalente exacto. Regla práctica: **ETS si el pensamiento es "componentes", ARIMA si es "memoria y diferencias"**, y deja que la validación (sección 10) decida el ganador.
 
 > [!note] El naive no es solo una vara de comparación: a veces es el modelo generador correcto
-> Si la serie sigue un **random walk** (`yₜ = yₜ₋₁ + εₜ`, con `εₜ` ruido blanco), el naive no es un baseline modesto — es el pronóstico puntual **óptimo**: no hay información en el pasado que reduzca el error esperado del próximo paso, porque no queda estructura que explotar más allá del último valor observado. Si tus tests de estacionariedad y tu ACF/PACF (secciones 3 y 4) apuntan a que tu serie es, en esencia, un random walk, la meta realista deja de ser "vencerle al naive en el punto" —imposible por construcción— y pasa a ser modelar su **distribución y volatilidad** (sección 9). Nota de notación, para quien llegue desde material con otra convención: de aquí en más este tomo usa `φ` (phi) para los coeficientes autorregresivos y `θ` (theta) para los de media móvil.
-
+> Si la serie sigue un **random walk** (`yₜ = yₜ₋₁ + εₜ`, con `εₜ` ruido blanco), el naive no es un baseline modesto — es el pronóstico puntual **óptimo**: no hay información en el pasado que reduzca el error esperado del próximo paso, porque no queda estructura que explotar más allá del último valor observado. Si tus tests de estacionariedad y tu ACF/PACF (secciones 3 y 4) apuntan a que tu serie es, en esencia, un random walk, la meta realista deja de ser "vencerle al naive en el punto" —imposible por construcción— y pasa a ser modelar su **distribución y volatilidad** (sección 9).
 **🔧 Diagnóstico de residuos: el ciclo completo de Box-Jenkins.** Ajustar un ARIMA (o cualquier modelo clásico) no termina en el fit. El método clásico (Box & Jenkins, 1970) es un **ciclo** — identificar → estimar → diagnosticar → iterar —, y un diagnóstico que falla te devuelve a identificar; no es un paso final que se marca y se olvida.
 
 | Test | H₀ (hipótesis nula) | Qué revela si se rechaza | Consecuencia |

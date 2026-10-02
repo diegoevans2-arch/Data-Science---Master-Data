@@ -3,7 +3,8 @@ title: "Tomo 01 — Introducción a RAG (Retrieval-Augmented Generation)"
 tags: [rag, llm, retrieval, generative-ai, data-science, knowledge-cutoff, hallucination, indexing]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 01
-version: 2.0
+version: 2.1
+updated: 2026-10-02
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -327,7 +328,7 @@ Desarmemos las tres afirmaciones:
 | **"a 'Growth Oblivious' era"** | **Término inventado.** No existe en la literatura económica. Suena a jerga técnica precisamente porque el modelo generó lo que *parecía* jerga técnica |
 | **"first confirmed soft landing in nearly 50 years"** | Internamente contradictorio (*"primera"* y *"en 50 años"* a la vez) y presentado como hecho establecido |
 
-Y todo esto sobre **2024**, un año que el modelo **no vio jamás** — su cutoff es diciembre de 2023.
+Dos de las tres afirmaciones (el *soft landing* y la cifra mensual) aparecen en la sección de **2023** de su respuesta —dentro de lo que el modelo conocía, y aun así inventadas—; el término *Growth Oblivious* aparece en la de **2024**, un año que el modelo **no vio jamás** — su cutoff es diciembre de 2023. *(Corregido el 2026-10-02: decía que las tres eran «sobre 2024»; el notebook C1M1 las ubica según el año que se indica arriba.)*
 
 ### ✅ Con RAG (`use_rag=True`)
 
@@ -338,13 +339,13 @@ El modelo recibe noticias reales de 2024 recuperadas del dataset. Abre así:
 Y entrega cifras por año (2021: ~5,7 % · 2022: ~1,8 % · 2023: ~2,3 %) sin inventar unidades ni acuñar términos.
 
 > [!note] 🔬 Lo que este experimento realmente demuestra (y lo que no)
-> Conviene ser preciso, porque es fácil sobrevender RAG. La versión con RAG **no es más larga ni más exhaustiva sobre 2024** — de hecho se concentra en 2021-2023. Lo que cambió es otra cosa, y es más valiosa:
+> Conviene ser preciso, porque es fácil sobrevender RAG. **Las dos salidas del notebook se cortan a mitad de frase** —la de con RAG dentro de su sección de 2023 y la de sin RAG en la de 2024— porque chocaron con el mismo límite de tokens de salida (2.279 y 2.205 caracteres): no se puede comparar cuál es más larga, ni concluir que la versión con RAG «se concentra» en 2021-2023; simplemente no alcanzó a escribir más. Lo que sí se ve en el texto visible es otra cosa, y es más valiosa:
 >
 > 1. **Declara sus fuentes.** Distingue explícitamente lo que sabe de entrenamiento y lo que viene del contexto entregado.
 > 2. **Dejó de inventar.** Desaparecen las unidades absurdas y los términos acuñados.
 > 3. **Se volvió calibrada.** Sin RAG el modelo era *más confiado* justamente donde *menos sabía*.
 >
-> **RAG no hizo al modelo más inteligente: lo hizo más honesto.** Y nota la asimetría peligrosa: la respuesta **sin** RAG era más larga, más asertiva y más agradable de leer. Si solo miras la superficie, la respuesta mala gana.
+> **RAG no hizo al modelo más inteligente: lo hizo más honesto.** Y nota la asimetría peligrosa: la respuesta **sin** RAG sonaba más asertiva y era más agradable de leer. Si solo miras la superficie, la respuesta mala gana.
 
 > [!abstract] 👔 La lección ejecutiva
 > El mismo modelo, con la misma pregunta, produce una respuesta **confiable o peligrosa** según tenga o no acceso a la información correcta en el momento de responder. En un contexto empresarial esa diferencia separa un asistente que puedes desplegar de uno que es un riesgo legal.
@@ -494,7 +495,7 @@ Audiencia: 🔧 🧭 👔
 - [ ] Reconozco las 4 etapas de consulta: retrieval → formatting → augmentation → generation.
 - [ ] Entiendo por qué el formateo de los documentos afecta la calidad y la trazabilidad.
 - [ ] Puedo señalar alucinaciones concretas en la respuesta sin RAG del experimento.
-- [ ] Tengo claro que **la respuesta sin RAG era más larga y más confiada** — y por qué eso es peligroso.
+- [ ] Tengo claro que **la respuesta sin RAG sonaba más confiada** — y por qué eso es peligroso.
 - [ ] Distingo RAG de fine-tuning, sé cuándo conviene cada uno y **por qué no son excluyentes**.
 - [ ] Puedo nombrar al menos tres anti-patrones de los primeros sistemas RAG.
 - [ ] Puedo argumentar el valor de negocio de RAG ante un stakeholder no técnico.

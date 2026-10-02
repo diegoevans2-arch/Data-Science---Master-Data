@@ -3,8 +3,8 @@ title: "Tomo 23 — Datos Tabulares en 2026: Gradient Boosting vs Deep Learning"
 tags: [data-science, machine-learning, tabular, boosting, deep-learning, tabpfn, xgboost]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 23
-version: 1.2
-updated: 2026-09-06
+version: 1.3
+updated: 2026-10-02
 ---
 
 # 🏋️ Tomo 23 — Datos Tabulares en 2026: Gradient Boosting vs Deep Learning
@@ -62,9 +62,11 @@ Audiencia: 🔧
 
 | Bias del árbol | Qué le da | Por qué las NNs luchan |
 |---|---|---|
-| **Invarianza a rotación de features** | Cada split usa UNA feature a la vez — no necesita que las features estén correlacionadas o en la misma escala | Las NNs operan con combinaciones lineales de todas las features: necesitan normalización y son sensibles a features irrelevantes |
+| **Respeta la orientación de los ejes (no es invariante a rotación)** | Cada split usa UNA feature a la vez: cada columna conserva su significado (edad, ingreso, saldo) y el modelo no necesita que estén en la misma escala | Un MLP es invariante a rotación: combina linealmente todas las features, y en tabular esa invarianza es una desventaja, porque los ejes sí significan algo; además necesita normalización para que ninguna columna domine |
 | **Manejo nativo de irregularidad** | Features con outliers, distribuciones no suaves, mezcla de categóricas y numéricas → el árbol las maneja sin transformar | Las NNs asumen suavidad implícita; datos "ruidosos" o heterogéneos degradan el gradiente |
-| **Aprendizaje orientado a features, no a muestras** | Cada split decide qué feature importa en qué región; features irrelevantes no se usan | Las NNs procesan TODAS las features en cada capa; necesitan regularización explícita (dropout, weight decay) para ignorar ruido |
+| **Robustez a features no informativas** | Cada split decide qué feature importa en qué región; las irrelevantes simplemente no se usan | Las NNs procesan TODAS las features en cada capa: las irrelevantes las degradan y hace falta regularización explícita (dropout, weight decay) para ignorar ruido |
+
+*(Corregido el 2026-10-02: la primera fila presentaba la «invarianza a rotación» como ventaja del árbol, y es al revés. El abstract del paper formula las tres características que una red necesita para competir en tabular —ser robusta a features no informativas, «preserve the orientation of the data» y aprender funciones irregulares—, que es lo que esta tabla ordena.)*
 
 **🔧 Cuándo las NNs SÍ ganan en tabular:**
 

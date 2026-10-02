@@ -3,8 +3,8 @@ title: "Tomo 14 — Anexo: Cómo Interpretar Resultados (para no técnicos)"
 tags: [data-science, machine-learning, ejecutivo, interpretacion, anexo]
 audiencias: [ejecutivo, puente]
 tomo: 14
-version: 6.2
-updated: 2026-09-06
+version: 6.3
+updated: 2026-10-02
 ---
 
 # 👓 Tomo 14 — Anexo: Cómo Interpretar Resultados (para no técnicos)
@@ -74,7 +74,7 @@ Audiencia: 👔 🧭
 
 - **Mientras más se "infla" la curva hacia la esquina superior izquierda, mejor** el modelo: detecta mucho tragándose pocas falsas alarmas.
 - **La diagonal es el azar puro.** Un modelo pegado a la diagonal no aporta nada: es una moneda cara.
-- **El AUC es el área bajo la curva** — un resumen de 0.5 (moneda) a 1.0 (perfecto). Lectura útil: *AUC = la probabilidad de que, tomando un cliente que se fugó y uno que no, el modelo le haya puesto más riesgo al que se fugó*. Referencias gruesas: 0.6 débil · 0.7 útil · 0.8 bueno · 0.9 excelente · **> 0.97 sospechoso** (huele a trampa en los datos, [[10-Validacion-y-Leakage]]).
+- **El AUC es el área bajo la curva** — un resumen de 0.5 (moneda) a 1.0 (perfecto). Lectura útil: *AUC = la probabilidad de que, tomando un cliente que se fugó y uno que no, el modelo le haya puesto más riesgo al que se fugó*. Referencias gruesas: 0.6 débil · 0.7 útil · 0.8 bueno · 0.9 excelente · **≥ 0.97 sospechoso** (huele a trampa en los datos, [[10-Validacion-y-Leakage]]). Son referencias gruesas, reglas de bolsillo: el corte depende del dominio.
 
 **Preguntas de ejecutivo ante una ROC:** ¿en qué punto de la curva vamos a operar y por qué? · ¿el AUC se midió con datos que el modelo nunca vio, y de fecha posterior al entrenamiento? · si el AUC es altísimo, ¿ya auditaron que no haya información filtrada del futuro?
 
@@ -205,7 +205,7 @@ Audiencia: 👔
 |---|---|
 | Cualquier métrica de acierto | ¿Contra qué baseline? ¿Cuánto mejor que lo que hacemos hoy? |
 | Una matriz de confusión | ¿Cuánto cuesta en pesos cada esquina de error? ¿Quién eligió el umbral y con qué criterio? |
-| Una curva ROC / un AUC | ¿Medido en datos futuros nunca vistos? Si es > 0.97, ¿auditaron leakage? |
+| Una curva ROC / un AUC | ¿Medido en datos futuros nunca vistos? Si es ≥ 0.97, ¿auditaron leakage? |
 | Un feature importance | ¿Las variables top existían al momento de decidir? ¿Alguna discrimina indirectamente? |
 | Un dashboard de drift | ¿Quién actúa cuando se enciende, y cuál es el plan de reentrenamiento? |
 | Un piloto "exitoso" | ¿Cuál era el tamaño de muestra planificado? ¿Se corrigió por múltiples pruebas? ([[02-Fundamentos-Matematicos]]) |

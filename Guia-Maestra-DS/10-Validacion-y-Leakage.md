@@ -3,8 +3,8 @@ title: "Tomo 10 — Validación y Data Leakage"
 tags: [data-science, machine-learning, validacion, cross-validation, leakage]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 10
-version: 6.5
-updated: 2026-09-06
+version: 6.6
+updated: 2026-10-02
 ---
 
 # 🛡️ Tomo 10 — Validación y Data Leakage
@@ -140,7 +140,7 @@ Audiencia: 🔧 🧭 👔
 - **Corrección de Nadeau-Bengio:** ajusta la varianza del t-test por la correlación entre folds (Nadeau & Bengio, 2003) — el test correcto para comparar modelos vía CV repetido.
 - **Test de McNemar:** para clasificadores evaluados en el MISMO test set: examina la matriz de desacuerdos (casos donde uno acierta y el otro no); apropiado cuando reentrenar K veces es inviable.
 
-**👔 En una frase para el negocio:** antes de premiar al "modelo ganador por dos décimas", exige el test que confirme que esas décimas no son ruido — cambiar de modelo también tiene costo.
+**👔 En una frase para el negocio:** antes de premiar al "modelo ganador por dos centésimas de AUC" (0.82 contra 0.80), exige el test que confirme que esa diferencia no es ruido — cambiar de modelo también tiene costo.
 
 ---
 
@@ -173,8 +173,8 @@ Audiencia: 🔧 🧭
 
 Audiencia: 🔧 🧭
 
-- **Métrica sospechosamente alta:** AUC > 0.98 en un problema real de negocio es casi siempre leakage — la perfección en datos reales es una bandera roja, no un triunfo.
-- **Importancia concentrada:** una sola feature explica casi todo ([[13-MLOps-XAI-Etica]]) → probable proxy del target.
+- **Métrica sospechosamente alta:** un AUC ≥ 0.97 en un problema real de negocio merece auditoría antes que celebración — la perfección en datos reales es una bandera roja, no un triunfo. Es una regla de bolsillo sin fundamento estadístico (el corte depende del dominio y del baseline) y es el mismo que usa el [[14-Anexo-Interpretar-Resultados|Tomo 14]] *(unificado el 2026-10-02: este tomo decía «> 0.98» y el 14 «> 0.97»)*.
+- **Importancia concentrada:** una sola feature explica casi todo ([[13-MLOps-XAI-Etica]]) → probable proxy del target. Reglas de bolsillo: > 10 % del total en una sola feature merece una mirada; > 50 % es alarma fuerte ([[11-Mejora-de-Modelos]]).
 - **Correlación feature-target > 0.95** en el EDA ([[04-EDA]]).
 - **Gap CV vs producción:** la señal definitiva (y la más cara): brillante offline, mediocre online.
 

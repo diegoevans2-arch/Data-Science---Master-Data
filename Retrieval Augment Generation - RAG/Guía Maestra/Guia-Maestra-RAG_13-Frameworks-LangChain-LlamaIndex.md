@@ -3,8 +3,8 @@ title: "Tomo 13 — ⭐ Frameworks de orquestación: LangChain, LlamaIndex, DSPy
 tags: [rag, complemento, vanguardia, frameworks, langchain, langgraph, llamaindex, dspy, haystack, ragflow, abstraccion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 13
-version: 1.2
-updated: 2026-09-05
+version: 1.3
+updated: 2026-10-02
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -52,7 +52,7 @@ Audiencia: 🔧 🧭 👔
 
 ### 1.1 El dato con el que hay que abrir
 
-Los once tomos anteriores de esta guía documentan un curso profesional de RAG de punta a punta: retrieval, chunking, hybrid search, re-ranking, generación, evaluación, producción y multimodal. Se verificó qué frameworks usa su material:
+Los once primeros tomos de esta guía (01–11) documentan un curso profesional de RAG de punta a punta: retrieval, chunking, hybrid search, re-ranking, generación, evaluación, producción y multimodal. Se verificó qué frameworks usa **el material del curso** —no la guía, que sí nombra LangChain en los tomos 06 y 10—: *(corregido el 2026-10-02: decía «los once tomos anteriores»; antes de este hay doce, y el cero es del material del curso)*
 
 ```
    Imports de langchain / llama_index / haystack / dspy   →   0
@@ -218,7 +218,7 @@ Audiencia: 🔧 🧭
 | **Semantic Kernel** | — | MIT | 28.380 | Microsoft; fuerte en .NET/enterprise |
 
 > [!note] Dos observaciones que las comparativas suelen omitir
-> **① RAGFlow es el elefante ausente.** Con 86.282 estrellas supera a LlamaIndex, Haystack, DSPy y LangGraph **juntos**, y falta en casi todas las comparativas anglosajonas. La razón es categorial: **es un motor desplegable, no una librería que importas** — no compite en el mismo eje, pero si tu pregunta es "quiero RAG funcionando", es una respuesta legítima que nadie te menciona.
+> **① RAGFlow es el elefante ausente.** Con 86.282 estrellas supera a LlamaIndex y Haystack **juntos** (77.226) —en esta tabla solo LangChain lo supera—, y falta en casi todas las comparativas anglosajonas *(corregido el 2026-10-02: decía que superaba también a DSPy y LangGraph «juntos»; los cuatro suman ~152.000)*. La razón es categorial: **es un motor desplegable, no una librería que importas** — no compite en el mismo eje, pero si tu pregunta es "quiero RAG funcionando", es una respuesta legítima que nadie te menciona.
 >
 > **② Haystack es el más viejo (2019) y el de disciplina de release más visible:** el único con versionado mayor serio (2.0 en 2024 → 3.0 en 2026) y **114 issues abiertas** frente a 588 de LlamaIndex y 613 de DSPy. Poca estrella, mucha ingeniería.
 
@@ -677,11 +677,11 @@ Por transparencia, y porque son justo las cosas que suelen afirmarse sin base:
 - [[Guia-Maestra-RAG_10-RAG-en-Produccion|Tomo 10 · Producción]] — la observabilidad de §8, y las dos correcciones de precisión sobre OpenTelemetry y la licencia de Phoenix.
 - [[Guia-Maestra-RAG_11-Quantization-Trade-offs-y-Multimodal-RAG|Tomo 11 · Trade-offs de cost/latency]] — el marco de costo contra el que se juzgan los 5.395 tokens por turno de §3.
 - [[Guia-Maestra-RAG_09-Hallucinations-Evaluacion-y-Agentic-RAG|Tomo 09 · Agentic RAG]] — los patrones de workflow de Anthropic, misma fuente que la recomendación de §1.2.
-- [[Guia-Maestra-RAG_06-Chunking|Tomo 06 · Chunking]] — donde LangChain aparece por única vez en el resto de la guía, y como complemento externo: sus splitters son el ejemplo canónico de la **capa ②**, la que sí conviene no reescribir.
+- [[Guia-Maestra-RAG_06-Chunking|Tomo 06 · Chunking]] — donde LangChain aparece como complemento externo: sus splitters son el ejemplo canónico de la **capa ②**, la que sí conviene no reescribir (en el Tomo 10 solo asoma, de pasada, por la licencia de su instrumentador de OpenTelemetry).
 
 ---
 
 > [!info] Navegación
 > [[Guia-Maestra-RAG_00-MOC-Guia-Maestra-RAG|🗺️ Volver al índice]] · Anterior → [[Guia-Maestra-RAG_12-Query-Decomposition-Multi-Query-y-GraphRAG|Tomo 12 · ⭐ Técnicas avanzadas de query]] · Siguiente → [[Guia-Maestra-RAG_14-Structured-Data-RAG|Tomo 14 · ⭐ Structured Data RAG]]
 
-> 🏁 **Fin de los complementos de vanguardia.** Con este tomo se cierra el cuerpo de la guía: once tomos sobre el curso (01–11) y dos complementos externos (12–13). Lo que sigue son los transversales: el [[Guia-Maestra-RAG_15-Glosario-Ejecutivo|glosario ejecutivo]] y la [[Guia-Maestra-RAG_16-Bibliografia|bibliografía]].
+> 🏁 **Fin de este bloque de complementos.** Con este tomo terminan los complementos sobre técnicas de query y frameworks (12–13); queda un último complemento, el [[Guia-Maestra-RAG_14-Structured-Data-RAG|Tomo 14 · Structured Data RAG]] (Text2SQL). Después vienen los transversales: el [[Guia-Maestra-RAG_15-Glosario-Ejecutivo|glosario ejecutivo]] y la [[Guia-Maestra-RAG_16-Bibliografia|bibliografía]] *(corregido el 2026-10-02: decía que con este tomo se cerraba el cuerpo de la guía)*.

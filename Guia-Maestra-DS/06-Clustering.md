@@ -3,8 +3,8 @@ title: "Tomo 06 — Clustering: Aprendizaje No Supervisado"
 tags: [data-science, machine-learning, clustering, unsupervised, segmentacion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 06
-version: 6.2
-updated: 2026-09-06
+version: 6.3
+updated: 2026-10-02
 ---
 
 # 🧩 Tomo 06 — Clustering: Aprendizaje No Supervisado
@@ -29,7 +29,7 @@ updated: 2026-09-06
 > [!example] 📊 Caso de negocio — Retail: de una campaña única a segmentos que responden
 > **Problema:** una cadena de retail envía la misma campaña a toda su base. Tasa de respuesta estancada, presupuesto de marketing cuestionado. "Segmentan" por edad y comuna — demografía, no comportamiento.
 >
-> **Técnica aplicada:** features RFM (recency, frequency, monetary) + comportamiento de categorías, escaladas con RobustScaler ([[05-Escalado-de-Datos]]). K-Means con K elegido por elbow + silhouette; HDBSCAN como contraste para detectar clientes "inclasificables" (ruido) que K-Means forzaba dentro de algún grupo. Perfilamiento de cada cluster con boxplots y parallel coordinates ([[04-EDA]]).
+> **Técnica aplicada:** features RFM (recency, frequency, monetary) + comportamiento de categorías, escaladas con RobustScaler ([[05-Escalado-de-Datos]]). K-Means con K elegido por silhouette y por estabilidad entre corridas (el elbow solo sirvió para acotar el rango de K; ver §5); HDBSCAN como contraste para detectar clientes "inclasificables" (ruido) que K-Means forzaba dentro de algún grupo. Perfilamiento de cada cluster con boxplots y parallel coordinates ([[04-EDA]]).
 >
 > **Resultado:** cinco segmentos accionables (ej.: "compradores intensivos en promoción", "dormidos de alto valor histórico") con mensajes y ofertas diferenciadas; el segmento "dormidos de alto valor" concentra la campaña de reactivación y responde varias veces mejor que el promedio histórico. El grupo "ruido" de HDBSCAN — clientes que no calzan con ningún patrón — se excluye de campañas masivas, ahorrando contactos inútiles.
 

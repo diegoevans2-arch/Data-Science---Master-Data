@@ -3,7 +3,8 @@ title: "Tomo 03 — Information Retrieval: keyword search (TF-IDF, BM25)"
 tags: [rag, information-retrieval, keyword-search, tf-idf, bm25, metadata-filtering, sparse-vectors, inverted-index, hybrid-search]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 03
-version: 1.2
+version: 1.3
+updated: 2026-10-02
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -24,8 +25,8 @@ author: El Egypcio
 
 > [!abstract] 👔 Impacto ejecutivo
 > Keyword search es la parte del sistema que garantiza que, cuando un usuario escribe el **nombre exacto de tu producto, un SKU o un término regulatorio**, el sistema lo encuentre literalmente. Es barata, madura, auditable y explicable.
-> - **Decisiones que habilita:** desplegar búsqueda sobre documentación técnica y catálogos sin depender de infraestructura de IA; cumplir requisitos de **control de acceso** por perfil de usuario vía metadata filtering; auditar por qué el sistema devolvió un documento (algo que un embedding no permite explicar con la misma claridad).
-> - **Costo o riesgo de hacerlo mal:** sin metadata filtering, un sistema RAG puede **filtrar documentos confidenciales a usuarios sin permisos** — el riesgo más grave y más frecuente de esta capa. Sin keyword search, el sistema falla justo en las consultas más específicas (códigos, nombres propios, jerga técnica), que suelen ser las de mayor valor.
+> - **Decisiones que habilita:** desplegar búsqueda sobre documentación técnica y catálogos sin depender de infraestructura de IA; personalizar lo que cada perfil de usuario ve vía metadata filtering (para **seguridad** real, el curso pide además tenants separados: [[Guia-Maestra-RAG_10-RAG-en-Produccion#6.2 Vía ① — autenticación y multi-tenancy|Tomo 10 §6.2]]); auditar por qué el sistema devolvió un documento (algo que un embedding no permite explicar con la misma claridad).
+> - **Costo o riesgo de hacerlo mal:** tratar el metadata filtering como si fuera una frontera de seguridad: un filtro mal construido puede **filtrar documentos confidenciales a usuarios sin permisos**. Sin keyword search, el sistema falla justo en las consultas más específicas (códigos, nombres propios, jerga técnica), que suelen ser las de mayor valor.
 > - **Pregunta ejecutiva que responde:** *"¿Cómo garantizo que cada usuario vea solo lo que le corresponde, y que una búsqueda por el código exacto de un producto siempre lo encuentre?"*
 
 ---
@@ -120,7 +121,7 @@ Ejemplos concretos de la segunda regla, siguiendo con el diario:
 - **Región.** Cada artículo lleva la región donde se publicó. El sistema detecta desde dónde consulta el lector y devuelve solo artículos de su región.
 - **Departamento.** Documentos relevantes para ingeniería vs. documentos de RR.HH. El sistema sabe a qué equipo pertenece el usuario y filtra en consecuencia.
 
-**👔 En una frase para el negocio:** metadata filtering es la capa donde vive el **control de acceso** de tu sistema RAG. Si está mal implementada, un empleado puede recibir en su respuesta un fragmento de un documento que no debería poder leer — y el LLM se lo va a redactar amablemente.
+**👔 En una frase para el negocio:** metadata filtering es la capa que **personaliza** lo que cada usuario ve según su perfil. Si está mal implementada, un empleado puede recibir en su respuesta un fragmento de un documento que no debería poder leer — y el LLM se lo va a redactar amablemente. Por eso conviene no confundirla con una frontera de seguridad: para eso el curso recomienda tenants separados ([[Guia-Maestra-RAG_10-RAG-en-Produccion#6.2 Vía ① — autenticación y multi-tenancy|Tomo 10 §6.2]]). *(Corregido el 2026-10-02: decía «la capa donde vive el control de acceso».)*
 
 ### 2.3 Ventajas y límites
 
@@ -182,7 +183,7 @@ visibles = aplicar_filtros(KB, area=usuario["area"], acceso=usuario["clearance"]
 > [!example] 📊 Caso de negocio — Asistente interno multi-área en banca
 > **Problema:** un banco despliega un asistente RAG sobre su intranet: políticas, manuales de producto, procedimientos de riesgo y documentación de RR.HH. El corpus es único, pero **no todo el mundo puede ver todo**: las escalas salariales son de RR.HH., los modelos de scoring crediticio son de Riesgos, y los procedimientos de auditoría son confidenciales.
 > **Técnica aplicada:** cada documento se indexa con metadata `area` y `nivel_acceso`. En cada consulta, el sistema resuelve la identidad del empleado contra el directorio corporativo y construye el filtro **desde su perfil**, nunca desde el texto de su pregunta. El filtro se aplica como pre-filtering en la vector database.
-> **Resultado:** un mismo asistente sirve a toda la organización sin duplicar infraestructura, y la trazabilidad de acceso queda auditable documento por documento. El punto crítico: **un usuario no puede eludir el filtro escribiendo un prompt astuto**, porque el filtro nunca dependió de su prompt.
+> **Resultado:** un mismo asistente sirve a toda la organización sin duplicar infraestructura, y la trazabilidad de acceso queda auditable documento por documento. El punto crítico: **un usuario no puede eludir el filtro escribiendo un prompt astuto**, porque el filtro nunca dependió de su prompt. Ojo con el alcance: eso protege contra el prompt, no contra un error del propio filtro (un campo mal poblado, una consulta que lo omite); para documentos realmente restringidos, el curso recomienda tenants separados ([[Guia-Maestra-RAG_10-RAG-en-Produccion#6.2 Vía ① — autenticación y multi-tenancy|Tomo 10 §6.2]]).
 
 ---
 
@@ -643,7 +644,7 @@ Audiencia: 👔 💡
 
 | Término técnico | Traducción a lenguaje de negocio |
 |---|---|
-| **Metadata filtering** | Filtrar documentos por sus etiquetas (área, permisos, fecha). La capa de control de acceso |
+| **Metadata filtering** | Filtrar documentos por sus etiquetas (área, permisos, fecha). La capa de personalización por perfil; no sustituye a los tenants separados para seguridad |
 | **Pre/post-filtering** | Si el filtro de permisos se aplica antes o después de buscar. Aplicarlo después puede dejarte sin resultados |
 | **Keyword search** | Buscar por las palabras exactas que escribió el usuario |
 | **Bag of words** | Tratar un texto como un montón de palabras sueltas, ignorando el orden |

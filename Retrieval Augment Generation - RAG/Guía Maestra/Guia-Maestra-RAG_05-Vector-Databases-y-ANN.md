@@ -3,7 +3,8 @@ title: "Tomo 05 — Vector databases y ANN (HNSW)"
 tags: [rag, vector-database, ann, hnsw, knn, weaviate, proximity-graph, hybrid-search, alpha]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 05
-version: 1.1
+version: 1.2
+updated: 2026-10-02
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -237,7 +238,7 @@ Audiencia: 🔧 🧭 👔
 > | Producción, corpus grande o creciente, filtros y metadata | **Vector database dedicada** (Weaviate, Qdrant, Milvus, Pinecone…) |
 > | Escala masiva, equipo de infra | Evaluar por benchmark propio, no por marketing |
 >
-> Un dato que refuerza esto y que aparece en la configuración real del índice (sección 7): Weaviate trae un `flat_search_cutoff` de **40.000 objetos** — por debajo de ese umbral **usa búsqueda exacta (flat) en vez de HNSW**, porque a esa escala el grafo no paga. La propia herramienta admite que HNSW es para cuando hay volumen.
+> Un dato que refuerza esto y que aparece en la configuración real del índice (sección 7): Weaviate trae un `flat_search_cutoff` de **40.000 objetos**. Ojo con cómo se lee: **no es un umbral por tamaño de la colección**, sino de las búsquedas **con filtro** — si el filtro deja menos de 40.000 candidatos, Weaviate se salta el grafo HNSW y compara la query contra todos ellos (búsqueda exacta/flat), porque con pocos candidatos recorrer el grafo no paga; sin filtro, la búsqueda siempre recorre HNSW (comprobado en el código fuente de Weaviate; ver §7.1). La propia herramienta admite que el grafo es para cuando hay volumen. *(Corregido el 2026-10-02: decía que por debajo de 40.000 objetos en la colección usa búsqueda exacta.)*
 
 **El curso usa Weaviate**, una vector database open-source que corre local o en la nube. La advertencia del propio instructor vale oro: *si eliges otra vector database, casi con certeza ofrecerá funcionalidad muy similar* — lo que importa es el **workflow**, no el vendor.
 
@@ -505,7 +506,7 @@ Esta sección es la joya operativa del tomo. Al imprimir el schema, el lab expon
 | **`max_connections`** | Aristas por nodo (la "M" del paper) | ↑ mejor recall · **más RAM** y grafo más lento de construir |
 | **`ef`** | Cuántos candidatos se evalúan **al buscar** | ↑ mejor recall · **más latencia**. La perilla de query time |
 | **`dynamic_ef_*`** | Weaviate ajusta `ef` solo, según el `limit` pedido | Por eso `ef = -1`: delega en el rango 100–500 |
-| **`flat_search_cutoff`** | Bajo este nº de objetos usa búsqueda **exacta** | Con 20 documentos, el lab **ni siquiera usó HNSW** |
+| **`flat_search_cutoff`** | En una búsqueda **con filtro**, si este deja menos de este nº de objetos, usa búsqueda **exacta** en vez de HNSW | Sin filtro siempre se recorre el grafo; con 20 documentos el grafo no tiene nada que demostrar |
 | **`distance_metric`** | La métrica de similitud | `cosine`, alineado con el Tomo 04 |
 
 > [!tip] 🧭 Las dos perillas que importan, y cuándo tocarlas
@@ -514,7 +515,7 @@ Esta sección es la joya operativa del tomo. Al imprimir el schema, el lab expon
 > **`ef`** es de **query time**: es el dial recall↔latencia que puedes mover en caliente. **Si tu búsqueda va rápido pero se pierde documentos, esta es la primera perilla.** Y como está en `-1` (dinámico), lo primero es saber si tu base la está ajustando sola.
 
 > [!warning] ⚠️ El detalle que reencuadra todo el lab
-> Con `flat_search_cutoff = 40000` y **20 documentos**, el lab corrió **búsqueda exacta**, no HNSW. Todo lo aprendido sobre el grafo jerárquico es cierto y necesario — pero no se ejercitó ahí. Es un recordatorio útil: **a escala de prototipo, el índice sofisticado no aporta**; la propia herramienta lo desactiva.
+> Con **20 documentos**, el grafo jerárquico no tiene nada que demostrar: comparar contra los 20 es instantáneo. Y hay un matiz sobre lo que el lab ejecutó con `flat_search_cutoff = 40000`: las consultas `near_text` **sin filtro** recorren HNSW; las que llevan **filtro** por `budget` dejan muy por debajo de 40.000 candidatos, así que su búsqueda vectorial es **exacta**. En ningún caso se nota la diferencia — todo lo aprendido sobre el grafo es cierto y necesario, pero a esta escala no se ejercita. Es un recordatorio útil: **a escala de prototipo, el índice sofisticado no aporta**. *(Corregido el 2026-10-02: decía que el lab «corrió búsqueda exacta, no HNSW», leyendo el umbral como tamaño de colección; en el código de Weaviate la búsqueda exacta solo se activa con un filtro que deja menos candidatos que el umbral.)*
 
 ### 7.2 BM25 — y una confirmación bonita
 
@@ -525,7 +526,7 @@ Esta sección es la joya operativa del tomo. Al imprimir el schema, el lab expon
 ```
 
 > [!important] ✅ Coherencia confirmada con el Tomo 03
-> Los defaults de BM25 en Weaviate son **exactamente** los que el [[Guia-Maestra-RAG_03-Keyword-Search-TF-IDF-y-BM25#4.3 La fórmula y sus dos perillas|Tomo 03]] documentó como estándar de la industria: `k1 = 1.2` (dentro del rango 1.2–2.0 de la lámina del curso) y `b = 0.75`. Y nota el `stopwords.preset = "en"`: **la base elimina stopwords por ti** — precisamente el paso cuya ausencia hizo que un documento sobre pan de masa madre le ganara al de hornos de pizza en el Tomo 03. En una vector database, el preprocesamiento viene resuelto.
+> Los defaults de BM25 en Weaviate son `k1 = 1.2` (el extremo inferior del rango 1.2–2.0 de la lámina del curso, que el [[Guia-Maestra-RAG_03-Keyword-Search-TF-IDF-y-BM25#4.3 La fórmula y sus dos perillas|Tomo 03]] documentó; allí el punto de partida del ejemplo es `k1 = 1.5`) y `b = 0.75` (el valor de facto de la industria, según el mismo tomo). Y nota el `stopwords.preset = "en"`: **la base elimina stopwords por ti** — precisamente el paso cuya ausencia hizo que un documento sobre pan de masa madre le ganara al de hornos de pizza en el Tomo 03. En una vector database, el preprocesamiento viene resuelto.
 
 ---
 
@@ -620,7 +621,7 @@ Audiencia: 👔 💡
 | **Vectorizer** | El componente que convierte tus textos en vectores al insertarlos |
 | **`alpha`** | La perilla que decide cuánto pesa el significado vs. las palabras exactas |
 | **Filtered search** | Aplicar los filtros *durante* la búsqueda, no después |
-| **Flat search cutoff** | El umbral bajo el cual conviene buscar a la antigua |
+| **Flat search cutoff** | El nº de candidatos filtrados bajo el cual Weaviate se salta el grafo y compara contra todos (búsqueda exacta) |
 
 ---
 

@@ -14,8 +14,8 @@ audiencias:
   - puente
   - ejecutivo
 tomo: 25
-version: 1.2
-updated: 2026-09-06
+version: 1.3
+updated: 2026-10-02
 ---
 
 # 🔐 Tomo 25 — Privacidad y Datos Sintéticos
@@ -239,7 +239,7 @@ Audiencia: 🔧
 └───────────────────────────────────────────────────────┘
 ```
 
-🔧 [Técnico] El clipping (paso 2) es esencial: acotar la norma del gradiente acotar la sensibilidad, lo que permite calibrar el ruido gaussiano. Sin clipping, un solo outlier puede tener influencia ilimitada.
+🔧 [Técnico] El clipping (paso 2) es esencial: acotar la norma del gradiente acota la sensibilidad, lo que permite calibrar el ruido gaussiano. Sin clipping, un solo outlier puede tener influencia ilimitada.
 
 ---
 
@@ -347,7 +347,7 @@ Audiencia: 🧭
 Audiencia: 🔧 🧭
 
 > [!important] Tres dimensiones de evaluación
-> No basta con que "se vean bien". Los datos sintéticos deben evaluarse en tres ejes ortogonales: fidelidad, utilidad y privacidad.
+> No basta con que "se vean bien". Los datos sintéticos deben evaluarse en tres ejes que compiten entre sí (el triángulo de trade-offs de abajo): fidelidad, utilidad y privacidad.
 
 | Dimensión | Métrica | Qué mide |
 |---|---|---|
@@ -496,13 +496,15 @@ Audiencia: 👔
 │    NO         SÍ            SÍ         NO                      │
 │     │          │              │          │                     │
 │     ▼          ▼              ▼          ▼                     │
-│  Pseudoni-   DP local      Federated   Datos                   │
+│  Pseudoni-   DP central    Federated   Datos                   │
 │  mización    (DP-SGD,      Learning    Sintéticos              │
 │  + controls  ruido en      (+ DP       (evaluar con            │
 │  de acceso   queries)      opcional)   DCR + MIA)              │
 │                                                                │
 └────────────────────────────────────────────────────────────────┘
 ```
+
+> 🔧 **«DP» en este diagrama es DP *central*, no local:** un curador de confianza tiene los datos y agrega el ruido, ya sea al entrenar con DP-SGD (Abadi et al., 2016) o al responder queries. En la DP *local*, en cambio, cada persona perturba su dato antes de entregarlo: es otra familia, que este tomo no cubre. *(Corregido el 2026-10-02: el diagrama rotulaba «DP local (DP-SGD…)».)*
 
 ### 7.1 Comparación de enfoques
 

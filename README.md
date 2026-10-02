@@ -7,8 +7,8 @@
 ![Formato](https://img.shields.io/badge/Formato-Obsidian%20%2F%20Markdown-7C3AED)
 ![Guías](https://img.shields.io/badge/Guías-2-0EA5E9)
 ![Tomos](https://img.shields.io/badge/Tomos-41-orange)
-![Fuentes verificadas](https://img.shields.io/badge/Fuentes%20verificadas-450-2EA043)
-![Última revisión](https://img.shields.io/badge/Última%20revisión-2026--09--06-informational)
+![Fuentes verificadas](https://img.shields.io/badge/Fuentes%20verificadas-460-2EA043)
+![Última revisión](https://img.shields.io/badge/Última%20revisión-2026--10--02-informational)
 
 ---
 
@@ -32,9 +32,9 @@ Son proyectos hermanos, pero **no se escriben igual** — y la diferencia es del
 |---|---|---|
 | **Tomos** | 25 (+ índice maestro) | 16 (+ índice maestro) |
 | **Fuente primaria** | Ninguna — se apoya solo en su bibliografía | Un curso completo de DeepLearning.AI: transcripciones, notebooks y láminas |
-| **¿Lleva código?** | **No, por diseño.** Vive en el plano conceptual y de decisión | **Sí.** Código funcional, ejecutado y verificado |
+| **¿Lleva código?** | **No, por diseño.** Vive en el plano conceptual y de decisión | **Sí.** Código funcional, ejecutado y verificado (en el Tomo 14, las funciones puras; falta probarlo contra PostgreSQL y OpenAI reales) |
 | **Cómo se verifica** | Cada afirmación se ancla a una referencia comprobable | Se contrasta contra el material del curso *y* se ejecuta el código |
-| **Qué la hace fiable** | 331 fuentes verificadas una por una | 119 obras verificadas + código que se corrió de verdad |
+| **Qué la hace fiable** | 333 fuentes verificadas una por una | 127 fuentes verificadas + código que se corrió de verdad |
 
 > 💡 **Por qué la de DS no lleva código:** sin fuente primaria externa, la bibliografía es el **único** mecanismo de verificación de la guía. Por eso el esfuerzo se puso ahí y no en la sintaxis de cada librería, que envejece y que la documentación oficial ya cubre mejor.
 
@@ -99,7 +99,17 @@ En [`Retrieval Augment Generation - RAG/Guía Maestra/`](Retrieval%20Augment%20G
 
 Además de manuales de lectura, ambas guías están pensadas para actuar como **fuente de conocimiento primaria de asistentes de IA**. La división de trabajo es explícita: la guía de **DS** es base de verdad para las **decisiones** (qué hacer y por qué), no para la implementación; la de **RAG** sí incluye código funcional y decisiones de arquitectura justificadas, porque su material de origen permite verificarlo.
 
-## 🆕 Qué trae esta versión (2026-09-06)
+## 🆕 Qué trae esta versión (2026-10-02)
+
+**57 correcciones repartidas en 28 tomos.** Una verificación cruzada —cada tomo contra los guiones de audio que se generan a partir de él— dejó 58 hallazgos **en los tomos mismos** (21 en la guía de DS y 37 en la de RAG); uno resultó ser un falso positivo y no se tocó. Cada corrección se verificó contra su fuente *antes* de editar: el texto del paper, el código fuente de la herramienta, su documentación oficial o la salida real de los notebooks del curso. Algunas:
+
+- **DS:** en *Tabular: DL vs Boosting*, la invarianza a rotación se le atribuía al árbol y es de las redes —en datos tabulares, una desventaja— (Grinsztajn et al., 2022); un ejemplo de la paradoja de Simpson decía −1 pp y la cuenta da −1,8 pp; DP-SGD estaba rotulado como privacidad diferencial *local* y es *central*; dos umbrales («AUC sospechoso» e «importancia concentrada») tenían un valor distinto en cada tomo y quedaron unificados como reglas de bolsillo.
+- **RAG:** `flat_search_cutoff` de Weaviate no depende del tamaño de la colección, solo aplica a búsquedas **con filtro** (se verificó en su código fuente); el hybrid search del assignment usa `relativeScoreFusion`, no RRF; los tomos de quantization y de evaluación traían cifras que no calzaban con su fuente (el blog de Hugging Face y las salidas del lab).
+- **Las funciones puras del Tomo 14 (Text2SQL) se ejecutaron por primera vez.** Los validadores SQL dejaban pasar `SELECT 1;DROP TABLE x`, CTE que modifican datos y `SELECT … INTO`, y el bloque de pandas fallaba por un `import` faltante. Ahora los validadores pasan los 23 casos de prueba, y el tomo declara lo que sigue sin probarse: una base PostgreSQL real, el cliente de OpenAI y los ejemplos de LangChain y LlamaIndex.
+
+**Bibliografía.** La guía de DS pasó de 331 a **333 fuentes verificadas** (310 obras + 23 enlaces de documentación oficial); la de RAG, de 119 a **127 fichas**. Las nuevas son las fuentes sobre las que descansan las correcciones —documentación y código fuente de Weaviate, PostgreSQL y Python, el benchmark RGB, la configuración de un modelo de embeddings, OWASP Top 10 para LLM—, y siguen etiquetadas como lo que son cuando no son papers.
+
+## 🕓 Versión anterior (2026-09-06)
 
 **Cuatro tomos nuevos en la guía de DS** (`22` Feature Engineering Avanzado, `23` Tabular: DL vs Boosting, `24` Experimentación A/B, `25` Privacidad y Datos Sintéticos) y **uno nuevo en la de RAG** (`14` Structured Data RAG).
 
@@ -115,7 +125,7 @@ Además de manuales de lectura, ambas guías están pensadas para actuar como **
 
 ## 🌱 Documentos vivos
 
-Ambas guías se mantienen y evolucionan: cada tomo lleva versión y fecha de última revisión en su *frontmatter*, y cada índice maestro conserva su tracker de estado y su bitácora de correcciones. El mantenimiento sigue un protocolo escrito —auditoría estructural, verificación bibliográfica contra fuente primaria y escaneo de vigencia— cuyo detalle queda registrado en cada guía. Son proyectos en mejora continua, no ediciones cerradas.
+Ambas guías se mantienen y evolucionan: cada tomo lleva versión y fecha de última revisión en su *frontmatter*, y cada índice maestro conserva su tracker de estado y su bitácora de correcciones. El mantenimiento sigue un protocolo escrito —auditoría estructural, verificación bibliográfica contra fuente primaria, escaneo de vigencia y ejecución del código que se pueda ejecutar— cuyo detalle queda registrado en cada guía. Son proyectos en mejora continua, no ediciones cerradas.
 
 ## 📄 Licencia
 

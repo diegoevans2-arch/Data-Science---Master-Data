@@ -3,8 +3,8 @@ title: "Tomo 21 — Análisis de Supervivencia y Multi-Armed Bandits"
 tags: [data-science, machine-learning, supervivencia, bandits, experimentacion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 21
-version: 6.4
-updated: 2026-09-06
+version: 6.5
+updated: 2026-10-02
 ---
 
 # ⏳ Tomo 21 — Análisis de Supervivencia y Multi-Armed Bandits
@@ -254,4 +254,4 @@ Fichas completas en [[16-Bibliografia]].
 
 **Navegación:** [[00-MOC-Guia-Maestra|⬅ Volver al índice]] · Anterior: [[20-Sistemas-de-Recomendacion|20 · Sistemas de Recomendación]] · Siguiente: [[22-Feature-Engineering-Avanzado|22 · Feature Engineering Avanzado ➡]]
 
-> 🏁 **Fin de la extensión aplicada (tomos 17–21) y de la Guía Maestra v6.** Vuelve al [[00-MOC-Guia-Maestra|índice maestro]] para navegar por perfil.
+> 🏁 **Aquí termina el tramo de los cinco dominios especializados (tomos 17–21).** La extensión aplicada sigue con el taller del practicante (tomos 22–25: feature engineering, datos tabulares, experimentación y privacidad), que cierra la Guía Maestra. Vuelve al [[00-MOC-Guia-Maestra|índice maestro]] para navegar por perfil.

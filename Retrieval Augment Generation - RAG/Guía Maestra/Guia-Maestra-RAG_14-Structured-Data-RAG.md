@@ -3,8 +3,8 @@ title: "Tomo 14 — Structured Data RAG: Text2SQL, Table QA y consultas sobre da
 tags: [rag, complemento, vanguardia, text2sql, table-qa, structured-data, sql-generation, schema-linking, pandas-qa, hybrid-rag]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 14
-version: 1.1
-updated: 2026-09-05
+version: 1.2
+updated: 2026-10-02
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -38,12 +38,12 @@ author: El Egypcio
 >
 > Pedirle al bibliotecario "¿cuáles fueron las ventas totales del Q3?" es tan absurdo como pedirle al analista "¿cuál es nuestra política de devoluciones?". **Son herramientas distintas para preguntas distintas.** Este tomo te enseña cuándo necesitas al analista.
 
-> [!example] 💼 Caso de negocio: Analytics Self-Service
+> [!example] 💼 Caso de negocio (escenario ilustrativo): Analytics Self-Service
 > **Escenario:** Una empresa de retail tiene un data warehouse con 150 tablas (ventas, inventario, clientes, proveedores). Los analistas de negocio hacen 200+ solicitudes al mes al equipo de BI pidiendo reportes ad-hoc. Cada solicitud tarda 2–5 días en resolverse.
 >
 > **Solución:** Un chatbot Text2SQL que permite a los analistas de negocio preguntar en lenguaje natural: *"¿Cuánto vendimos en la región norte en julio, desglosado por categoría?"* — y obtener la respuesta en segundos.
 >
-> **Resultado:** 60–70% de consultas ad-hoc resueltas sin intervención de BI. Tiempo promedio de respuesta: 15 segundos vs. 3 días. El equipo de BI se dedica a problemas complejos, no a `SELECT ... GROUP BY`.
+> **Resultado esperado (ilustrativo; las cifras de este caso no provienen de ninguna medición):** 60–70% de consultas ad-hoc resueltas sin intervención de BI. Tiempo promedio de respuesta: 15 segundos vs. 2–5 días. El equipo de BI se dedica a problemas complejos, no a `SELECT ... GROUP BY`.
 >
 > **Riesgo controlado:** Las queries sólo tienen permisos de `SELECT` sobre vistas aprobadas — imposible modificar datos.
 
@@ -55,7 +55,7 @@ Audiencia: 🔧 🧭 👔
 
 ### 1.1 La diferencia fundamental
 
-El RAG que documentan los Tomos 1–12 asume un pipeline:
+El RAG que documentan los Tomos 1–13 asume un pipeline:
 
 ```
 Pregunta → Embed → Buscar chunks similares → Reranking → Generar respuesta con contexto
@@ -68,7 +68,7 @@ Ese pipeline **no aplica** cuando la respuesta vive en una base de datos relacio
 │              RAG DOCUMENTAL vs RAG ESTRUCTURADO                       │
 ├──────────────────────────────────────────────────────────────────────┤
 │                                                                      │
-│   RAG Documental (Tomos 1-12)          Structured Data RAG (Tomo 14)│
+│   RAG Documental (Tomos 1-13)          Structured Data RAG (Tomo 14)│
 │   ─────────────────────────────        ─────────────────────────────│
 │                                                                      │
 │   Fuente: documentos, PDFs, web        Fuente: tablas, SQL DBs, CSV │
@@ -340,35 +340,35 @@ print(f"SQL generado:\n{sql}")
 
 ```python
 """
-Execution + Answer Synthesis con sandboxing.
+Execution + Answer Synthesis con varias capas de protección.
 """
 import sqlalchemy
 from sqlalchemy import text
 
+# normalize_sql y validate_sql_safety están definidas en §5.3
+
 
 def execute_sql_safe(sql: str, connection_string: str, timeout_seconds: int = 30) -> dict:
     """
-    Ejecutar SQL con sandboxing básico.
-    
-    Validaciones de seguridad:
-    1. Solo permite SELECT
-    2. Timeout para evitar queries costosas
-    3. Límite de filas en el resultado
+    Ejecutar SQL de solo lectura con varias capas (defense in depth):
+    1. Normalizar (sin comentarios) y validar: un único SELECT/WITH, sin DML/DDL (§5.3)
+    2. Sesión en modo solo lectura (default_transaction_read_only)
+    3. Timeout para evitar queries costosas
+    4. Límite de filas en el resultado
+    Ninguna capa sola alcanza: la validación de texto es la primera línea, no la defensa.
     """
-    # Validación de seguridad: solo SELECT
-    sql_upper = sql.strip().upper()
-    FORBIDDEN = ["INSERT", "UPDATE", "DELETE", "DROP", "ALTER", "CREATE", "TRUNCATE", "EXEC", "GRANT"]
-    for keyword in FORBIDDEN:
-        if keyword in sql_upper.split():  # split para evitar falsos positivos en nombres de columna
-            return {"error": f"Operación prohibida detectada: {keyword}", "sql": sql}
-    
-    if not sql_upper.startswith("SELECT") and not sql_upper.startswith("WITH"):
-        return {"error": "Solo se permiten queries SELECT o WITH (CTEs)", "sql": sql}
-    
-    # Ejecutar con timeout
+    sql = normalize_sql(sql)  # lo que se valida es exactamente lo que se ejecuta
+    is_safe, reason = validate_sql_safety(sql)
+    if not is_safe:
+        return {"error": f"Query rechazada: {reason}", "sql": sql}
+
+    # Ejecutar con timeout y en modo solo lectura (PostgreSQL)
     engine = sqlalchemy.create_engine(
         connection_string,
-        connect_args={"options": f"-c statement_timeout={timeout_seconds * 1000}"}  # PostgreSQL
+        connect_args={
+            "options": f"-c statement_timeout={timeout_seconds * 1000} "
+                       "-c default_transaction_read_only=on"
+        },
     )
     
     try:
@@ -444,7 +444,7 @@ print(f"\nRespuesta: {answer}")
 ```
 
 > [!warning] ⚠️ Seguridad: el sandboxing no es opcional
-> El código anterior implementa validación mínima. En producción necesitas:
+> El código anterior combina validación de texto, sesión de solo lectura, timeout y límite de filas — y aun así **ninguna capa sola alcanza**: un validador de texto no ve funciones con efectos (`pg_sleep`, `nextval`, `set_config`…), y una transacción de solo lectura es una noción de alto nivel que, según la documentación de PostgreSQL, «no impide todas las escrituras a disco». En producción necesitas además:
 > - **Usuario de DB con permisos de solo lectura** (defense in depth)
 > - **Query review** para queries complejas (JOINs con más de 3 tablas, subqueries)
 > - **Resource limits** a nivel de DB: `statement_timeout`, `max_rows`, `work_mem`
@@ -468,6 +468,7 @@ En vez de SQL, el LLM genera código `pandas` que se ejecuta sobre un DataFrame.
 Table QA con Pandas: el LLM genera código pandas.
 Ideal para archivos CSV/Excel que no están en una DB.
 """
+import numpy as np
 import pandas as pd
 
 
@@ -513,10 +514,10 @@ def pandas_qa(question: str, df: pd.DataFrame, df_name: str = "df") -> str:
     if code.startswith("```"):
         code = code.split("\n", 1)[1].rsplit("```", 1)[0].strip()
     
-    # Ejecutar en sandbox (namespace restringido)
+    # ⚠️ NO es un sandbox: un namespace dict hereda todos los builtins (ver el aviso de abajo)
     namespace = {"df": df, "pd": pd, "np": np}
     
-    # Validación básica de seguridad
+    # Filtro débil: se esquiva con facilidad (ver el aviso de abajo)
     FORBIDDEN_PATTERNS = ["import os", "import subprocess", "exec(", "eval(", "__", "open("]
     for pattern in FORBIDDEN_PATTERNS:
         if pattern in code:
@@ -542,9 +543,14 @@ answer = pandas_qa("¿Cuál fue el promedio de ventas diarias por región en jul
 print(answer)
 ```
 
+> [!danger] 🚨 Esto NO es un sandbox
+> `exec(code, namespace)` con un `dict` como namespace **hereda todos los builtins**: Python inserta `__builtins__` por sí solo si el diccionario no lo trae (documentación de `exec`). Y la lista de patrones prohibidos se esquiva con facilidad: en una prueba de texto del 2026-10-02, `from os import system`, `import shutil`, `import  os` (con dos espacios) y `eval (...)` pasan el filtro; también `pd.read_csv(...)` y `df.to_csv(...)`, porque pandas mismo lee y escribe archivos y URLs. De lo que se probó, solo el patrón `__` bloquea algo.
+>
+> **Para código generado por un LLM, el aislamiento real es otro proceso o un contenedor efímero**, sin red ni acceso al disco, con límites de CPU, memoria y tiempo. Si no puedes aislarlo, no lo ejecutes: usa Text2SQL con usuario de solo lectura, o Direct Reasoning. *(Corregido el 2026-10-02: el bloque lo llamaba «sandbox»; y faltaba `import numpy as np`, así que `pandas_qa` fallaba con `NameError`.)*
+
 ### 3.2 Direct Table Reasoning: la tabla en el context window
 
-Para tablas pequeñas (< 100 filas), a veces lo más simple es pasar la tabla completa al LLM y dejar que razone directamente.
+Para tablas pequeñas (< 50 filas), a veces lo más simple es pasar la tabla completa al LLM y dejar que razone directamente.
 
 ```python
 """
@@ -593,7 +599,7 @@ def direct_table_qa(question: str, df: pd.DataFrame, max_rows: int = 50) -> str:
 | **Complejidad de queries** | Alta (JOINs, CTEs, window functions) | Media (groupby, merge) | Baja (conteo, comparación simple) |
 | **Precisión numérica** | ✅ Exacta (la DB calcula) | ✅ Exacta (pandas calcula) | ⚠️ El LLM puede equivocarse en aritmética |
 | **Latencia** | Media (genera SQL + ejecuta) | Media (genera código + ejecuta) | Baja (una sola llamada al LLM) |
-| **Riesgo de seguridad** | Alto (SQL injection, destructive queries) | Medio (code execution) | Bajo (no ejecuta nada) |
+| **Riesgo de seguridad** | Alto (SQL injection, destructive queries) | Alto sin aislamiento real (ejecuta código generado por un LLM, §3.1) | Bajo (no ejecuta nada) |
 | **Setup requerido** | Conexión a DB + permisos + schema | Archivo cargado en memoria | Solo el LLM |
 
 > [!tip] 💡 Regla rápida
@@ -705,7 +711,7 @@ Responde SOLO con una palabra: SQL, DOCUMENT, o HYBRID."""
     classification = response.choices[0].message.content.strip().upper()
     
     mapping = {"SQL": QueryType.SQL, "DOCUMENT": QueryType.DOCUMENT, "HYBRID": QueryType.HYBRID}
-    return mapping.get(classification, QueryType.DOCUMENT)  # Default seguro
+    return mapping.get(classification, QueryType.HYBRID)  # Ante la duda, buscar en ambos (más lento, más seguro)
 
 
 def hybrid_pipeline(question: str) -> str:
@@ -762,7 +768,7 @@ Audiencia: 🔧 🧭 👔
 ### 5.2 Schema complexity: bases con 200+ tablas
 
 🔧 [Técnico] Pasar el DDL completo de 200 tablas a un LLM es:
-1. **Imposible** si excede el context window (200 tablas × 10 columnas × 50 chars = ~100K tokens)
+1. **Caro**, y con esquemas muy grandes **imposible**: 200 tablas × 10 columnas × 50 caracteres son ~100K caracteres, del orden de 25K tokens (a ~4 caracteres por token) en *cada* consulta. Eso cabe hoy en un context window moderno, pero se paga en cada query; con miles de tablas, o con comentarios de columna, deja de caber *(corregido el 2026-10-02: decía «~100K tokens»; eran caracteres)*
 2. **Contraproducente** incluso si cabe: el LLM se distrae con tablas irrelevantes
 
 **Solución: schema filtering progresivo**
@@ -788,8 +794,8 @@ Nivel 3: Context final
 > Un LLM al que le pides "borra los registros duplicados" **sí generará un DELETE**. Y si tiene permisos para ejecutarlo, lo ejecutará sin pestañear.
 >
 > **Controles obligatorios (defense in depth):**
-> 1. **DB user read-only** — conexión con permisos `SELECT` únicamente
-> 2. **Query validation** — parsear el SQL y rechazar todo lo que no sea SELECT/WITH
+> 1. **DB user read-only** — conexión con permisos `SELECT` únicamente, y sesión en modo solo lectura (`default_transaction_read_only=on`)
+> 2. **Query validation** — parsear el SQL y aceptar **un único** SELECT (o WITH … SELECT) sin DML/DDL en ninguna parte, ni dentro de un CTE
 > 3. **Vistas, no tablas base** — el LLM solo ve vistas curadas, no la DB real
 > 4. **Row-level security** — cada usuario ve solo los datos que le corresponden
 > 5. **Timeout + resource limits** — prevenir `SELECT * FROM tabla_de_100M_filas` sin WHERE
@@ -800,41 +806,49 @@ Nivel 3: Context final
 Validación de seguridad de SQL generado.
 """
 import sqlparse
+from sqlparse import tokens as T
+
+# Palabras que no deben aparecer en NINGUNA parte de una consulta de solo lectura.
+# INTO cubre SELECT ... INTO tabla_nueva (PostgreSQL) e INSERT INTO. Los literales de texto
+# y los identificadores entre comillas no se revisan: sqlparse los tokeniza aparte, así que
+# 'DELETE' como dato no produce un falso positivo.
+BLOCKED_KEYWORDS = {
+    "INTO", "COPY", "GRANT", "REVOKE", "TRUNCATE", "CALL", "EXEC", "EXECUTE",
+    "MERGE", "LOCK", "VACUUM", "REINDEX", "REFRESH", "SET", "PREPARE",
+}
+
+
+def normalize_sql(sql: str) -> str:
+    """Quita los comentarios: lo que se valida es exactamente lo que se ejecuta."""
+    return sqlparse.format(sql, strip_comments=True).strip()
 
 
 def validate_sql_safety(sql: str) -> tuple[bool, str]:
     """
-    Validar que el SQL es seguro para ejecutar.
+    Primera línea de defensa (NO la única): acepta solo UN statement de lectura.
     Returns: (is_safe, reason)
     """
-    parsed = sqlparse.parse(sql)
-    
-    for statement in parsed:
-        stmt_type = statement.get_type()
-        
-        # Solo permitir SELECT (y CTEs que son WITH...SELECT)
-        if stmt_type not in ("SELECT", None):  # None para CTEs complejos
-            return False, f"Tipo de statement no permitido: {stmt_type}"
-    
-    # Buscar keywords peligrosas
-    sql_upper = sql.upper()
-    dangerous_keywords = [
-        "DROP", "DELETE", "INSERT", "UPDATE", "ALTER", "CREATE",
-        "TRUNCATE", "GRANT", "REVOKE", "EXEC", "EXECUTE",
-        "INTO OUTFILE", "INTO DUMPFILE", "LOAD_FILE",
-    ]
-    
-    for keyword in dangerous_keywords:
-        # Buscar como palabra completa (no como parte de un nombre de columna)
-        if f" {keyword} " in f" {sql_upper} " or sql_upper.startswith(keyword):
-            return False, f"Keyword peligrosa detectada: {keyword}"
-    
-    # Validar que no hay stacking de statements (;)
-    if sql.count(";") > 1:
-        return False, "Múltiples statements detectados (posible SQL injection)"
-    
+    statements = [s for s in sqlparse.parse(sql) if str(s).strip(" ;\n\t\r")]
+    if len(statements) != 1:
+        return False, "Se exige exactamente un statement"
+
+    statement = statements[0]
+    # Para un WITH ... SELECT, get_type() devuelve "SELECT"; para lo que no reconoce, "UNKNOWN".
+    if statement.get_type() != "SELECT":
+        return False, f"Tipo de statement no permitido: {statement.get_type()}"
+
+    # Recorre TODOS los tokens, incluidos los de subqueries y CTEs.
+    for token in statement.flatten():
+        if token.ttype in (T.Keyword.DML, T.Keyword.DDL) and token.normalized != "SELECT":
+            return False, f"Operación no permitida: {token.normalized}"
+        if token.ttype in T.Keyword and token.normalized in BLOCKED_KEYWORDS:
+            return False, f"Keyword no permitida: {token.normalized}"
+
     return True, "OK"
 ```
+
+> [!note] 🧪 Qué se probó (2026-10-02)
+> Estas funciones son puras —analizan texto, sin base de datos ni API— y se ejecutaron con `sqlparse` 0.6.0 contra 23 casos: consultas legítimas (CTE recursiva, ventanas, fechas, la palabra `DELETE` dentro de un literal, una columna llamada `update_count`) y ataques (DML directo, dos statements con y sin espacio, CTE con `DELETE`/`INSERT`/`UPDATE`, `SELECT … INTO`, `FOR UPDATE`, `COPY`). **Las versiones anteriores fallaban** — la validación de `execute_sql_safe` dejaba pasar `SELECT 1;DROP TABLE usuarios` (dos statements sin espacio), CTE con DML y `SELECT … INTO`; `validate_sql_safety` dejaba pasar los CTE con DML y `SELECT … INTO` — porque `get_type()` de `sqlparse` mira la palabra DML que sigue **a las definiciones** del CTE, no lo que hay dentro, y devuelve `"UNKNOWN"` (nunca `None`) cuando no reconoce el statement. La versión de arriba pasa los 23. No se probó contra una base PostgreSQL real, y ningún validador de texto sustituye al usuario de solo lectura.
 
 ### 5.4 Evaluation: ¿cómo saber si el SQL generado es correcto?
 
@@ -957,6 +971,9 @@ print(f"SQL usado: {response.metadata['sql_query']}")
 
 Audiencia: 👔 🧭
 
+> [!note] Cifras ilustrativas
+> Las cifras de este caso (costo, latencia, porcentajes, ROI) son un **escenario ilustrativo**, no el resultado de una medición: no las cites como evidencia.
+
 ### 7.1 El problema de negocio
 
 ```
@@ -1014,7 +1031,7 @@ Audiencia: 👔 🧭
 │  │  SQL ejecutado: SELECT ... [ver detalle]"       │            │
 │  └─────────────────────────────────────────────────┘            │
 │                                                                  │
-│  65-80% de queries resueltas sin intervención humana            │
+│  60-70% de queries resueltas sin intervención humana            │
 │  Equipo de BI liberado para análisis complejos y estratégicos   │
 │  ROI estimado: 6-9 meses                                        │
 │                                                                  │
@@ -1055,7 +1072,7 @@ Audiencia: 🔧 🧭 👔
 │  ┌──────────────┐                    ¿Los datos están en una         │
 │  │ RAG          │                     base de datos relacional?      │
 │  │ DOCUMENTAL   │                                                    │
-│  │ (Tomos 1-12) │                    SÍ              NO              │
+│  │ (Tomos 1-13) │                    SÍ              NO              │
 │  └──────────────┘                    │               │               │
 │                                      ▼               ▼               │
 │                          ¿Más de 50 filas    ┌────────────────┐      │
@@ -1122,9 +1139,12 @@ Para quien va a implementar un sistema Text2SQL en producción:
 | 5 | Li, J., Hui, B., Qu, G., Yang, J., et al. (2023). *Can LLM Already Serve as A Database Interface? A BIg Bench for Large-Scale Database Grounded Text-to-SQLs* (BIRD). NeurIPS 2023, Datasets and Benchmarks Track, 42330–42357. ✅ *(Año y venue corregidos el 2026-09-05: 2023, no 2024.)* | Benchmark más realista que Spider: bases reales con dirty data, valores ambiguos y schemas complejos. El paper original mide GPT-4 en 54,89% EX frente a 92,96% humano; el leaderboard posterior supera el 65% |
 | 6 | LangChain Documentation. *Build a SQL agent*. docs.langchain.com/oss/python/langchain/sql-agent ✅ *(URL actualizada el 2026-09-05: la anterior, `docs/use_cases/sql`, devuelve 404.)* | Documentación oficial del SQL Agent usado en §6.2 |
 | 7 | LlamaIndex Documentation. *NL SQL table — `NLSQLTableQueryEngine`*. developers.llamaindex.ai/python/framework-api-reference/query_engine/NL_SQL_table/ ✅ *(Dominio actualizado el 2026-09-05; docs.llamaindex.ai redirige. La clase sigue exportándose desde `llama_index.core.query_engine`.)* | Documentación oficial del query engine usado en §6.3 |
+| 8 | PostgreSQL Documentation. *Client Connection Defaults* (`default_transaction_read_only`), *SET TRANSACTION* (qué rechaza una transacción de solo lectura) y *libpq: Connection Parameters* (`options`). postgresql.org/docs/current/ ✅ *(Verificada el 2026-10-02.)* | Respaldan la sesión de solo lectura y el timeout de §2.4 y §5.3 |
+| 9 | Python Documentation. *Built-in Functions — `exec()`*. docs.python.org/3/library/functions.html ✅ *(Verificada el 2026-10-02.)* | Respalda que `exec` con un `dict` hereda los builtins (§3.1) |
+| 10 | `sqlparse` (código fuente, `sqlparse/sql.py`, `Statement.get_type`; versión 0.6.0). pypi.org/project/sqlparse ✅ *(Verificada el 2026-10-02 leyendo el código instalado.)* | Respalda cómo clasifica los statements y los CTE (§5.3) |
 
 > [!note] 🔎 Verificación bibliográfica (2026-09-05)
-> Las 7 referencias se contrastaron con fuente primaria (ACL Anthology, proceedings de NeurIPS, Crossref/PVLDB, arXiv, documentación oficial). **Cuatro errores corregidos:** el tercer autor de Rajkumar et al. (Bahdanau, no "Baber"); el título y los autores del paper de DAIL-SQL; el año y venue de BIRD (NeurIPS 2023, no 2024) junto con la cifra de EX del §1.2, que no provenía del paper; y la URL de LangChain (404). Dos precisiones menores (cifras de Spider, dominio de LlamaIndex). Fichas completas en el [[Guia-Maestra-RAG_16-Bibliografia|Tomo 16 §17]]. El código de este tomo **no se ejecutó** en esta revisión (requiere credenciales de API y una base PostgreSQL); se corrigió un import inexistente (`from typing import list`) detectado por lectura.
+> Las 7 referencias se contrastaron con fuente primaria (ACL Anthology, proceedings de NeurIPS, Crossref/PVLDB, arXiv, documentación oficial). **Cuatro errores corregidos:** el tercer autor de Rajkumar et al. (Bahdanau, no "Baber"); el título y los autores del paper de DAIL-SQL; el año y venue de BIRD (NeurIPS 2023, no 2024) junto con la cifra de EX del §1.2, que no provenía del paper; y la URL de LangChain (404). Dos precisiones menores (cifras de Spider, dominio de LlamaIndex). Fichas completas en el [[Guia-Maestra-RAG_16-Bibliografia|Tomo 16 §17]]. El código de este tomo **no se ejecutó** en esta revisión (requiere credenciales de API y una base PostgreSQL); se corrigió un import inexistente (`from typing import list`) detectado por lectura. **El 2026-10-02 sí se ejecutaron las funciones puras de seguridad** (`validate_sql_safety` y la validación original de `execute_sql_safe`, con `sqlparse` 0.6.0, sin base de datos ni API): fallaron 3 y 4 de 14 casos, se reescribieron y la versión corregida pasa 23 de 23 (§5.3); el filtro de patrones del bloque pandas se evaluó como texto (§3.1). El resto del código —cliente de OpenAI, conexión a PostgreSQL, frameworks— sigue sin ejecutarse.
 
 ---
 

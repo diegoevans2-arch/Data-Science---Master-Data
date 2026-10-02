@@ -3,8 +3,8 @@ title: "Tomo 04 — Semantic search, embeddings y hybrid search"
 tags: [rag, semantic-search, embeddings, vector-space, cosine-similarity, contrastive-training, hybrid-search, rrf, dense-retrieval]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 04
-version: 1.5
-updated: 2026-09-05
+version: 1.6
+updated: 2026-10-02
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -19,7 +19,7 @@ author: El Egypcio
 ---
 
 > [!info] ¿Por qué importa esta sección?
-> El [[Guia-Maestra-RAG_03-Keyword-Search-TF-IDF-y-BM25|Tomo 03]] terminó con un hueco preciso: keyword search no puede conectar `"happy"` con `"glad"`, y en cambio sí confunde el `Python` lenguaje con el `Python` serpiente. Este tomo cierra ese hueco y **completa el retriever**. Aquí está la tecnología que la mayoría de la gente asocia con "IA en la búsqueda" —los embeddings— explicada hasta el fondo: qué son esos vectores, por qué funcionan, cómo se entrenan y, crucialmente, **qué NO capturan**.
+> El [[Guia-Maestra-RAG_03-Keyword-Search-TF-IDF-y-BM25|Tomo 03]] terminó con un hueco preciso: el *vocabulary mismatch* —keyword search no conecta una pregunta con un documento que dice lo mismo con otras palabras (el auto que «no arranca en invierno» frente al «encendido del vehículo a baja temperatura»)—. Este tomo cierra ese hueco, también su inverso (una misma palabra con dos significados, como el `Python` lenguaje frente al `Python` serpiente, que verás enseguida) y **completa el retriever** *(corregido el 2026-10-02: decía que el Tomo 03 había terminado con `"happy"`/`"glad"` y con Python)*. Aquí está la tecnología que la mayoría de la gente asocia con "IA en la búsqueda" —los embeddings— explicada hasta el fondo: qué son esos vectores, por qué funcionan, cómo se entrenan y, crucialmente, **qué NO capturan**.
 >
 > Y termina montando la pieza final: **hybrid search**, el mecanismo que combina las dos búsquedas en un único ranking. Al cerrar este tomo tienes el retriever completo de punta a punta.
 
@@ -40,8 +40,8 @@ Recordemos el límite estructural de keyword search con dos ejemplos que lo deja
 ```
    ❌ FALSO NEGATIVO — mismo significado, palabras distintas
 
-      Query:      "estoy happy con el resultado"
-      Documento:  "el cliente quedó glad con el resultado"
+      Query:      "estoy happy"
+      Documento:  "el cliente quedó glad"
       → sinónimos perfectos, cero palabras en común, NO lo encuentra
 
 

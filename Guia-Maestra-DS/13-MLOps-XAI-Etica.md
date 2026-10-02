@@ -3,8 +3,8 @@ title: "Tomo 13 — MLOps, XAI y Ética"
 tags: [data-science, machine-learning, mlops, xai, fairness, etica]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 13
-version: 6.4
-updated: 2026-07-29
+version: 6.5
+updated: 2026-10-02
 ---
 
 # 🏭 Tomo 13 — MLOps, XAI y Ética
@@ -33,7 +33,7 @@ Audiencia: 🔧 🧭 👔
 > La interpretabilidad no es un lujo: en finanzas, salud y sectores regulados es **requisito legal** (GDPR y equivalentes), y en todos lados es la herramienta para detectar sesgos, leakage ([[10-Validacion-y-Leakage]]) y errores sistemáticos. Existe un espectro: modelos intrínsecamente interpretables (lineales, árboles) ↔ cajas negras con explicabilidad post-hoc (Molnar, 2022).
 
 > [!tip] 💡 Analogías prácticas de XAI (con su métrica y rangos)
-> **Feature Importance:** el ranking de ingredientes por cuánto sabor aportan — genera importancias 0–1 que suman 1; > 10% en una sola feature merece atención (¿y si es leakage?). **Permutation Importance:** barajar una columna y ver cuánto cae el AUC — caída > 0.05 = feature importante. **PDP:** "si subo los m² de 50 a 200, ¿qué pasa con el precio predicho?" — revela la **forma** de la relación (lineal, meseta, umbral). **SHAP:** descompone CADA predicción en la contribución exacta de cada feature — │SHAP│ > 0.1 (en la escala del output) = contribución relevante. **LIME:** un mini-modelo lineal que explica UNA predicción en su vecindario.
+> **Feature Importance:** el ranking de ingredientes por cuánto sabor aportan — genera importancias 0–1 que suman 1; > 10% en una sola feature merece atención (¿y si es leakage?) y > 50% es alarma fuerte ([[11-Mejora-de-Modelos]]) — reglas de bolsillo, no estándares. **Permutation Importance:** barajar una columna y ver cuánto cae el AUC — caída > 0.05 = feature importante. **PDP:** "si subo los m² de 50 a 200, ¿qué pasa con el precio predicho?" — revela la **forma** de la relación (lineal, meseta, umbral). **SHAP:** descompone CADA predicción en la contribución exacta de cada feature — │SHAP│ > 0.1 (en la escala del output) = contribución relevante. **LIME:** un mini-modelo lineal que explica UNA predicción en su vecindario.
 
 ### Métodos globales (explican el modelo completo)
 
@@ -182,9 +182,9 @@ Audiencia: 🔧 🧭 👔
 > [!info] 📌 Actualizado (29-jul-2026): el Digital Omnibus ya es ley vigente, no un acuerdo pendiente
 > El marco de 4 niveles de riesgo es consenso sólido y estable. Lo que en la redacción original de este tomo (jul-2026) era "noticia de semanas, a confirmar" ya se resolvió: el paquete **"Digital Omnibus on AI"** fue aprobado por el Parlamento Europeo (16-jun-2026, 423 votos a favor) y el Consejo de la UE (29-jun-2026), adoptado el 8-jul-2026 como **Reglamento (UE) 2026/1744**, publicado en el Diario Oficial de la UE (OJ L, 2026/1744) el 24-jul-2026 y **en vigor desde el 27-jul-2026**. Retrasa las obligaciones de alto riesgo del **Anexo III** (sistemas autónomos) de ago-2026 al **2-dic-2027**, y las del **Anexo I** (IA embebida en productos regulados por legislación de armonización de la UE) al **2-ago-2028**. Verificado vía búsqueda web contra eur-lex.europa.eu/eli/reg/2026/1744/oj/eng (fuente primaria).
 
-**🧭 Cuándo usarlo:** si tu modelo decide sobre personas en crédito, empleo, salud, educación o justicia y opera en la UE (o sirve a clientes que sí), la clasificación de riesgo determina qué documentación, auditoría de fairness y supervisión humana son exigibles por ley, no solo recomendables. Para la operación día a día, dos estándares voluntarios complementan la ley dura: el **NIST AI Risk Management Framework** — con su **Generative AI Profile** (jul-2024), que añade categorías de riesgo específicas de IA generativa (confabulación, sesgo y homogeneización, integridad de la información, entre otras) — y la **ISO/IEC 42001:2023**, el primer estándar internacional certificable de sistema de gestión de IA. Ninguno de los dos es ley; ambos son cada vez más exigidos en procesos de procurement de sectores regulados como capa operativa para demostrar cumplimiento del AI Act.
+**🧭 Cuándo usarlo:** si tu modelo decide sobre personas en crédito, empleo, salud, educación o justicia y opera en la UE (o sirve a clientes que sí), la clasificación de riesgo determina qué documentación, auditoría de fairness y supervisión humana serán exigibles por ley, no solo recomendables: las obligaciones de alto riesgo se aplican desde el 2-dic-2027 (sistemas del Anexo III) y el 2-ago-2028 (IA embebida en productos regulados, Anexo I), según el Digital Omnibus. Hay plazo para prepararse, no para ignorarlo *(corregido el 2026-10-02: decía «son exigibles», en presente)*. Para la operación día a día, dos estándares voluntarios complementan la ley dura: el **NIST AI Risk Management Framework** — con su **Generative AI Profile** (jul-2024), que añade categorías de riesgo específicas de IA generativa (confabulación, sesgo y homogeneización, integridad de la información, entre otras) — y la **ISO/IEC 42001:2023**, el primer estándar internacional certificable de sistema de gestión de IA. Ninguno de los dos es ley; ambos son cada vez más exigidos en procesos de procurement de sectores regulados como capa operativa para demostrar cumplimiento del AI Act.
 
-**👔 En una frase para el negocio:** si tu sistema decide sobre crédito, empleo, salud o justicia, la pregunta ya no es "¿deberíamos auditar fairness?" sino "¿qué evidencia documentada exige el regulador?" — y esa exigencia ya tiene ley detrás en la UE.
+**👔 En una frase para el negocio:** si tu sistema decide sobre crédito, empleo, salud o justicia, la pregunta ya no es "¿deberíamos auditar fairness?" sino "¿qué evidencia documentada exige el regulador?" — y esa exigencia ya tiene ley detrás en la UE, con obligaciones de alto riesgo que se aplican desde el 2-dic-2027 (Anexo III) y el 2-ago-2028 (Anexo I).
 
 ---
 

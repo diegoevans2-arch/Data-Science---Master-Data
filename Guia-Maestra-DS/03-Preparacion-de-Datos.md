@@ -3,8 +3,8 @@ title: "Tomo 03 — Preparación y Calidad de Datos"
 tags: [data-science, machine-learning, data-quality, preprocessing, feature-engineering]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 03
-version: 6.4
-updated: 2026-09-06
+version: 6.5
+updated: 2026-10-02
 ---
 
 # 🧹 Tomo 03 — Preparación y Calidad de Datos
@@ -14,7 +14,7 @@ updated: 2026-09-06
 ---
 
 > [!info] 📌 ¿Por qué importa esta sección?
-> El **80% del tiempo** en un proyecto real de ML se dedica a preparar datos. Si tus datos están sucios, sesgados o mal codificados, el mejor modelo del mundo producirá resultados basura: es como construir una casa sobre cimientos de arena — puede verse bien por fuera, pero se derrumba cuando la habitas. Un dataset pequeño pero limpio y representativo supera siempre a uno masivo pero sesgado: el *Literary Digest* predijo mal la elección de 1936 encuestando a 10 millones de personas con sesgo de selección — la advertencia histórica definitiva de que el volumen no compra calidad.
+> **La mayor parte del tiempo** de un proyecto real de ML se dedica a preparar datos. El «80 %» que repite la industria es un orden de magnitud, no una cifra medida: nace de encuestas de proveedores, y una encuesta más reciente y amplia lo sitúa cerca de la mitad (~45 %; Anaconda, 2020). Si tus datos están sucios, sesgados o mal codificados, el mejor modelo del mundo producirá resultados basura: es como construir una casa sobre cimientos de arena — puede verse bien por fuera, pero se derrumba cuando la habitas. Un dataset pequeño pero limpio y representativo supera a uno masivo pero sesgado: el sondeo del *Literary Digest* de 1936 envió unas 10 millones de papeletas, recibió ~2,4 millones y erró igual, por un marco muestral sesgado y, sobre todo, por no-respuesta (Squire, 1988) — la advertencia histórica de que el volumen no compra calidad. *(Corregido el 2026-10-02: decía «80 % del tiempo» sin fuente y «encuestando a 10 millones de personas con sesgo de selección».)*
 
 > [!abstract] 👔 Impacto ejecutivo
 > La calidad de un modelo tiene un techo infranqueable: la calidad de sus datos. Todo peso invertido en modelado sobre datos sucios es un peso mal invertido.
@@ -491,6 +491,7 @@ Audiencia: 🔧 🧭 👔
 - (Hooker et al., 2021), (Strobl et al., 2008) — permutation importance con features correlacionadas. · (Kursa & Rudnicki, 2010) — Boruta.
 - (van Buuren & Groothuis-Oudshoorn, 2011) — MICE. · (Sperrin et al., 2020) — missing data para predicción vs. inferencia.
 - Documentación oficial de scikit-learn (`IterativeImputer` con `sample_posterior`, `LocalOutlierFactor` con `novelty=True`, `TSNE` con `init='pca'` por defecto) → [[16-Bibliografia]] §13. *(Corregido el 2026-09-06: la fila LOF decía «sin predict() para datos nuevos».)*
+- (Squire, 1988) — por qué falló el sondeo del *Literary Digest*. · (Anaconda, 2020) — encuesta *State of Data Science* (informe de empresa, no revisado por pares): ~45 % del tiempo en carga y limpieza de datos.
 - (Kuhn & Johnson, 2019) — feature engineering y selection aplicados.
 - (Géron, 2022) — pipelines de preparación end-to-end en scikit-learn.
 

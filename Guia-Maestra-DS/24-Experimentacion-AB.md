@@ -11,8 +11,8 @@ audiencias:
   - puente
   - ejecutivo
 tomo: 24
-version: 1.2
-updated: 2026-09-06
+version: 1.3
+updated: 2026-10-02
 ---
 
 # 🧪 Tomo 24 — Experimentación A/B y Diseño de Experimentos
@@ -444,13 +444,15 @@ Ejemplo:
   Segmento B:     2% conv         3% conv  (+1 pp) ✓
 
   Pero si tratamiento atrae más usuarios del segmento B (baja conversión):
-  Agregado:       8% conv         7% conv  (-1 pp) ✗ ???
+  Agregado:       8.4% conv       6.6% conv  (-1.8 pp) ✗ ???
 
   Composición Control:  80% A, 20% B → conv = 0.8×10 + 0.2×2 = 8.4%
   Composición Trata:    40% A, 60% B → conv = 0.4×12 + 0.6×3 = 6.6%
 ```
 
 🔧 [Técnico] **Diagnóstico**: si la composición de segmentos cambia entre variantes, el efecto agregado mezcla el efecto causal con el efecto composicional. Solución: reportar efecto **dentro de cada segmento** (condicional) y decidir si el cambio composicional es deseable o no.
+
+🔧 [Técnico] **Cuándo puede cambiar la composición en un A/B:** con asignación aleatoria, los segmentos definidos *antes* de asignar (país, dispositivo, antigüedad) tienen la misma mezcla en ambas variantes por diseño — el ejemplo de arriba no puede ocurrir con ellos. La mezcla solo cambia entre variantes si el segmento se define *después* del tratamiento (p. ej., «usuarios que abrieron la feature») o si el trigger depende del tratamiento (las causas de SRM de la §7.2). En esos casos el desbalance de composición es una señal para diagnosticar, no un resultado para reportar. *(Corregido el 2026-10-02: el agregado decía «−1 pp» y la cuenta da −1.8 pp; y faltaba esta aclaración.)*
 
 ---
 
@@ -558,11 +560,9 @@ Audiencia: 🔧 🧭
         │               │
         ▼               ▼
    Multi-armed        A/B/n test
-   bandit             (múltiples
-   [[21-Multi-Armed-  variantes,
-   Bandits]]          fixed allocation)
-   (Thompson,
-   UCB — minimiza
+   bandit (T21)       (múltiples
+   (Thompson,         variantes,
+   UCB — minimiza     fixed allocation)
    regret)
 ```
 

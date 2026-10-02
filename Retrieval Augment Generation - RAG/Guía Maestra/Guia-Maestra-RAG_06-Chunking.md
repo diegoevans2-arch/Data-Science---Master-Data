@@ -3,8 +3,8 @@ title: "Tomo 06 — Chunking (básico y avanzado)"
 tags: [rag, chunking, fixed-size, overlap, recursive-splitting, semantic-chunking, contextual-retrieval, indexing]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 06
-version: 1.2
-updated: 2026-09-05
+version: 1.3
+updated: 2026-10-02
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -499,7 +499,7 @@ Audiencia: 🔧
 
 Audiencia: 🔧 🧭 👔
 
-El lab cierra alimentando un LLM con lo recuperado por cada estrategia, **compensando el tamaño** para igualar el contexto:
+El lab cierra alimentando un LLM con lo recuperado por cada estrategia, **compensando el número de chunks** para que el contexto sea parecido — no idéntico: 8 chunks de ~30 palabras y 2 de ~120 suman lo mismo (240 palabras) en las dos estrategias de tamaño fijo, pero no en las de párrafo, cuyos chunks van de 4 a 1.296 palabras:
 
 ```python
 n_chunks_by_strat = {
@@ -520,7 +520,7 @@ Comparando las cuatro respuestas generadas para *"history of git"*:
 | `para_chunks_min_25` | ✅ | ✅ | ✅ completo | Bajo |
 
 > [!important] 🎯 El chunking no solo afecta la búsqueda: afecta lo que el LLM responde
-> Con **la misma cantidad de contexto** y el mismo modelo, la estrategia de chunks largos produjo la respuesta **más completa y fiel**, y las de chunks cortos **arrastraron ruido del contexto adyacente** — inventando conexiones entre fragmentos que no tenían relación.
+> Con un contexto **de tamaño comparable** (el mismo número de chunks compensado, no las mismas palabras: en las de párrafo varía mucho) y el mismo modelo, la estrategia de chunks largos produjo la respuesta **más completa y fiel**, y las de chunks cortos **arrastraron ruido del contexto adyacente** — inventando conexiones entre fragmentos que no tenían relación.
 >
 > Es el eslabón que cierra el tomo: los chunks mal dimensionados no producen "resultados un poco peores", producen **respuestas con hechos equivocados**. Y ese fallo se ve como una respuesta bien redactada — el patrón del [[Guia-Maestra-RAG_01-Introduccion-a-RAG#6. 🔬 Con RAG vs sin RAG: el experimento, con resultados reales|Tomo 01]].
 >

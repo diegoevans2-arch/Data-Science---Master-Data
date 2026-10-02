@@ -3,8 +3,8 @@ title: "Tomo 09 — Reglas de Asociación"
 tags: [data-science, machine-learning, association-rules, market-basket]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 09
-version: 6.3
-updated: 2026-09-06
+version: 6.4
+updated: 2026-10-02
 ---
 
 # 🛒 Tomo 09 — Reglas de Asociación
@@ -124,7 +124,7 @@ Audiencia: 🔧 🧭 👔
 - **Calibración de min_support:** muy alto → solo patrones archisabidos; muy bajo → explosión combinatoria de reglas triviales. Heurística de partida: apuntar a que se generen ≈1.000–10.000 reglas y ajustar iterativamente.
 - **Filtrado post-generación:** eliminar lift ≤ 1 (sin relación real); eliminar consecuentes triviales (ítems presentes en > 80–90% de las transacciones); priorizar reglas **accionables** (consecuentes que se pueden promocionar, recomendar o alertar).
 - **Tamaño útil de itemsets:** las reglas de mayor utilidad práctica son 2-itemsets y 3-itemsets; reglas de 5+ ítems son raras, hiper-específicas y difíciles de accionar.
-- **Dominios no-retail (misma matemática, otra lectura):** medicina — ítem = diagnóstico/síntoma, transacción = paciente (comorbilidades); logs de sistemas — ítem = evento, transacción = sesión (secuencias que anticipan fallas); clickstream — ítem = página, transacción = visita (rutas de navegación).
+- **Dominios no-retail (misma matemática, otra lectura):** medicina — ítem = diagnóstico/síntoma, transacción = paciente (comorbilidades); logs de sistemas — ítem = evento, transacción = sesión (qué eventos co-ocurren; si lo que importa es el **orden** —las secuencias que anticipan fallas—, la herramienta es la §5); clickstream — ítem = página, transacción = visita (qué páginas se visitan juntas; las rutas de navegación, con su orden, son sequential pattern mining, §5).
 
 **👔 En una frase para el negocio:** una regla solo vale si sobrevive tres filtros — ocurre bastante, implica de verdad, y **alguien puede hacer algo con ella** el lunes.
 

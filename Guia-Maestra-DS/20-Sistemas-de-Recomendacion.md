@@ -3,8 +3,8 @@ title: "Tomo 20 — Sistemas de Recomendación"
 tags: [data-science, machine-learning, recomendadores, ranking, personalizacion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 20
-version: 6.2
-updated: 2026-07-27
+version: 6.3
+updated: 2026-10-02
 ---
 
 # 🎁 Tomo 20 — Sistemas de Recomendación
@@ -143,7 +143,7 @@ Audiencia: 🔧 🧭
 > [!tip] 💡 Analogía
 > Las tres etapas de esta sección son como armar un mueble con instrucciones separadas para cortar, ensamblar y pintar — cada paso lo hace una estación distinta. Un **generative recommender** es el mueble impreso de una sola pieza: la misma máquina que "entiende" la forma final decide directamente qué producir, sin pasar la pieza de estación en estación.
 
-**🔧 Definición técnica:** cada ítem del catálogo se codifica como una secuencia corta de tokens discretos ("semantic IDs", obtenidos cuantizando sus embeddings de contenido). Con esa tokenización, recomendar deja de ser "generar candidatos y luego ordenarlos" y pasa a ser un problema de **modelado generativo autoregresivo**: un único Transformer, entrenado sobre el historial de interacciones del usuario como si fuera una secuencia de lenguaje, genera directamente los próximos ítems a mostrar — fusionando candidate generation y ranking en un solo modelo. Meta reporta con su arquitectura HSTU (Hierarchical Sequential Transduction Units, hasta 1.5 billones de parámetros en inglés "trillion") **leyes de escala tipo LLM**: a diferencia del DLRM clásico de esta sección, que se estanca tras una época de entrenamiento, estos modelos siguen mejorando con más cómputo y datos, y ya está desplegado en múltiples superficies de producción con una mejora reportada de +12.4% en métricas online (Zhai et al., 2024). Kuaishou reporta un patrón análogo con OneRec, un modelo generativo end-to-end también en producción, con +1.6% en watch-time (Deng et al., 2025); reportes similares circulan en Meituan, Alibaba y ByteDance.
+**🔧 Definición técnica:** cada ítem del catálogo se codifica como una secuencia corta de tokens discretos ("semantic IDs", obtenidos cuantizando sus embeddings de contenido). Con esa tokenización, recomendar deja de ser "generar candidatos y luego ordenarlos" y pasa a ser un problema de **modelado generativo autoregresivo**: un único Transformer, entrenado sobre el historial de interacciones del usuario como si fuera una secuencia de lenguaje, genera directamente los próximos ítems a mostrar — fusionando candidate generation y ranking en un solo modelo. Meta reporta con su arquitectura HSTU (Hierarchical Sequential Transduction Units, hasta 1,5 billones de parámetros —en inglés, 1.5 *trillion*, o sea 1.5 × 10¹²—) **leyes de escala tipo LLM**: a diferencia del DLRM clásico de esta sección, que se estanca tras una época de entrenamiento, estos modelos siguen mejorando con más cómputo y datos, y ya está desplegado en múltiples superficies de producción con una mejora reportada de +12.4% en métricas online (Zhai et al., 2024). Kuaishou reporta un patrón análogo con OneRec, un modelo generativo end-to-end también en producción, con +1.6% en watch-time (Deng et al., 2025); reportes similares circulan en Meituan, Alibaba y ByteDance.
 
 **🧭 Cuándo usarlo:** por ahora es una apuesta de plataformas con escala y presupuesto de investigación excepcionales. Para el resto de los catálogos, la arquitectura de tres etapas de esta sección sigue siendo el punto de partida correcto: exige menos infraestructura, es más auditable etapa por etapa, y su costo/beneficio está mejor probado. No es un reemplazo universal del pipeline clásico, sino una familia emergente para el extremo superior de escala — **desarrollo muy reciente (2024–2025): tratar como línea de investigación a monitorear, no como estándar de la industria todavía**.
 
@@ -243,7 +243,7 @@ El error estratégico más común es optimizar una sola métrica (el CTR) y desc
 > [!example] 📊 Caso de negocio — E-commerce: del carrusel único al híbrido con guardrails
 > **Problema:** el home muestra el mismo carrusel de top-ventas a todos. CTR estancado, y el 70% del catálogo jamás se exhibe.
 >
-> **Técnica aplicada:** arquitectura de dos etapas (sección 4): candidatos desde ALS implícito (compras + carritos) + ítems similares por embeddings de contenido para lo nuevo; ranking final con boosting usando contexto (hora, categoría de la sesión); una capa de re-ranking con diversidad mínima y "no mostrar lo ya comprado"; popularidad segmentada como fallback de cold start. Evaluación offline con NDCG@10 y coverage, decisión final por A/B con ingresos por sesión.
+> **Técnica aplicada:** arquitectura de tres etapas (sección 4: candidatos → ranking → re-ranking): candidatos desde ALS implícito (compras + carritos) + ítems similares por embeddings de contenido para lo nuevo; ranking final con boosting usando contexto (hora, categoría de la sesión); una capa de re-ranking con diversidad mínima y "no mostrar lo ya comprado"; popularidad segmentada como fallback de cold start. Evaluación offline con NDCG@10 y coverage, decisión final por A/B con ingresos por sesión.
 >
 > **Resultado:** mejora sostenida de conversión en el A/B, y — el efecto menos esperado — la cola larga del catálogo empieza a rotar: coverage se triplica, descomprimiendo inventario que antes solo se movía con descuentos. La lección: **el recomendador no solo sube el clic; redistribuye la demanda** — y eso también se gestiona.
 
@@ -287,4 +287,4 @@ Fichas completas en [[16-Bibliografia]].
 
 **Navegación:** [[00-MOC-Guia-Maestra|⬅ Volver al índice]] · Anterior: [[19-NLP-y-LLMs|19 · NLP y LLMs]] · Siguiente: [[21-Supervivencia-y-Bandits|21 · Supervivencia y Bandits ➡]]
 
-> **Próximo tomo:** [[21-Supervivencia-y-Bandits]] — los dos complementos finales: modelar el *cuándo* (análisis de supervivencia con censura) y aprender *mientras* se decide (multi-armed bandits).
+> **Próximo tomo:** [[21-Supervivencia-y-Bandits]] — dos temas más: modelar el *cuándo* (análisis de supervivencia con censura) y aprender *mientras* se decide (multi-armed bandits).

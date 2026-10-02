@@ -3,8 +3,8 @@ title: "Tomo 09 — Hallucinations, evaluación y agentic RAG"
 tags: [rag, evaluacion, metricas, precision, recall, map, mrr, ragas, faithfulness, hallucinations, agentic-rag, fine-tuning]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 09
-version: 1.2
-updated: 2026-09-05
+version: 1.3
+updated: 2026-10-02
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -21,7 +21,7 @@ author: El Egypcio
 > [!info] ¿Por qué importa esta sección?
 > Los ocho tomos anteriores llenaron el sistema de **perillas**: `top_k`, `alpha`, tamaño de chunk, overlap, `ef`, over-fetch, `temperature`, `top_p`, el system prompt, el modelo. Y hasta ahora **no tenemos forma de saber si moverlas mejora o empeora las cosas.**
 >
-> Este es el tomo que cierra ese hueco, y por eso es el más largo de la guía. Trae las métricas del **retriever** (que quedaron pendientes de ruteo desde el Módulo 2) y las del **generador**, más la detección de **hallucinations**, los flujos **agentic** y la comparación honesta entre **RAG y fine-tuning**.
+> Este es el tomo que cierra ese hueco. Trae las métricas del **retriever** (que quedaron pendientes de ruteo desde el Módulo 2) y las del **generador**, más la detección de **hallucinations**, los flujos **agentic** y la comparación honesta entre **RAG y fine-tuning**.
 >
 > Si un tomo de esta guía cambia cómo trabajas, probablemente sea este: **sin medición, todo lo anterior es fe.**
 
@@ -244,13 +244,13 @@ El lab corre las mismas 10 queries con `K = 5, 20, 50`. Los resultados muestran 
 | K | Precision (típica) | Recall (típico) |
 |---:|---|---|
 | **5** | **1.00** en 8 de 10 queries | ~0.01 |
-| **20** | baja en varias (0.65–1.00) | ~0.03 |
-| **50** | sigue bajando (0.60–1.00) | 0.05–0.08 |
+| **20** | baja en varias (0.50–1.00) | 0.02–0.03 |
+| **50** | sigue bajando (0.52–1.00) | 0.05–0.08 |
 
 > [!important] 🎯 Tres lecturas de esa tabla, y la tercera es la que importa
 > **(1) El trade-off es real y monótono.** A medida que K crece, recuperas más de lo relevante que existe (recall ↑) al costo de incluir irrelevantes (precision ↓).
 >
-> **(2) El recall se ve "terrible" y no lo es.** Con `K=5` el recall es ~1 %. Suena catastrófico hasta que haces la cuenta: **cada categoría tiene entre 500 y 600 documentos**, así que recuperar 5 nunca puede dar más de ~1 % de recall. El número está limitado por la aritmética, no por el retriever.
+> **(2) El recall se ve "terrible" y no lo es.** Con `K=5` el recall es ~1 %. Suena catastrófico hasta que haces la cuenta: **cada categoría tiene cientos de documentos** (en el conjunto de entrenamiento del lab, de unos 380 a unos 600), así que recuperar 5 nunca puede dar mucho más de ~1 % de recall. El número está limitado por la aritmética, no por el retriever. *(Corregido el 2026-10-02: decía «entre 500 y 600» documentos por categoría; hay categorías con menos de 500.)* Ojo con la lectura: esto vale porque aquí «relevante» es una categoría entera; con un ground truth marcado a mano, de pocos documentos por pregunta, recall@K sigue siendo la métrica base.
 >
 > **(3) Y de ahí sale la conclusión que cambia cómo eliges K en un RAG:**
 >
@@ -413,7 +413,7 @@ Audiencia: 🔧 🧭 👔
 > 2. **Enfocar la energía en asegurar el grounding** refinando el **system prompt**.
 > 3. **Testear con benchmarks enfocados en hallucinations** para asegurar respuestas fundamentadas y bien citadas.
 >
-> Y un cuarto punto que el curso menciona en 3.5 y merece destacarse: **incluir en tu golden set preguntas SIN respuesta en el corpus.** Es la prueba que casi nadie hace y la que más revela: un sistema honesto responde *"no está en los documentos"*; uno que alucina se inventa algo. Si tu set de evaluación solo tiene preguntas respondibles, **nunca vas a medir esa conducta**.
+> Y un cuarto punto que **no viene de las lecciones del curso** sino de la práctica de evaluación, y merece destacarse: **incluir en tu golden set preguntas SIN respuesta en el corpus.** El benchmark RGB lo mide con el nombre de *negative rejection*: el modelo debe negarse a responder cuando el conocimiento requerido no está en ningún documento recuperado (Chen et al., 2024). *(Corregido el 2026-10-02: decía que el curso lo menciona en la §3.5, que no trata el tema.)* Es la prueba que casi nadie hace y la que más revela: un sistema honesto responde *"no está en los documentos"*; uno que alucina se inventa algo. Si tu set de evaluación solo tiene preguntas respondibles, **nunca vas a medir esa conducta**.
 
 ---
 
@@ -584,7 +584,7 @@ Audiencia: 🔧 🧭 👔
 
 - Si el groundedness score < umbral (ej: < 0.7), **no entregar la respuesta** — en su lugar, responder con un fallback: *"No tengo suficiente información en mis fuentes para responder esto con confianza."*
 - Trade-off: agregar el check añade latencia (1-3s) y costo (una llamada extra al LLM). Solución: correrlo async y hacer streaming con retractación si falla, o aplicarlo solo a respuestas de alto riesgo (dominios regulados).
-- Detalle de guardrails completos en [[Guia-Maestra-RAG_10-RAG-en-Produccion|Tomo 10 §5]].
+- Detalle de guardrails completos en [[Guia-Maestra-RAG_10-RAG-en-Produccion|Tomo 10 §10]].
 
 ### 4.6 Sesgos y limitaciones de LLM-as-judge
 
@@ -761,7 +761,7 @@ Audiencia: 🔧
 >
 > **(3) La lógica de relajación de filtros está invertida, y se ve en el output.** La lista de prioridades tiene `'masterCategory'` **dos veces** y **le falta `'articleType'`**; y el bucle elimina **cuatro filtros de golpe en la primera iteración** en vez de relajar de a poco. Como retorna en cuanto encuentra ≥5 resultados, en la práctica **casi siempre tira `gender`, `season`, `usage` y `masterCategory` de entrada**.
 >
-> El resultado es visible: para *"un look para un hombre en una fiesta de boda de noche"*, el sistema devolvió **unos zapatos y una corbata**. No un traje, no una camisa. Un "look" de dos accesorios — porque los filtros que garantizaban coherencia se descartaron en el primer intento.
+> El resultado es visible: para *"un look para un hombre en una fiesta de boda de noche"*, el sistema devolvió **unos zapatos y una corbata**. No un traje, no una camisa. Un "look" de dos accesorios — porque los filtros que garantizaban coherencia se descartaron en el primer intento. (Ojo: la misma consulta, en el assignment del Módulo 5 —[[Guia-Maestra-RAG_11-Quantization-Trade-offs-y-Multimodal-RAG|Tomo 11]], §4.4—, devuelve **camisa + corbata** en su versión base y zapatos + corbata en la simplificada. Son notebooks distintos, con versiones distintas del pipeline: no se contradicen.)
 >
 > **(4) El prompt del extractor interpola `set` de Python como si fueran JSON.** Dice *"los valores posibles se dan en el siguiente JSON: {values}"*, pero `values` contiene `set`, cuyo `repr` usa comillas simples y **cuyo orden de iteración no es estable entre procesos**. El prompt cambia en cada reinicio del kernel — **irreproducible**, en un ejercicio que corre con `temperature=0` precisamente para ser determinista.
 >
@@ -981,6 +981,7 @@ Audiencia: 🔧 🧭 👔
 - Hu, E. J. et al. (2021). *LoRA: Low-Rank Adaptation of Large Language Models*. arXiv:2106.09685 (ICLR 2022). — El fine-tuning eficiente que hace viable la sección 6.
 - Anthropic (2024). *Building Effective Agents*. — Los patrones de workflow (sequential, conditional/routing, iterative, parallel) de la sección 5.2.
 - Lewis, P. et al. (2020). *Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks*. NeurIPS. — El paper fundacional.
+- Chen, J., Lin, H., Han, X. & Sun, L. (2024). *Benchmarking Large Language Models in Retrieval-Augmented Generation*. AAAI 2024, 38(16), 17754–17762. — El benchmark RGB y su capacidad de *negative rejection* (§3.8).
 
 > [!note] Sobre el código y los valores de este tomo
 > - **Del curso:** toda la teoría de las secciones 1 a 6 proviene de las lecciones (M4 para hallucinations, evaluación, agentic y fine-tuning; M2 para las métricas de retrieval). Los ejemplos numéricos de precision, recall, MAP y MRR son los del curso, **recalculados y verificados** (MAP = 0.7; MRR = 0.5). Los resultados de 2.7 son del Ungraded Lab 2 del M2, y el flujo y los defectos de 5.4 son del assignment graded C1M4.

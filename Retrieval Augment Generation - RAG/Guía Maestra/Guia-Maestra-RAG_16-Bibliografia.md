@@ -3,8 +3,8 @@ title: "Tomo 16 — Bibliografía"
 tags: [rag, bibliografia, referencias, transversal, verificacion]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 16
-version: 1.1
-updated: 2026-09-05
+version: 1.2
+updated: 2026-10-02
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -24,6 +24,8 @@ author: El Egypcio
 > ✅ **52/52 obras verificadas contra fuente primaria (2026-07-28)** — cada una con evidencia y DOI/URL. La auditoría corrigió **4 errores** y precisó **6 fichas** más; el detalle está en la sección 14, porque los errores encontrados son didácticos en sí mismos.
 >
 > ➕ **67 fichas incorporadas el 2026-09-05** (§15–§18): las 37 del Tomo 12 y las 12 del Tomo 13 (verificadas al escribirlos, el 2026-07-28/29, pero nunca consolidadas aquí), las 7 del Tomo 14 y las 11 adiciones de la revisión del 2026-08-28 — estas 18 últimas verificadas el 2026-09-05, con **4 errores corregidos en el Tomo 14, una referencia inexistente eliminada del Tomo 04 y un título corregido en el Tomo 06**. **Total: 119 fichas.**
+>
+> ➕ **8 fichas incorporadas el 2026-10-02** (§17 y §19), verificadas **antes** de corregir los Tomos 05, 07, 08, 09, 11 y 14: las fuentes sobre las que descansan las correcciones. **Total: 127 fichas.**
 >
 > El **§5 de las [[Instrucciones|Instrucciones]]** exige que toda afirmación de fuente externa tenga bibliografía verificable. Este tomo es donde eso se comprueba.
 
@@ -192,7 +194,7 @@ author: El Egypcio
 - Kusupati, A., Bhatt, G., Rege, A., Wallingford, M., Sinha, A., Ramanujan, V., Howard-Snyder, W., Chen, K., Kakade, S., Jain, P., & Farhadi, A. (2022). "Matryoshka Representation Learning". *Advances in Neural Information Processing Systems 35 (NeurIPS 2022)*. arXiv:2205.13147. ✅ *Verificada 2026-07-28 (proceedings de NeurIPS; arXiv). Nota: la explicación del curso ("dimensiones ordenadas por densidad de información") es una buena intuición divulgativa pero **no es como lo enuncia el paper**, que habla de representaciones* coarse-to-fine *anidadas.* — Tomo [[Guia-Maestra-RAG_11-Quantization-Trade-offs-y-Multimodal-RAG|11]]
 - Faysse, M., Sibille, H., Wu, T., Omrani, B., Viaud, G., Hudelot, C., & Colombo, P. (2025). "ColPali: Efficient Document Retrieval with Vision Language Models". *Proceedings of ICLR 2025*. arXiv:2407.01449. ✅ *Verificada 2026-07-28 (arXiv; proceedings de ICLR). **Es la técnica que el curso llama "PDF RAG"**, nombre que no aparece en la literatura revisada por pares. Introduce el benchmark ViDoRe.* — Tomo [[Guia-Maestra-RAG_11-Quantization-Trade-offs-y-Multimodal-RAG|11]]
 - Macé, Q., Loison, A., & Faysse, M. (2025). *ViDoRe Benchmark V2: Raising the Bar for Visual Retrieval*. arXiv:2505.17166. ✅ *Verificada 2026-07-28. Motivado por la saturación de V1. **Release de benchmark, no paper revisado por pares.*** — Tomo [[Guia-Maestra-RAG_11-Quantization-Trade-offs-y-Multimodal-RAG|11]]
-- Shakir, A., Aarsen, T., & Lee, S. (2024, 22 de marzo). *Binary and Scalar Embedding Quantization for Significantly Faster & Cheaper Retrieval*. Hugging Face Blog. [huggingface.co/blog/embedding-quantization](https://huggingface.co/blog/embedding-quantization) ✅ *Verificada 2026-07-28. Fuente canónica de las cifras de retención de rendimiento (Tom Aarsen mantiene `sentence-transformers`). **Blog técnico de referencia, no paper revisado por pares** — se cita por sus mediciones reproducibles.* — Tomo [[Guia-Maestra-RAG_11-Quantization-Trade-offs-y-Multimodal-RAG|11]]
+- Shakir, A., Aarsen, T., & Lee, S. (2024, 22 de marzo). *Binary and Scalar Embedding Quantization for Significantly Faster & Cheaper Retrieval*. Hugging Face Blog. [huggingface.co/blog/embedding-quantization](https://huggingface.co/blog/embedding-quantization) ✅ *Verificada 2026-07-28. Fuente canónica de las cifras de retención de rendimiento (Tom Aarsen mantiene `sentence-transformers`). **Blog técnico de referencia, no paper revisado por pares** — se cita por sus mediciones reproducibles. Nota 2026-10-02: en su tabla de «Percentage of default performance», las cifras de **binary** se calcularon **con rescoring** (top-100 con `rescore_multiplier` = 4) y las de **int8 sin** rescoring; sin rescoring, mxbai-embed-large-v1 con binary retiene 92,53 % (texto del repositorio `huggingface/blog`, `embedding-quantization.md`).* — Tomo [[Guia-Maestra-RAG_11-Quantization-Trade-offs-y-Multimodal-RAG|11]]
 - Weaviate (2024, 2 de abril). *32x Reduced Memory Usage With Binary Quantization*. [weaviate.io/blog/binary-quantization](https://weaviate.io/blog/binary-quantization) ✅ *Verificada 2026-07-28. Aporta el contrapunto de recalls ~0,74–0,76 sobre DBPedia.* — Tomo [[Guia-Maestra-RAG_11-Quantization-Trade-offs-y-Multimodal-RAG|11]]
 
 ---
@@ -385,6 +387,9 @@ Además, dos datos concretos quedaron sin confirmar y **no se dan por buenos**: 
 - Li, J., Hui, B., Qu, G., Yang, J., Li, B., Li, B., Wang, B., Qin, B., Geng, R., Huo, N., Zhou, X., Ma, C., Li, G., Chang, K., Huang, F., Cheng, R., & Li, Y. (2023). "Can LLM Already Serve as A Database Interface? A BIg Bench for Large-Scale Database Grounded Text-to-SQLs" (BIRD). *Advances in Neural Information Processing Systems 36 (NeurIPS 2023), Datasets and Benchmarks Track*, 42330–42357. arXiv:2305.03111. ✅ *Verificada 2026-09-05 (proceedings de NeurIPS). GPT-4: 54,89 % de EX frente a 92,96 % humano.*
 - LangChain (s.f.). *Build a SQL agent*. Documentación oficial: docs.langchain.com/oss/python/langchain/sql-agent ✅ *Verificada 2026-09-05. La URL que citaba el tomo (`docs/use_cases/sql`) devuelve 404.*
 - LlamaIndex (s.f.). *NL SQL table — `NLSQLTableQueryEngine`*. Referencia de API: developers.llamaindex.ai/python/framework-api-reference/query_engine/NL_SQL_table/ ✅ *Verificada 2026-09-05 (la clase se exporta desde `llama_index.core.query_engine`; `docs.llamaindex.ai` redirige al dominio nuevo).*
+- PostgreSQL Global Development Group (s.f.). *PostgreSQL Documentation*: «Client Connection Defaults» (`default_transaction_read_only`), «SET TRANSACTION» y «libpq — Connection Parameters» (`options`). Documentación oficial: postgresql.org/docs/current/ ✅ *Verificada 2026-10-02. Una transacción de solo lectura rechaza INSERT, UPDATE, DELETE, MERGE y COPY FROM sobre tablas no temporales, todo CREATE/ALTER/DROP, COMMENT, GRANT, REVOKE y TRUNCATE; la propia documentación aclara que es «una noción de alto nivel que no impide todas las escrituras a disco». `options` admite varios `-c` separados por espacios.*
+- Python Software Foundation (s.f.). *The Python Standard Library — Built-in Functions*, `exec()`. docs.python.org/3/library/functions.html ✅ *Verificada 2026-10-02: si el diccionario de globals no trae `__builtins__`, Python inserta una referencia al módulo `builtins` (probado además con una expresión trivial).*
+- Albrecht, A. (s.f.). `sqlparse` — parser SQL no validante para Python, versión 0.6.0. pypi.org/project/sqlparse ✅ *Verificada 2026-10-02 leyendo el código instalado (`sqlparse/sql.py`, `Statement.get_type`): devuelve la primera palabra DML/DDL, `"UNKNOWN"` si no la reconoce (nunca `None`) y, para un `WITH`, la palabra DML que sigue a las definiciones del CTE.*
 
 ---
 
@@ -404,6 +409,19 @@ Además, dos datos concretos quedaron sin confirmar y **no se dan por buenos**: 
 - Zheng, L., Chiang, W.-L., Sheng, Y., Zhuang, S., Wu, Z., Zhuang, Y., Lin, Z., Li, Z., Li, D., Xing, E. P., Zhang, H., Gonzalez, J. E., & Stoica, I. (2023). "Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena". *Advances in Neural Information Processing Systems 36 (NeurIPS 2023), Datasets and Benchmarks Track*, 46595–46623. arXiv:2306.05685. ✅ *Verificada 2026-09-05 (BibTeX oficial de NeurIPS). Distinta del paper de Chatbot Arena de 2024 (§9).* — Tomo 09
 - Rebedea, T., Dinu, R., Sreedhar, M. N., Parisien, C., & Cohen, J. (2023). "NeMo Guardrails: A Toolkit for Controllable and Safe LLM Applications with Programmable Rails". *Proceedings of EMNLP 2023: System Demonstrations*, 431–445. DOI 10.18653/v1/2023.emnlp-demo.40. ✅ *Verificada 2026-09-05 (ACL Anthology).* — Tomo 10
 - Inan, H., Upasani, K., Chi, J., Rungta, R., Iyer, K., Mao, Y., Tontchev, M., Hu, Q., Fuller, B., Testuggine, D., & Khabsa, M. (2023). *Llama Guard: LLM-based Input-Output Safeguard for Human-AI Conversations*. arXiv:2312.06674. ✅ *Verificada 2026-09-05 (arXiv; DBLP: preprint sin venue formal).* — Tomo 10
+
+---
+
+## 19. Adiciones de las correcciones del 2026-10-02 (Tomos 05, 07, 08, 09)
+
+> [!note] Verificadas el 2026-10-02, antes de editar los tomos
+> Cinco correcciones de este día dependían de fuentes externas. Se contrastaron con el original (texto del paper, código fuente, archivo de configuración) y no con resúmenes.
+
+- Chen, J., Lin, H., Han, X., & Sun, L. (2024). "Benchmarking Large Language Models in Retrieval-Augmented Generation". *Proceedings of the AAAI Conference on Artificial Intelligence*, 38(16), 17754–17762. DOI 10.1609/aaai.v38i16.29728. arXiv:2309.01431. ✅ *Verificada 2026-10-02 (AAAI OJS: autores, volumen, páginas, DOI y fecha, 24-mar-2024). La definición de* negative rejection *—el LLM debe negarse a responder cuando el conocimiento requerido no está en ningún documento recuperado— se leyó en la versión HTML del paper.* — Tomo [[Guia-Maestra-RAG_09-Hallucinations-Evaluacion-y-Agentic-RAG|09]]
+- Weaviate (s.f.). *Hybrid search*. Documentación oficial: docs.weaviate.io/weaviate/search/hybrid ✅ *Verificada 2026-10-02: «Relative Score Fusion is the default fusion method starting in v1.24».* — Tomo [[Guia-Maestra-RAG_07-Reranking-Cross-Encoders-y-ColBERT|07]]
+- Kulawiak, D., & Hwang, J.-P. (2023, 29 de agosto). "Unlocking the Power of Hybrid Search — A Deep Dive into Weaviate's Fusion Algorithms". Weaviate Blog. weaviate.io/blog/hybrid-search-fusion-algorithms ✅ *Verificada 2026-10-02: relativeScoreFusion normaliza con min-max a 0–1 los scores de BM25 y vectorial (el mayor vale 1, el menor 0) y los suma ponderados por `alpha`; rankedFusion (RRF) fue el default hasta la v1.24. **Blog de proveedor, no paper revisado por pares.*** — Tomo [[Guia-Maestra-RAG_07-Reranking-Cross-Encoders-y-ColBERT|07]]
+- Weaviate (rama `main`, consultado 2026-10-02). `adapters/repos/db/vector/hnsw/search.go` (repositorio `weaviate/weaviate`) y referencia de configuración del índice vectorial (`flatSearchCutoff`, 40.000 por defecto): docs.weaviate.io/weaviate/config-refs/indexing/vector-index ✅ *Verificada 2026-10-02 en el código: `SearchByVector` llama a `flatSearch` solo si `allowList != nil`, el flat no está prohibido y el tamaño de la allow-list es menor que `flatSearchCutoff`; es decir, el umbral aplica a búsquedas **con filtro**, no al tamaño de la colección. La página de configuración solo dice «threshold for the flat-search cutoff»: la autoridad es el código.* — Tomo [[Guia-Maestra-RAG_05-Vector-Databases-y-ANN|05]]
+- BAAI (s.f.). `BAAI/bge-base-en-v1.5`, archivo `config.json`. Hugging Face: huggingface.co/BAAI/bge-base-en-v1.5 ✅ *Verificada 2026-10-02: `"architectures": ["BertModel"]`, `"model_type": "bert"` — un encoder tipo BERT.* — Tomo [[Guia-Maestra-RAG_08-Generacion-Transformers-Sampling-Prompting|08]]
 
 ---
 

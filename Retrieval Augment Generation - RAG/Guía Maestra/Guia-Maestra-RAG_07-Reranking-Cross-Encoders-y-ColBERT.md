@@ -3,7 +3,8 @@ title: "Tomo 07 — Query parsing, arquitecturas de scoring y re-ranking"
 tags: [rag, query-parsing, query-rewriting, hyde, ner, bi-encoder, cross-encoder, colbert, reranking, maxsim]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 07
-version: 1.1
+version: 1.2
+updated: 2026-10-02
 status: done
 type: apunte
 project: guia-maestra-rag
@@ -138,7 +139,7 @@ Desglosando qué hizo el reescritor:
 > [!abstract] 👔 El veredicto del curso sobre costo-beneficio
 > *"Aunque puedes y debes iterar sobre el prompt que usas para el query rewriting, en general **los beneficios que obtienes son sustanciales y justifican fácilmente el costo adicional** de la llamada al LLM necesaria para limpiar cada prompt."*
 >
-> Traducido: es una llamada extra al modelo por consulta, y **vale la pena**. Si vas a añadir una sola cosa a tu pipeline, empieza por aquí.
+> Traducido: es una llamada extra al modelo por consulta, y **vale la pena**. Es una de las dos mejoras de los extremos que casi siempre pagan; en el orden de trabajo del tomo (§6) va **después** del re-ranking con over-fetch, que es la mejora más barata *(corregido el 2026-10-02: decía «si vas a añadir una sola cosa, empieza por aquí», contra el orden de §6)*.
 
 > [!warning] ⚠️ Lo que el curso no menciona y hay que vigilar
 > El query rewriting agrega **una llamada de LLM en el camino crítico**, con tres consecuencias que conviene anticipar:
@@ -428,7 +429,7 @@ response = collection.query.near_text(
 > [!example] 📊 Caso de negocio — Legal: el buscador jurisprudencial que encontraba todo menos lo que servía
 > **Problema:** un estudio jurídico monta un buscador sobre su archivo de jurisprudencia, doctrina y escritos propios. El retriever híbrido funciona: los abogados confirman que **los documentos relevantes aparecen entre los recuperados**. El problema es que aparecen en el puesto 7, el 9 y el 14 — y como al LLM se le pasan los primeros 5, **nunca llegan a la respuesta**. Además, los asociados junior consultan escribiendo el caso como se lo contó el cliente (*"al vecino le tiraron un muro y quiere que le paguen"*), lo que produce resultados muy distintos a cuando el socio busca con la terminología precisa.
 >
-> **Técnica aplicada:** las dos mejoras de los extremos, en el orden que recomienda el curso. **(1) Query rewriting** (sección 2.2): un LLM traduce la consulta coloquial a terminología jurídica y agrega sinónimos del dominio — el equivalente de la ficha médica del ejemplo de este tomo. Como el archivo está lleno de identificadores exactos (roles de causa, artículos, fechas), se busca con **la query original y la reescrita**, fusionando ambos rankings, para no perder el término literal. **(2) Re-ranking con over-fetch** (sección 4.2): en vez de recuperar 5 documentos, se recuperan **25** y un cross-encoder los re-puntúa leyendo cada par consulta-documento; solo entonces se recortan a los 5 finales. Ese over-fetch es lo que permite que el documento del puesto 14 **suba**, no solo que los 5 primeros se reordenen. Y sobre la mesa queda una tercera opción evaluada y postergada: **ColBERT**, que el propio curso señala como justificable en el ámbito legal precisamente porque el trade-off de memoria se paga con precisión.
+> **Técnica aplicada:** las dos mejoras de los extremos, aplicadas juntas (si hubiera que elegir una primero, el orden de trabajo del tomo, §6, empieza por el re-ranking con over-fetch). **(a) Query rewriting** (sección 2.2): un LLM traduce la consulta coloquial a terminología jurídica y agrega sinónimos del dominio — el equivalente de la ficha médica del ejemplo de este tomo. Como el archivo está lleno de identificadores exactos (roles de causa, artículos, fechas), se busca con **la query original y la reescrita**, fusionando ambos rankings, para no perder el término literal. **(b) Re-ranking con over-fetch** (sección 4.2): en vez de recuperar 5 documentos, se recuperan **25** y un cross-encoder los re-puntúa leyendo cada par consulta-documento; solo entonces se recortan a los 5 finales. Ese over-fetch es lo que permite que el documento del puesto 14 **suba**, no solo que los 5 primeros se reordenen. Y sobre la mesa queda una tercera opción evaluada y postergada: **ColBERT**, que el propio curso señala como justificable en el ámbito legal precisamente porque el trade-off de memoria se paga con precisión.
 >
 > **Resultado:** los documentos que ya estaban siendo recuperados **empiezan a llegar a la respuesta**, sin cambiar el modelo generador, sin re-indexar el archivo y sin tocar el chunking. El costo es una llamada extra de LLM y unos milisegundos de re-ranking por consulta. La lección: **antes de asumir que tu retriever no encuentra los documentos, verifica si los encuentra y los ordena mal** — son dos problemas distintos, y el segundo es mucho más barato de arreglar.
 
@@ -462,7 +463,7 @@ collection.query.near_text(query=query, limit=top_k)
 # ③ BM25 / keyword (Tomo 03)
 collection.query.bm25(query=query, limit=top_k)
 
-# ④ Hybrid con RRF (Tomo 04)
+# ④ Hybrid (el assignment lo llama «RRF», pero no fija fusion_type: ver §5.2)
 collection.query.hybrid(query=query, alpha=alpha, limit=top_k)     # alpha=0.5
 
 # ⑤ Semantic + re-ranking (este tomo)
@@ -489,7 +490,7 @@ Para la query **`"Tell me about the last Taylor Swift show"`**, los tres retriev
 > [!important] 🎯 Dos lecciones en una sola tabla
 > **(1) El vocabulary mismatch, otra vez y al revés.** El [[Guia-Maestra-RAG_05-Vector-Databases-y-ANN#6.6 Un hallazgo del lab que vale más que el código|Tomo 05]] mostró BM25 devolviendo *muy poco*; aquí lo muestra devolviendo *cualquier cosa*: un artículo sobre los Grammys, porque comparte palabras genéricas ("show", "last") sin tener nada que ver. **BM25 no entiende de qué habla el texto** — solo cuenta coincidencias ponderadas.
 >
-> **(2) Hybrid es una fusión, no una mejora automática.** Con `alpha=0.5` el sistema puso el resultado *malo* de BM25 en primer lugar y el *bueno* de semantic en segundo. Es exactamente la mecánica de RRF (fusiona posiciones, no calidad) del [[Guia-Maestra-RAG_04-Semantic-Search-y-Embeddings#6.3 Reciprocal Rank Fusion (RRF)|Tomo 04]]: **si uno de los dos rankings es basura, la fusión lo arrastra al top.**
+> **(2) Hybrid es una fusión, no una mejora automática.** Con `alpha=0.5` el sistema puso el resultado *malo* de BM25 en primer lugar y el *bueno* de semantic en segundo. El assignment lo describe como «RRF», pero su código no pasa `fusion_type`, y desde Weaviate 1.24 el default de `hybrid` es **relativeScoreFusion**, no RRF: normaliza los scores de cada lista a una escala de 0 a 1 (el mejor vale 1, el peor 0) y los suma ponderados por `alpha` (documentación y blog de Weaviate; el servidor embebido del curso no declara versión, pero con el cliente 4.15.4 de sus requirements lo esperable es ≥ 1.24). Con esa normalización, **el primero de cada ranking entra arriba aunque ese ranking sea basura**: la fusión no mide la calidad absoluta de cada lista, así que **si uno de los dos rankings es basura, la fusión lo arrastra al top.** (Con RRF, la mecánica del [[Guia-Maestra-RAG_04-Semantic-Search-y-Embeddings#6.3 Reciprocal Rank Fusion (RRF)|Tomo 04]], el efecto sería parecido: fusiona posiciones, no calidad.) *(Corregido el 2026-10-02: este párrafo atribuía el resultado a RRF; el error viene del texto del propio curso.)*
 >
 > Y aquí está el cierre elegante del tomo: **este es justamente el caso donde un re-ranker arregla el problema.** El documento correcto *está* entre los recuperados, solo está mal ordenado. Re-rankear el par query-documento con un cross-encoder pondría a Taylor Swift primero y a Killer Mike al fondo. El assignment tiene las dos piezas y **nunca las combina** (no hay `hybrid_retrieve` + `rerank`).
 >
@@ -556,7 +557,7 @@ Audiencia: 🔧 🧭
 
 | Situación | Qué hacer |
 |---|---|
-| Vas a añadir **una sola** mejora al pipeline | **Re-ranking** (una línea) o **query rewriting** (una llamada) |
+| Vas a añadir **una sola** mejora al pipeline | **Re-ranking con over-fetch** primero (la más barata: una línea); después, **query rewriting** (una llamada) |
 | Los usuarios escriben conversacionalmente | Query rewriting |
 | Un reescritor agresivo borra términos exactos | Buscar con query original **y** reescrita, fusionar con RRF |
 | Hay fechas, lugares o categorías en las queries | **NER** → convertirlas en filtros de metadata |

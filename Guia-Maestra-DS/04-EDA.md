@@ -3,8 +3,8 @@ title: "Tomo 04 — EDA: Análisis Exploratorio de Datos"
 tags: [data-science, machine-learning, eda, visualizacion, data-quality]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 04
-version: 6.4
-updated: 2026-09-06
+version: 6.5
+updated: 2026-10-02
 ---
 
 # 🔍 Tomo 04 — EDA: Análisis Exploratorio de Datos
@@ -27,7 +27,7 @@ updated: 2026-09-06
 
 > [!example] 📊 Caso de negocio — Salud: la auditoría que evitó el deployment de una trampa
 > **Problema:** un grupo hospitalario construye un modelo de reingreso a 30 días. El equipo, presionado por el calendario, salta directo al modelado y celebra un AUC de 0.97. Antes del deployment, se exige un EDA formal.
-> **Técnica aplicada:** el EDA disciplinado encuentra cuatro problemas en dos días: (1) el histograma de glucosa es **bimodal** — dos hospitales del grupo registran en unidades distintas (mg/dL vs mmol/L); (2) el target tiene 8% de positivos y nadie había planificado el manejo del desbalance ([[03-Preparacion-de-Datos]]); (3) los nulos de presión arterial se concentran en pacientes de urgencias — missingness MNAR, no aleatoria; (4) la feature `dias_hasta_proximo_control` tiene mutual information altísima con el target… porque **solo se registra para pacientes que ya reingresaron**: leakage de manual ([[10-Validacion-y-Leakage]]).
+> **Técnica aplicada:** el EDA disciplinado encuentra cuatro problemas en dos días: (1) el histograma de glucosa es **bimodal** — dos hospitales del grupo registran en unidades distintas (mg/dL vs mmol/L); (2) el target tiene 8% de positivos y nadie había planificado el manejo del desbalance ([[03-Preparacion-de-Datos]]); (3) los nulos de presión arterial se concentran en pacientes de urgencias — ausencia **no aleatoria** que depende de una variable observada (el tipo de paciente): MAR según la definición del [[03-Preparacion-de-Datos|Tomo 03]]; solo sería MNAR si la presión faltara por su propio valor *(corregido el 2026-10-02: decía «MNAR»)*; (4) la feature `dias_hasta_proximo_control` tiene mutual information altísima con el target… porque **solo se registra para pacientes que ya reingresaron**: leakage de manual ([[10-Validacion-y-Leakage]]).
 > **Resultado:** corregidas las unidades, eliminada la feature filtrada y tratado el desbalance, el AUC honesto es 0.79 — y ese sí se sostiene en producción. El hallazgo de unidades, de paso, corrige los reportes clínicos del grupo. Dos días de EDA evitaron un deployment tramposo y un escándalo clínico.
 
 **El EDA es de doble pasada:**
