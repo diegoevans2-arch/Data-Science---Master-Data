@@ -3,8 +3,8 @@ title: "Tomo 08 — Métricas de Evaluación"
 tags: [data-science, machine-learning, metricas, evaluacion, roc]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 08
-version: 6.5
-updated: 2026-09-06
+version: 6.6
+updated: 2026-10-13
 ---
 
 # 🌡️ Tomo 08 — Métricas de Evaluación
@@ -186,14 +186,14 @@ Audiencia: 🔧 🧭 👔
 | Métrica | Definición | 💡 Analogía | Cuándo priorizarla |
 |---|---|---|---|
 | **Demographic Parity** (Statistical Parity) | P(ŷ=1 \| grupo A) = P(ŷ=1 \| grupo B). La tasa de predicción positiva es igual entre grupos. | "Apruebo al mismo % de candidatos de cada grupo" | Asignación de recursos (créditos, becas) donde la igualdad de acceso es el objetivo explícito |
-| **Equalized Odds** | TPR y FPR iguales entre grupos. El modelo se equivoca por igual en ambos. | "Mi detector de fraude falla con la misma frecuencia sin importar quién seas" | El estándar más robusto para corrección de bias — no sacrifica precisión global innecesariamente (Hardt et al., 2016) |
+| **Equalized Odds** | TPR y FPR iguales entre grupos. El modelo se equivoca por igual en ambos. | "Mi detector de fraude falla con la misma frecuencia sin importar quién seas" | Cuando el error no debe depender del grupo. A diferencia de Demographic Parity, la cumple el clasificador perfecto, y cualquier modelo ya entrenado puede ajustarse en post-procesamiento para cumplirla (Hardt et al., 2016) |
 | **Equal Opportunity** | Solo el TPR es igual entre grupos (caso relajado de Equalized Odds). | "Si estás enfermo, te detecto con la misma probabilidad seas del grupo que seas" | Cuando el FN es el error costoso y diferencial (screening médico, admisiones) |
 | **Predictive Parity** | Precision igual entre grupos: P(y=1 \| ŷ=1, A) = P(y=1 \| ŷ=1, B). | "Si te señalo, la probabilidad de que realmente seas positivo es la misma" | Alertas donde actuar sobre un FP tiene costo diferencial por grupo (intervenciones policiales) |
 | **Disparate Impact Ratio** | Tasa positiva del grupo desfavorecido / tasa del grupo favorecido. La «regla del 80%» (≥ 0.8) es un criterio **administrativo** de las agencias federales de EE. UU. para presumir *adverse impact* en selección de personal (Uniform Guidelines on Employee Selection Procedures, 29 CFR §1607.4(D), 1978), no un umbral estatutario ni universal | "¿Apruebo al grupo B al menos al 80% de la tasa del grupo A?" | Auditoría de sesgo; los marcos regulatorios ([[13-MLOps-XAI-Etica]]: EU AI Act, ISO/IEC 42001) exigen gestionar el sesgo pero no fijan este número. *(Corregido el 2026-09-06: decía «umbral legal» y que esos marcos «lo referencian».)* |
 | **Calibration by Group** | El modelo está calibrado dentro de cada grupo: P(y=1 \| score=s, grupo) = s. | "Cuando digo 70% para cualquier grupo, realmente el 70% es positivo" | Modelos probabísticos usados en decisiones de alto impacto (sentencias, créditos) |
 
-> [!warning] ⚠️ El teorema de la imposibilidad de Chouldechova (2017) / Kleinberg et al. (2016)
-> Cuando las tasas base difieren entre grupos (prevalencia distinta del target), **no se puede satisfacer simultáneamente** Demographic Parity, Equalized Odds y Calibration by Group. La elección de cuál priorizar es **ética y de negocio**, no técnica — y debe documentarse explícitamente.
+> [!warning] ⚠️ Los teoremas de imposibilidad de Chouldechova (2017) y Kleinberg et al. (2017)
+> Cuando las tasas base difieren entre grupos (prevalencia distinta del target) y el modelo no es perfecto, **calibración y Equalized Odds no se pueden tener a la vez**. Chouldechova (2017) lo prueba para un clasificador con umbral: si cumple Predictive Parity, tiene que desbalancear entre grupos el FPR o el FNR. Kleinberg et al. (2017) lo prueba para scores: Calibration by Group es incompatible con igualar entre grupos el score promedio de los positivos y el de los negativos, salvo en casos especiales muy acotados. Demographic Parity choca por otra vía: si las tasas reales difieren, ni siquiera el clasificador perfecto la cumple (Hardt et al., 2016). La elección de cuál priorizar es **ética y de negocio**, no técnica — y debe documentarse explícitamente.
 
 **🧭 Cuándo usarlo:** siempre que el modelo afecte personas y exista un atributo sensible en los datos (o inferible de proxies). Especialmente en: scoring crediticio, contratación, admisiones, pricing, atención médica, justicia. Ver contexto regulatorio en [[13-MLOps-XAI-Etica]].
 
@@ -283,7 +283,8 @@ Audiencia: 🧭 👔
 - (Brabec et al., 2020) — las métricas dependen de la prevalencia. · (Saito & Rehmsmeier, 2015) — PR vs. ROC en desbalance. · (Chicco & Jurman, 2020) — MCC. · (Landis & Koch, 1977) — la escala convencional de kappa.
 - Uniform Guidelines on Employee Selection Procedures (1978), 29 CFR §1607.4(D) — la regla del 80% (ficha en [[16-Bibliografia]] §11).
 - (Hardt et al., 2016) — *Equality of Opportunity in Supervised Learning*. NeurIPS. El paper fundacional de Equalized Odds.
-- (Chouldechova, 2017) — *Fair prediction with disparate impact*. Big Data 5(2). El teorema de imposibilidad.
+- (Chouldechova, 2017) — *Fair prediction with disparate impact*. Big Data 5(2). Predictive Parity vs. balance de errores.
+- (Kleinberg, Mullainathan & Raghavan, 2017) — *Inherent Trade-Offs in the Fair Determination of Risk Scores*. ITCS 2017. Calibración vs. balance de scores.
 - (Järvelin & Kekäläinen, 2002) — *Cumulated Gain-based Evaluation of IR Techniques*. ACM TOIS 20(4). NDCG original.
 - (Manning, Raghavan & Schütze, 2008) — *Introduction to Information Retrieval*, cap. 8 "Evaluation in information retrieval": MAP y la evaluación de ranking. (Voorhees, 1999) — *The TREC-8 Question Answering Track Report*: el origen del MRR. *(Reemplazan, el 2026-09-05, la cita "(Robertson, 2009)" — que remitía a un trabajo sobre BM25 y no respaldaba la fila de MAP/MRR.)*
 - (Hyndman & Koehler, 2006) — la asimetría del MAPE. (Hyndman & Athanasopoulos, 2021) — por qué los criterios de información no son comparables entre transformaciones distintas de los datos.

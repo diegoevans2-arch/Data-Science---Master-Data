@@ -3,8 +3,8 @@ title: "Tomo 16 — Bibliografía"
 tags: [data-science, machine-learning, bibliografia, referencias]
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 16
-version: 6.9
-updated: 2026-10-02
+version: 6.10
+updated: 2026-10-13
 ---
 
 # 📚 Tomo 16 — Bibliografía
@@ -18,11 +18,11 @@ Audiencia: 🔧
 > [!info] 📌 Sobre esta bibliografía
 > Todas las obras citadas en los tomos 01–15 y en la extensión aplicada (tomos 17–25) con sus datos de publicación completos. Solo referencias **reales, publicadas y verificables**. Las citas en el texto usan el formato `(Autor, Año)`; los dos trabajos de Breiman de 2001 se distinguen como **2001a** (Random Forests) y **2001b** (Two Cultures).
 >
-> ✅ **310/310 entradas de esta bibliografía (secciones 1–12 y 14–22) verificadas vía búsqueda web (2026-07-27, 2026-07-29, 2026-09-05, 2026-09-06 y 2026-10-02)** — cada una con evidencia textual y URL/DOI, auditoría descrita en `Instrucciones-Guia-Maestra-DS.md` §5. Un error sustantivo corregido (Box & Cox 1964, rango de páginas); el resto, correcto o con diferencias triviales de formato ya documentadas en su propia entrada.
+> ✅ **311/311 entradas de esta bibliografía (secciones 1–12 y 14–22) verificadas vía búsqueda web (2026-07-27, 2026-07-29, 2026-09-05, 2026-09-06, 2026-10-02 y 2026-10-13)** — cada una con evidencia textual y URL/DOI, auditoría descrita en `Instrucciones-Guia-Maestra-DS.md` §5. Un error sustantivo corregido (Box & Cox 1964, rango de páginas); el resto, correcto o con diferencias triviales de formato ya documentadas en su propia entrada.
 > 
 > La inmensa mayoría son papers o libros académicos revisados por pares. **Algunas son de otro tipo** (informes de empresa, reportes técnicos, anuncios, documentos de proyectos), etiquetadas como tales en su propia entrada para no hacerlas pasar por algo que no son — entre ellas: Shilakes & Tylman (1998, informe de Merrill Lynch), OWASP (2025, documento de un proyecto comunitario), Radcliffe (2007, revista de un gremio de marketing directo, no indexada), Hong, Troynikov & Huber (2025, reporte técnico de Chroma) y Anthropic (2024, anuncio corporativo del Model Context Protocol). Diez de las 116 originales se incorporaron en la revisión de vigencia del 2026-07-27 (Tomos 12, 13, 19 y 20 — ver bitácora en `Instrucciones-Guia-Maestra-DS.md` §5 para el detalle de cuál desarrollo motivó cada una). **12 fuentes adicionales se incorporaron el 2026-07-29** en la revisión de Series de Tiempo (Tomos 17, 08, 10 y 12): regresión espuria, cointegración, causalidad de Granger, heterocedasticidad condicional (ARCH), el test de Ljung-Box, los criterios de información AIC/BIC, las estrategias de pronóstico multi-step y la validación cruzada para series de tiempo, entre otras.
 >
-> Más los **23 enlaces de documentación oficial** de la Sección 13, verificados por separado (resuelven a la documentación vigente de cada proyecto; los añadidos desde el 2026-09-05 citan además la frase exacta que respalda cada uso). **333 fuentes verificadas en total.**
+> Más los **23 enlaces de documentación oficial** de la Sección 13, verificados por separado (resuelven a la documentación vigente de cada proyecto; los añadidos desde el 2026-09-05 citan además la frase exacta que respalda cada uso). **334 fuentes verificadas en total.**
 >
 > 🔧 **Mantenimiento del 2026-09-05:** 40 fichas nuevas verificadas en un solo lote (Tomos 22–25 completos, más las adiciones del sprint del 2026-08-28 en los Tomos 04, 08, 09 y 11). Ese sprint había escrito ~39 referencias **sin pasar por este protocolo**: la auditoría encontró **7 errores sustantivos** — Brink (año), Johari et al. (autor omitido), Kotelnikov et al. (autores inventados), Carlini et al. (apellido), el reporte técnico de TabPFN-2.5 atribuido a "Hollmann et al., 2026", un "Nature 2026 / TabPFN v2.6" inexistente y una cita "(Robertson, 2009)" que no respaldaba la celda donde estaba — más 3 atribuciones corporativas sin paper ("AWS, 2020", "Microsoft, 2021" y las model cards de 2024) convertidas a fichas reales. Todo corregido en los tomos y anotado en su ficha. **Dos reportes técnicos de fabricante** (TabPFN-2.5 y TabPFN-3) se citan etiquetados como tales en la Sección 20.
 >
@@ -119,6 +119,7 @@ Audiencia: 🔧
 - Goodwin, P., & Lawton, R. (1999). "On the asymmetry of the symmetric MAPE". *International Journal of Forecasting*, 15(4), 405–408. ✅ *Verificada 2026-09-06 vía búsqueda web (Crossref, DOI 10.1016/S0169-2070(99)00007-2).*
 - Hardt, M., Price, E., & Srebro, N. (2016). "Equality of Opportunity in Supervised Learning". *Advances in Neural Information Processing Systems 29 (NIPS 2016)*. ✅ *Verificada 2026-09-05 vía búsqueda web (papers.nips.cc; DBLP). Se cita sin páginas: DBLP da 3315–3323 y otros índices 3323–3331.*
 - Järvelin, K., & Kekäläinen, J. (2002). "Cumulated Gain-based Evaluation of IR Techniques". *ACM Transactions on Information Systems*, 20(4), 422–446. ✅ *Verificada 2026-09-05 vía búsqueda web (Crossref, DOI 10.1145/582415.582418).*
+- Kleinberg, J., Mullainathan, S., & Raghavan, M. (2017). "Inherent Trade-Offs in the Fair Determination of Risk Scores". En *8th Innovations in Theoretical Computer Science Conference (ITCS 2017)*, LIPIcs vol. 67, 43:1–43:23. Schloss Dagstuhl–Leibniz-Zentrum für Informatik. ✅ *Verificada 2026-10-13 vía búsqueda web (PDF de las actas en drops.dagstuhl.de; DOI 10.4230/LIPIcs.ITCS.2017.43 vía Semantic Scholar). Preprint: arXiv:1609.05807 (2016); se cita con el año de las actas, no el del preprint.*
 - Landis, J. R., & Koch, G. G. (1977). "The Measurement of Observer Agreement for Categorical Data". *Biometrics*, 33(1), 159–174. ✅ *Verificada 2026-09-06 vía búsqueda web (Crossref, DOI 10.2307/2529310; el registro consigna la primera página).*
 - Matthews, B. W. (1975). "Comparison of the Predicted and Observed Secondary Structure of T4 Phage Lysozyme". *Biochimica et Biophysica Acta — Protein Structure*, 405(2), 442–451. ✅ *Verificada 2026-07-27 vía búsqueda web (Crossref, DOI 10.1016/0005-2795(75)90109-9).*
 - Murphy, A. H. (1973). "A New Vector Partition of the Probability Score". *Journal of Applied Meteorology*, 12(4), 595–600. ✅ *Verificada 2026-09-06 vía búsqueda web (Crossref, DOI 10.1175/1520-0450(1973)012<0595:ANVPOT>2.0.CO;2).*
