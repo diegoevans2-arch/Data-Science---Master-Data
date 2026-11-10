@@ -650,79 +650,79 @@ El servicio de pedidos de AnyCompany Online pasó de un monolito síncrono on-pr
 ## 📖 Recursos del módulo
 
 **Generales**
-- AWS re:Post · https://repost.aws
-- Tickets de contenido de AWS Training · https://support.aws.amazon.com/#/contacts/aws-training
-- Iconos de arquitectura de AWS · https://aws.amazon.com/architecture/icons/
-- ¿Cómo creo y activo una cuenta de AWS? · https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/
-- Capa gratuita de AWS · https://aws.amazon.com/free/
-- Centro de Arquitectura de AWS · https://aws.amazon.com/architecture/
-- AWS Well-Architected Framework · https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html
+- [AWS re:Post](https://repost.aws)
+- [Tickets de contenido de AWS Training](https://support.aws.amazon.com/#/contacts/aws-training)
+- [Iconos de arquitectura de AWS](https://aws.amazon.com/architecture/icons/)
+- [¿Cómo creo y activo una cuenta de AWS?](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/)
+- [Capa gratuita de AWS](https://aws.amazon.com/free/)
+- [Centro de Arquitectura de AWS](https://aws.amazon.com/architecture/)
+- [AWS Well-Architected Framework](https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html)
 
 **Cómputo**
-- Computación en AWS · https://aws.amazon.com/products/compute/
-- Preguntas frecuentes de AWS Lambda · https://aws.amazon.com/lambda/faqs/
-- Guía del desarrollador de AWS Lambda · https://docs.aws.amazon.com/lambda/latest/dg/welcome.html
-- Guía del operador de AWS Lambda · https://docs.aws.amazon.com/lambda/latest/operatorguide/intro.html
-- Arquitectura y prácticas recomendadas (Lambda) · https://docs.aws.amazon.com/lambda/latest/operatorguide/architecture-best-practice.html
-- AWS Lambda — Charlas técnicas · https://aws.amazon.com/lambda/resources/webinars-and-talks/
-- AWS Lambda — Talleres y tutoriales · https://aws.amazon.com/lambda/resources/workshops-and-tutorials/
-- Amazon API Gateway · https://aws.amazon.com/api-gateway/
-- Preguntas frecuentes de API Gateway · https://aws.amazon.com/api-gateway/faqs/
-- Introducción a las instancias Linux de Amazon EC2 · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html
-- ¿Qué es Amazon EC2? · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html
-- Preguntas frecuentes de Amazon EC2 · https://aws.amazon.com/ec2/faqs/
-- Guía del usuario de Amazon EKS · https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html
-- Contenedores en AWS · https://aws.amazon.com/containers/services/
-- Amazon ECS en AWS Fargate · https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html
-- Taller de Amazon ECS · https://ecsworkshop.com/
+- [Computación en AWS](https://aws.amazon.com/products/compute/)
+- [Preguntas frecuentes de AWS Lambda](https://aws.amazon.com/lambda/faqs/)
+- [Guía del desarrollador de AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html)
+- [Guía del operador de AWS Lambda](https://docs.aws.amazon.com/lambda/latest/operatorguide/intro.html)
+- [Arquitectura y prácticas recomendadas (Lambda)](https://docs.aws.amazon.com/lambda/latest/operatorguide/architecture-best-practice.html)
+- [AWS Lambda — Charlas técnicas](https://aws.amazon.com/lambda/resources/webinars-and-talks/)
+- [AWS Lambda — Talleres y tutoriales](https://aws.amazon.com/lambda/resources/workshops-and-tutorials/)
+- [Amazon API Gateway](https://aws.amazon.com/api-gateway/)
+- [Preguntas frecuentes de API Gateway](https://aws.amazon.com/api-gateway/faqs/)
+- [Introducción a las instancias Linux de Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html)
+- [¿Qué es Amazon EC2?](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html)
+- [Preguntas frecuentes de Amazon EC2](https://aws.amazon.com/ec2/faqs/)
+- [Guía del usuario de Amazon EKS](https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html)
+- [Contenedores en AWS](https://aws.amazon.com/containers/services/)
+- [Amazon ECS en AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html)
+- [Taller de Amazon ECS](https://ecsworkshop.com/)
 
 **Bases de datos**
-- Bases de datos en la nube de AWS · https://aws.amazon.com/products/databases/
-- Uso de Aurora Serverless v2 · https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html
-- Introducción a Amazon Aurora · https://aws.amazon.com/rds/aurora/getting-started/
-- Utilización de Amazon RDS Proxy · https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html
-- ¿Qué es Amazon DynamoDB? · https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html
-- Preguntas frecuentes de DynamoDB · https://aws.amazon.com/dynamodb/faqs/
-- Ejemplo de modelado de datos relacionales en DynamoDB · https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-modeling-nosql-B.html
-- Laboratorios prácticos para DynamoDB · https://amazon-dynamodb-labs.com/hands-on-labs.html
+- [Bases de datos en la nube de AWS](https://aws.amazon.com/products/databases/)
+- [Uso de Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html)
+- [Introducción a Amazon Aurora](https://aws.amazon.com/rds/aurora/getting-started/)
+- [Utilización de Amazon RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html)
+- [¿Qué es Amazon DynamoDB?](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html)
+- [Preguntas frecuentes de DynamoDB](https://aws.amazon.com/dynamodb/faqs/)
+- [Ejemplo de modelado de datos relacionales en DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-modeling-nosql-B.html)
+- [Laboratorios prácticos para DynamoDB](https://amazon-dynamodb-labs.com/hands-on-labs.html)
 
 **Event-driven y mensajería**
-- ¿Qué es una arquitectura basada en eventos? · https://aws.amazon.com/event-driven-architecture/
-- Destinos de EventBridge · https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-targets.html
-- Eventos de EventBridge · https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html
-- Reglas de EventBridge · https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rules.html
-- Patrones de eventos de EventBridge · https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html
-- Buses de eventos de EventBridge · https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus.html
-- Preguntas frecuentes de EventBridge · https://aws.amazon.com/eventbridge/faqs/
-- ¿Qué es Amazon EventBridge? · https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html
-- Filtrado de mensajes por payload en SNS · https://aws.amazon.com/blogs/compute/introducing-payload-based-message-filtering-for-amazon-sns/
-- Preguntas frecuentes de SNS · https://aws.amazon.com/sns/faqs/
-- ¿Qué es Amazon SNS? · https://docs.aws.amazon.com/sns/latest/dg/welcome.html
-- Introducción a Amazon SNS · https://docs.aws.amazon.com/sns/latest/dg/sns-getting-started.html#step-create-queue
-- Captura de datos de cambios para DynamoDB Streams · https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html
-- Tutorial: procesar nuevos elementos con DynamoDB Streams y Lambda · https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.Lambda.Tutorial.html
-- Patrones para la integración de microservicios · https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-integrating-microservices/integrating-patterns.html
-- Building storage-first serverless applications with HTTP APIs service integrations · https://aws.amazon.com/blogs/compute/building-storage-first-applications-with-http-apis-service-integrations/
-- Crear una cola SQS · https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-create-queue.html
-- Editar una cola SQS · https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-edit-queue.html
-- Colas de retardo de SQS · https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-delay-queues.html
-- Parámetros de la cola (consola) · https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-queue-parameters.html
-- Configuración del long polling · https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/working-with-messages.html#setting-up-long-polling
-- ¿Qué es Amazon SQS? · https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html
-- Preguntas frecuentes de SQS · https://aws.amazon.com/sqs/faqs/
-- Uso de AWS Lambda con Amazon SQS · https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html
+- [¿Qué es una arquitectura basada en eventos?](https://aws.amazon.com/event-driven-architecture/)
+- [Destinos de EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-targets.html)
+- [Eventos de EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html)
+- [Reglas de EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rules.html)
+- [Patrones de eventos de EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html)
+- [Buses de eventos de EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus.html)
+- [Preguntas frecuentes de EventBridge](https://aws.amazon.com/eventbridge/faqs/)
+- [¿Qué es Amazon EventBridge?](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html)
+- [Filtrado de mensajes por payload en SNS](https://aws.amazon.com/blogs/compute/introducing-payload-based-message-filtering-for-amazon-sns/)
+- [Preguntas frecuentes de SNS](https://aws.amazon.com/sns/faqs/)
+- [¿Qué es Amazon SNS?](https://docs.aws.amazon.com/sns/latest/dg/welcome.html)
+- [Introducción a Amazon SNS](https://docs.aws.amazon.com/sns/latest/dg/sns-getting-started.html#step-create-queue)
+- [Captura de datos de cambios para DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html)
+- [Tutorial: procesar nuevos elementos con DynamoDB Streams y Lambda](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.Lambda.Tutorial.html)
+- [Patrones para la integración de microservicios](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-integrating-microservices/integrating-patterns.html)
+- [Building storage-first serverless applications with HTTP APIs service integrations](https://aws.amazon.com/blogs/compute/building-storage-first-applications-with-http-apis-service-integrations/)
+- [Crear una cola SQS](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-create-queue.html)
+- [Editar una cola SQS](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-edit-queue.html)
+- [Colas de retardo de SQS](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-delay-queues.html)
+- [Parámetros de la cola (consola)](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-queue-parameters.html)
+- [Configuración del long polling](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/working-with-messages.html#setting-up-long-polling)
+- [¿Qué es Amazon SQS?](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html)
+- [Preguntas frecuentes de SQS](https://aws.amazon.com/sqs/faqs/)
+- [Uso de AWS Lambda con Amazon SQS](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html)
 
 **Optimización**
-- Almacenamiento en caché (caching) · https://aws.amazon.com/caching/
-- Amazon DynamoDB Accelerator (DAX) · https://aws.amazon.com/dynamodb/dax/
-- AWS Lambda Power Tuning · https://github.com/alexcasalboni/aws-lambda-power-tuning
-- AWS Lambda Powertools (Python) · https://awslabs.github.io/aws-lambda-powertools-python/latest/
-- Prácticas recomendadas para AWS Lambda · https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html
-- Optimizing application costs (Well-Architected serverless, blog) · https://aws.amazon.com/blogs/compute/building-well-architected-serverless-applications-optimizing-application-costs/
-- Serverless Applications Lens — Well-Architected · https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/welcome.html
+- [Almacenamiento en caché (caching)](https://aws.amazon.com/caching/)
+- [Amazon DynamoDB Accelerator (DAX)](https://aws.amazon.com/dynamodb/dax/)
+- [AWS Lambda Power Tuning](https://github.com/alexcasalboni/aws-lambda-power-tuning)
+- [AWS Lambda Powertools (Python)](https://awslabs.github.io/aws-lambda-powertools-python/latest/)
+- [Prácticas recomendadas para AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html)
+- [Optimizing application costs (Well-Architected serverless, blog)](https://aws.amazon.com/blogs/compute/building-well-architected-serverless-applications-optimizing-application-costs/)
+- [Serverless Applications Lens — Well-Architected](https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/welcome.html)
 
 **Ejercicio**
-- Ejercicio 1: prueba de concepto para una solución sin servidor · https://aws-tc-largeobjects.s3.us-west-2.amazonaws.com/DEV-AWS-MO-Architecting/exercise-1-serverless.html
+- [Ejercicio 1: prueba de concepto para una solución sin servidor](https://aws-tc-largeobjects.s3.us-west-2.amazonaws.com/DEV-AWS-MO-Architecting/exercise-1-serverless.html)
 
 ---
 

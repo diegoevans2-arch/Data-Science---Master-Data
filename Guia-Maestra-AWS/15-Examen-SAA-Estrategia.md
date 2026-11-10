@@ -1,7 +1,7 @@
 ---
 title: "Tomo 15 — Examen SAA-C03: formato, dominios y estrategia"
 tags: [aws, solutions-architect, certificacion, saa-c03, estrategia-examen]
-curso: 4 · Exam Prep: AWS Certified Solutions Architect – Associate
+curso: "4 · Exam Prep: AWS Certified Solutions Architect – Associate"
 modulo: "Bienvenido al curso · Determinar la preparación para el examen"
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 15
@@ -287,16 +287,16 @@ El cierre del curso recalca que **no enseña todo el temario**: es un instrument
 
 ## 📖 Recursos del módulo
 
-- AWS Certified Solutions Architect – Associate (página del examen) · https://aws.amazon.com/certification/certified-solutions-architect-associate/
-- AWS Security Best Practices (whitepaper) · https://docs.aws.amazon.com/whitepapers/latest/introduction-aws-security/security-of-the-aws-infrastructure.html
-- Amazon EC2 FAQ · https://aws.amazon.com/ec2/faqs/?saa=sec&sec=prep
-- Amazon S3 FAQ · https://aws.amazon.com/s3/faqs/?saa=sec&sec=prep
-- Amazon VPC FAQ · https://aws.amazon.com/vpc/faqs/?saa=sec&sec=prep
-- Amazon Route 53 FAQ · https://aws.amazon.com/route53/faqs/?saa=sec&sec=prep
-- Amazon RDS FAQ · https://aws.amazon.com/rds/faqs/?saa=sec&sec=prep
-- Amazon SQS FAQ · https://aws.amazon.com/sqs/faqs/?saa=sec&sec=prep
-- Opciones para rendir el examen · https://aws.amazon.com/certification/certification-prep/testing/?ch=tile&tile=getstarted
-- Cuenta de AWS Certification (agendar) · https://www.aws.training/certification/?ch=tile&tile=getstarted
+- [AWS Certified Solutions Architect – Associate (página del examen)](https://aws.amazon.com/certification/certified-solutions-architect-associate/)
+- [AWS Security Best Practices (whitepaper)](https://docs.aws.amazon.com/whitepapers/latest/introduction-aws-security/security-of-the-aws-infrastructure.html)
+- [Amazon EC2 FAQ](https://aws.amazon.com/ec2/faqs/?saa=sec&sec=prep)
+- [Amazon S3 FAQ](https://aws.amazon.com/s3/faqs/?saa=sec&sec=prep)
+- [Amazon VPC FAQ](https://aws.amazon.com/vpc/faqs/?saa=sec&sec=prep)
+- [Amazon Route 53 FAQ](https://aws.amazon.com/route53/faqs/?saa=sec&sec=prep)
+- [Amazon RDS FAQ](https://aws.amazon.com/rds/faqs/?saa=sec&sec=prep)
+- [Amazon SQS FAQ](https://aws.amazon.com/sqs/faqs/?saa=sec&sec=prep)
+- [Opciones para rendir el examen](https://aws.amazon.com/certification/certification-prep/testing/?ch=tile&tile=getstarted)
+- [Cuenta de AWS Certification (agendar)](https://www.aws.training/certification/?ch=tile&tile=getstarted)
 - Guía del examen, preguntas de muestra y AWS Well-Architected Framework: mencionados en el material sin URL en el texto extraído.
 
 ---

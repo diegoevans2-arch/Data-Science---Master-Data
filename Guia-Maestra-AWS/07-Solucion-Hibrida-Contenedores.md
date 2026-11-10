@@ -581,42 +581,42 @@ Registro de contenedores: el cliente puede seguir con **Docker Hub** (se integra
 
 ## 📖 Recursos del módulo
 
-- Opciones de conectividad de red a VPC de Amazon · https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/network-to-amazon-vpc-connectivity-options.html
-- ¿Qué es AWS Direct Connect? · https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html
-- Preguntas frecuentes sobre AWS Direct Connect · https://aws.amazon.com/directconnect/faqs/?nc=sn&loc=6
-- ¿Qué es AWS Site-to-Site VPN? · https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html
-- ¿Qué es AWS Client VPN? · https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/what-is.html
-- ¿Qué es una transit gateway? · https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html
-- Contenedores en AWS · https://aws.amazon.com/containers/
-- Preguntas frecuentes de contenedores · https://aws.amazon.com/containers/faqs/
-- Tipos de lanzamiento de Amazon ECS · https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html
-- Conectarse a Internet u otras redes con dispositivos NAT · https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat.html
-- Comparar NAT gateways y NAT instances · https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-comparison.html
-- Amazon RDS Multi-AZ · https://aws.amazon.com/rds/features/multi-az/
-- Réplicas de lectura de Amazon RDS · https://aws.amazon.com/rds/features/read-replicas/
-- Instancias de base de datos de Amazon RDS · https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.DBInstance.html
-- ¿Qué es AWS Database Migration Service? · https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html
-- ¿Qué es Amazon S3 File Gateway? · https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html
-- Características de AWS Storage Gateway · https://aws.amazon.com/storagegateway/features/
-- Tipos de volumen de Amazon EBS · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
-- ¿Qué es Amazon EFS? · https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html
-- ¿Qué es Amazon S3? · https://docs.aws.amazon.com/AmazonS3/latest/userguide//Welcome.html
-- Introducción a Amazon S3 · https://aws.amazon.com/s3/getting-started/?nc=sn&loc=6&dn=1
-- Clases de almacenamiento de Amazon S3 · https://aws.amazon.com/s3/storage-classes/
-- Taller de Amazon ECS: ECS Anywhere · https://www.ecsworkshop.com/ecsanywhere/
-- Ejecutar comandos de forma remota en una instancia EC2 con Systems Manager · https://aws.amazon.com/getting-started/hands-on/remotely-run-commands-ec2-instance-systems-manager/
-- Taller de herramientas de administración y gobernanza: AWS Systems Manager · https://mng.workshop.aws/ssm.html
-- ¿Qué es AWS Systems Manager? · https://docs.aws.amazon.com/systems-manager/latest/userguide/what-is-systems-manager.html
-- ¿Qué es AWS Backup? · https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html
-- Amazon Machine Images (AMI) · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html
-- AWS CodePipeline · http://aws.amazon.com/codepipeline
-- Disaster Recovery of Workloads on AWS: Recovery in the Cloud (whitepaper) · https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-workloads-on-aws.html
-- ¿Cómo configuro la conmutación por error de Direct Connect y VPN con Transit Gateway? · https://aws.amazon.com/premiumsupport/knowledge-center/dx-configure-dx-and-vpn-failover-tgw/
-- Escalado automático de clústeres de Amazon ECS · https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html
-- Taller de Amazon ECS: autoescalado de clústeres · https://ecsworkshop.com/capacity_providers/ec2/
-- Service auto scaling (Guía para desarrolladores de ECS) · https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html
-- Storage autoscaling de Amazon RDS · https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.StorageTypes.html#USER_PIOPS.Autoscaling
-- Amazon S3 Intelligent-Tiering · https://aws.amazon.com/s3/storage-classes/intelligent-tiering/
+- [Opciones de conectividad de red a VPC de Amazon](https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/network-to-amazon-vpc-connectivity-options.html)
+- [¿Qué es AWS Direct Connect?](https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html)
+- [Preguntas frecuentes sobre AWS Direct Connect](https://aws.amazon.com/directconnect/faqs/?nc=sn&loc=6)
+- [¿Qué es AWS Site-to-Site VPN?](https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html)
+- [¿Qué es AWS Client VPN?](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/what-is.html)
+- [¿Qué es una transit gateway?](https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html)
+- [Contenedores en AWS](https://aws.amazon.com/containers/)
+- [Preguntas frecuentes de contenedores](https://aws.amazon.com/containers/faqs/)
+- [Tipos de lanzamiento de Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html)
+- [Conectarse a Internet u otras redes con dispositivos NAT](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat.html)
+- [Comparar NAT gateways y NAT instances](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-comparison.html)
+- [Amazon RDS Multi-AZ](https://aws.amazon.com/rds/features/multi-az/)
+- [Réplicas de lectura de Amazon RDS](https://aws.amazon.com/rds/features/read-replicas/)
+- [Instancias de base de datos de Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.DBInstance.html)
+- [¿Qué es AWS Database Migration Service?](https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html)
+- [¿Qué es Amazon S3 File Gateway?](https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html)
+- [Características de AWS Storage Gateway](https://aws.amazon.com/storagegateway/features/)
+- [Tipos de volumen de Amazon EBS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html)
+- [¿Qué es Amazon EFS?](https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html)
+- [¿Qué es Amazon S3?](https://docs.aws.amazon.com/AmazonS3/latest/userguide//Welcome.html)
+- [Introducción a Amazon S3](https://aws.amazon.com/s3/getting-started/?nc=sn&loc=6&dn=1)
+- [Clases de almacenamiento de Amazon S3](https://aws.amazon.com/s3/storage-classes/)
+- [Taller de Amazon ECS: ECS Anywhere](https://www.ecsworkshop.com/ecsanywhere/)
+- [Ejecutar comandos de forma remota en una instancia EC2 con Systems Manager](https://aws.amazon.com/getting-started/hands-on/remotely-run-commands-ec2-instance-systems-manager/)
+- [Taller de herramientas de administración y gobernanza: AWS Systems Manager](https://mng.workshop.aws/ssm.html)
+- [¿Qué es AWS Systems Manager?](https://docs.aws.amazon.com/systems-manager/latest/userguide/what-is-systems-manager.html)
+- [¿Qué es AWS Backup?](https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html)
+- [Amazon Machine Images (AMI)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html)
+- [AWS CodePipeline](http://aws.amazon.com/codepipeline)
+- [Disaster Recovery of Workloads on AWS: Recovery in the Cloud (whitepaper)](https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-workloads-on-aws.html)
+- [¿Cómo configuro la conmutación por error de Direct Connect y VPN con Transit Gateway?](https://aws.amazon.com/premiumsupport/knowledge-center/dx-configure-dx-and-vpn-failover-tgw/)
+- [Escalado automático de clústeres de Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html)
+- [Taller de Amazon ECS: autoescalado de clústeres](https://ecsworkshop.com/capacity_providers/ec2/)
+- [Service auto scaling (Guía para desarrolladores de ECS)](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html)
+- [Storage autoscaling de Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.StorageTypes.html#USER_PIOPS.Autoscaling)
+- [Amazon S3 Intelligent-Tiering](https://aws.amazon.com/s3/storage-classes/intelligent-tiering/)
 
 ---
 **Navegación:** [[00-MOC-Guia-Maestra-AWS|⬅ Volver al índice]] · Anterior: [[06-Analitica-de-Datos-Serverless|06 · Analítica de datos serverless]] · Siguiente: [[08-Gobierno-y-Multicuenta|08 · Gobierno y multicuenta ➡]]

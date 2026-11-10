@@ -509,24 +509,24 @@ La lectura de buenas prácticas también sugiere estructuras de OU por caso de u
 
 ## 📖 Recursos del módulo
 
-- Establishing Your Cloud Foundation on AWS (whitepaper) · https://docs.aws.amazon.com/whitepapers/latest/establishing-your-cloud-foundation-on-aws/welcome.html
-- AWS Well-Architected Framework · http://aws.amazon.com/architecture/well-architected/
-- Build on AWS (constructores) · http://aws.amazon.com/campaigns/build-on-aws/
-- Organizing Your AWS Environment Using Multiple Accounts (whitepaper) · https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/organizing-your-aws-environment.html
-- Términos y conceptos de roles (IAM) · https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_terms-and-concepts.html
-- ¿Qué es IAM Identity Center? · https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html
-- Cómo funciona CloudTrail · https://docs.aws.amazon.com/awscloudtrail/latest/userguide/how-cloudtrail-works.html
-- ¿Qué es AWS Config? · https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html
-- Registro del tráfico IP con VPC Flow Logs · https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html
-- ¿Qué es Amazon GuardDuty? · https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html
-- ¿Qué es AWS CloudFormation? · https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html
-- Implementación de infraestructura multinivel fiable con CloudFormation (Well-Architected Labs) · https://www.wellarchitectedlabs.com/reliability/100_labs/100_deploy_cloudformation/
-- Servicios integrados con AWS Control Tower · https://docs.aws.amazon.com/controltower/latest/userguide/integrated-services.html
-- ¿Qué es AWS Control Tower? · https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html
-- ¿Qué es AWS Service Catalog? · https://docs.aws.amazon.com/servicecatalog/latest/adminguide/introduction.html
-- Best practices for AWS Organizations service control policies in a multi-account environment (blog) · https://aws.amazon.com/blogs/industries/best-practices-for-aws-organizations-service-control-policies-in-a-multi-account-environment/
-- Establishing your best practice AWS environment · https://aws.amazon.com/organizations/getting-started/best-practices/
-- Requerir una etiqueta en los recursos creados especificados (SCP de ejemplo) · https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples_tagging.html#example-require-tag-on-create
+- [Establishing Your Cloud Foundation on AWS (whitepaper)](https://docs.aws.amazon.com/whitepapers/latest/establishing-your-cloud-foundation-on-aws/welcome.html)
+- [AWS Well-Architected Framework](http://aws.amazon.com/architecture/well-architected/)
+- [Build on AWS (constructores)](http://aws.amazon.com/campaigns/build-on-aws/)
+- [Organizing Your AWS Environment Using Multiple Accounts (whitepaper)](https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/organizing-your-aws-environment.html)
+- [Términos y conceptos de roles (IAM)](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_terms-and-concepts.html)
+- [¿Qué es IAM Identity Center?](https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html)
+- [Cómo funciona CloudTrail](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/how-cloudtrail-works.html)
+- [¿Qué es AWS Config?](https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html)
+- [Registro del tráfico IP con VPC Flow Logs](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html)
+- [¿Qué es Amazon GuardDuty?](https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html)
+- [¿Qué es AWS CloudFormation?](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html)
+- [Implementación de infraestructura multinivel fiable con CloudFormation (Well-Architected Labs)](https://www.wellarchitectedlabs.com/reliability/100_labs/100_deploy_cloudformation/)
+- [Servicios integrados con AWS Control Tower](https://docs.aws.amazon.com/controltower/latest/userguide/integrated-services.html)
+- [¿Qué es AWS Control Tower?](https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html)
+- [¿Qué es AWS Service Catalog?](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/introduction.html)
+- [Best practices for AWS Organizations service control policies in a multi-account environment (blog)](https://aws.amazon.com/blogs/industries/best-practices-for-aws-organizations-service-control-policies-in-a-multi-account-environment/)
+- [Establishing your best practice AWS environment](https://aws.amazon.com/organizations/getting-started/best-practices/)
+- [Requerir una etiqueta en los recursos creados especificados (SCP de ejemplo)](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples_tagging.html#example-require-tag-on-create)
 
 ---
 **Navegación:** [[00-MOC-Guia-Maestra-AWS|⬅ Volver al índice]] · Anterior: [[07-Solucion-Hibrida-Contenedores|07 · Solución híbrida con contenedores]] · Siguiente: [[09-Introduccion-a-Data-Lakes|09 · Introducción a data lakes ➡]]

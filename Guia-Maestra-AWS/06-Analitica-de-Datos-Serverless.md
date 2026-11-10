@@ -650,45 +650,45 @@ El producto de menús por QR suma una **capa analítica de cinco bloques serverl
 ## 📖 Recursos del módulo
 
 **Panorama de servicios de datos**
-- Data Lakes and Analytics on AWS · https://aws.amazon.com/big-data/datalakes-and-analytics/
-- Amazon S3 · https://aws.amazon.com/s3/
-- Clases de almacenamiento Amazon S3 Glacier · https://aws.amazon.com/s3/storage-classes/glacier/
-- AWS Lake Formation · https://aws.amazon.com/lake-formation/
-- Amazon Athena · https://aws.amazon.com/athena/
-- Amazon EMR · https://aws.amazon.com/emr/
-- Amazon OpenSearch Service · https://aws.amazon.com/opensearch-service/
-- Amazon Kinesis · https://aws.amazon.com/kinesis/
-- AWS Glue · https://aws.amazon.com/glue/
-- AWS Database Migration Service · https://aws.amazon.com/dms/
-- Amazon SageMaker · https://aws.amazon.com/sagemaker/
-- Amazon Rekognition · https://aws.amazon.com/rekognition/
-- Amazon Comprehend · https://aws.amazon.com/comprehend/
-- Amazon Comprehend Medical · https://aws.amazon.com/comprehend/medical/
+- [Data Lakes and Analytics on AWS](https://aws.amazon.com/big-data/datalakes-and-analytics/)
+- [Amazon S3](https://aws.amazon.com/s3/)
+- [Clases de almacenamiento Amazon S3 Glacier](https://aws.amazon.com/s3/storage-classes/glacier/)
+- [AWS Lake Formation](https://aws.amazon.com/lake-formation/)
+- [Amazon Athena](https://aws.amazon.com/athena/)
+- [Amazon EMR](https://aws.amazon.com/emr/)
+- [Amazon OpenSearch Service](https://aws.amazon.com/opensearch-service/)
+- [Amazon Kinesis](https://aws.amazon.com/kinesis/)
+- [AWS Glue](https://aws.amazon.com/glue/)
+- [AWS Database Migration Service](https://aws.amazon.com/dms/)
+- [Amazon SageMaker](https://aws.amazon.com/sagemaker/)
+- [Amazon Rekognition](https://aws.amazon.com/rekognition/)
+- [Amazon Comprehend](https://aws.amazon.com/comprehend/)
+- [Amazon Comprehend Medical](https://aws.amazon.com/comprehend/medical/)
 
 **S3: replicación y ciclo de vida**
-- Replicación de objetos (Guía del usuario de S3) · https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html
-- S3 Intelligent-Tiering · https://aws.amazon.com/s3/storage-classes/intelligent-tiering/
+- [Replicación de objetos (Guía del usuario de S3)](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html)
+- [S3 Intelligent-Tiering](https://aws.amazon.com/s3/storage-classes/intelligent-tiering/)
 
 **Kinesis**
-- Amazon Kinesis Data Streams · https://aws.amazon.com/kinesis/data-streams/
-- Amazon Kinesis Data Firehose · https://aws.amazon.com/kinesis/data-firehose/
-- Amazon Kinesis Data Analytics · https://aws.amazon.com/kinesis/data-analytics/
-- Amazon Kinesis Video Streams · https://aws.amazon.com/kinesis/video-streams/
+- [Amazon Kinesis Data Streams](https://aws.amazon.com/kinesis/data-streams/)
+- [Amazon Kinesis Data Firehose](https://aws.amazon.com/kinesis/data-firehose/)
+- [Amazon Kinesis Data Analytics](https://aws.amazon.com/kinesis/data-analytics/)
+- [Amazon Kinesis Video Streams](https://aws.amazon.com/kinesis/video-streams/)
 
 **Optimizaciones**
-- Serverless en AWS · https://aws.amazon.com/serverless/
-- Amazon CloudFront · https://aws.amazon.com/cloudfront/
-- Amazon Cognito · https://aws.amazon.com/cognito/
-- AssumeRoleWithWebIdentity (STS API Reference) · https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html
-- Fragmentos de plantillas de CloudFormation · https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/CHAP_TemplateQuickRef.html
-- AWS CloudFormation · https://aws.amazon.com/cloudformation/
-- Reintentos de error y backoff exponencial en AWS · https://docs.aws.amazon.com/general/latest/gr/api-retries.html
-- Top 10 performance tuning tips for Amazon Athena · https://aws.amazon.com/blogs/big-data/top-10-performance-tuning-tips-for-amazon-athena/
-- Particionar datos en Athena · https://docs.aws.amazon.com/athena/latest/ug/partitions.html
-- Conversión a formatos columnares · https://docs.aws.amazon.com/athena/latest/ug/convert-to-columnar.html
+- [Serverless en AWS](https://aws.amazon.com/serverless/)
+- [Amazon CloudFront](https://aws.amazon.com/cloudfront/)
+- [Amazon Cognito](https://aws.amazon.com/cognito/)
+- [AssumeRoleWithWebIdentity (STS API Reference)](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html)
+- [Fragmentos de plantillas de CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/CHAP_TemplateQuickRef.html)
+- [AWS CloudFormation](https://aws.amazon.com/cloudformation/)
+- [Reintentos de error y backoff exponencial en AWS](https://docs.aws.amazon.com/general/latest/gr/api-retries.html)
+- [Top 10 performance tuning tips for Amazon Athena](https://aws.amazon.com/blogs/big-data/top-10-performance-tuning-tips-for-amazon-athena/)
+- [Particionar datos en Athena](https://docs.aws.amazon.com/athena/latest/ug/partitions.html)
+- [Conversión a formatos columnares](https://docs.aws.amazon.com/athena/latest/ug/convert-to-columnar.html)
 
 **Ejercicio**
-- Ejercicio 2: prueba de concepto para el análisis de datos · https://aws-tc-largeobjects.s3.us-west-2.amazonaws.com/DEV-AWS-MO-Architecting/exercise-2-analytics.html
+- [Ejercicio 2: prueba de concepto para el análisis de datos](https://aws-tc-largeobjects.s3.us-west-2.amazonaws.com/DEV-AWS-MO-Architecting/exercise-2-analytics.html)
 
 ---
 

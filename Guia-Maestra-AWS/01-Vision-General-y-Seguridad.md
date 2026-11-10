@@ -787,49 +787,49 @@ Al terminar la semana 1, Employee Directory existe así:
 ## 📖 Recursos del módulo
 
 **Lectura 1.2 — ¿Qué es AWS?**
-- AWS: What is cloud computing? · https://aws.amazon.com/what-is-cloud-computing/
-- AWS: Types of cloud computing · http://docs.aws.amazon.com/whitepapers/latest/aws-overview/types-of-cloud-computing.html
-- AWS: Cloud computing with AWS · https://aws.amazon.com/what-is-aws/
+- [AWS: What is cloud computing?](https://aws.amazon.com/what-is-cloud-computing/)
+- [AWS: Types of cloud computing](http://docs.aws.amazon.com/whitepapers/latest/aws-overview/types-of-cloud-computing.html)
+- [AWS: Cloud computing with AWS](https://aws.amazon.com/what-is-aws/)
 
 **Lectura 1.3 — Infraestructura global**
-- AWS Global Infrastructure · https://aws.amazon.com/about-aws/global-infrastructure/
-- Documentación de la infraestructura global de AWS · https://docs.aws.amazon.com/whitepapers/latest/aws-overview/global-infrastructure.html
-- Regions and Availability Zones · https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
-- AWS service endpoints · https://docs.aws.amazon.com/general/latest/gr/rande.html
-- AWS Regional Services · https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
+- [AWS Global Infrastructure](https://aws.amazon.com/about-aws/global-infrastructure/)
+- [Documentación de la infraestructura global de AWS](https://docs.aws.amazon.com/whitepapers/latest/aws-overview/global-infrastructure.html)
+- [Regions and Availability Zones](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/)
+- [AWS service endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html)
+- [AWS Regional Services](https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/)
 
 **Lectura 1.4 — Interactuar con AWS**
-- Working with the AWS Management Console · https://docs.aws.amazon.com/awsconsolehelpdocs/latest/gsg/getting-started.html
-- AWS Command Line Interface · https://aws.amazon.com/cli/
-- Tools to build on AWS · https://aws.amazon.com/tools/
+- [Working with the AWS Management Console](https://docs.aws.amazon.com/awsconsolehelpdocs/latest/gsg/getting-started.html)
+- [AWS Command Line Interface](https://aws.amazon.com/cli/)
+- [Tools to build on AWS](https://aws.amazon.com/tools/)
 
 **Lectura 1.5 — Shared responsibility model**
-- Shared Responsibility Model · https://aws.amazon.com/compliance/shared-responsibility-model/
+- [Shared Responsibility Model](https://aws.amazon.com/compliance/shared-responsibility-model/)
 
 **Lectura 1.6 — Proteger el root user**
-- My Security Credentials (consola) · https://console.aws.amazon.com/iam/home?#security_credential
-- Enabling a hardware MFA device (console) · https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_enable_physical.html
-- Enabling a U2F security key (console) · https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_enable_u2f.html
-- Enabling a virtual MFA device (console) · https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_enable_virtual.html
-- Supported MFA devices · https://aws.amazon.com/iam/features/mfa/
-- Tasks that require root user credentials · https://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html#aws_tasks-that-require-root
+- [My Security Credentials (consola)](https://console.aws.amazon.com/iam/home?#security_credential)
+- [Enabling a hardware MFA device (console)](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_enable_physical.html)
+- [Enabling a U2F security key (console)](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_enable_u2f.html)
+- [Enabling a virtual MFA device (console)](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_enable_virtual.html)
+- [Supported MFA devices](https://aws.amazon.com/iam/features/mfa/)
+- [Tasks that require root user credentials](https://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html#aws_tasks-that-require-root)
 
 **Lectura 1.7 — Introducción a IAM**
-- AWS services that work with IAM · https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_aws-services-that-work-with-iam.html
-- What is IAM? · https://docs.amazonaws.cn/en_us/IAM/latest/UserGuide/introduction.html
-- AWS IAM identities · https://docs.amazonaws.cn/en_us/IAM/latest/UserGuide/id.html
-- Access management with AWS IAM · https://docs.amazonaws.cn/en_us/IAM/latest/UserGuide/access.html
+- [AWS services that work with IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_aws-services-that-work-with-iam.html)
+- [What is IAM?](https://docs.amazonaws.cn/en_us/IAM/latest/UserGuide/introduction.html)
+- [AWS IAM identities](https://docs.amazonaws.cn/en_us/IAM/latest/UserGuide/id.html)
+- [Access management with AWS IAM](https://docs.amazonaws.cn/en_us/IAM/latest/UserGuide/access.html)
 
 **Lectura 1.8 — Acceso basado en roles**
-- Security best practices in IAM · https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html
-- How to create and manage users within AWS IAM Identity Center · https://aws.amazon.com/blogs/security/how-to-create-and-manage-users-within-aws-sso/
+- [Security best practices in IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)
+- [How to create and manage users within AWS IAM Identity Center](https://aws.amazon.com/blogs/security/how-to-create-and-manage-users-within-aws-sso/)
 
 **Roles IAM y Employee Directory**
-- IAM roles for Amazon EC2 · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html
+- [IAM roles for Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html)
 
 **Otros**
-- AWS re:Post (comunidad) · https://repost.aws
-- Código de Employee Directory (user data) · https://aws-tc-largeobjects.s3-us-west-2.amazonaws.com/DEV-AWS-MO-GCNv2/FlaskApp.zip
+- [AWS re:Post (comunidad)](https://repost.aws)
+- [Código de Employee Directory (user data)](https://aws-tc-largeobjects.s3-us-west-2.amazonaws.com/DEV-AWS-MO-GCNv2/FlaskApp.zip)
 
 > [!note] ➕ Nota del editor
 > En la Lectura 1.6, el enlace del texto "CLI de AWS o la API de AWS" apunta a un módulo de Trailhead (`trailhead.salesforce.com/content/learn/modules/aws-cloud-technical-professionals`), probablemente un error de la versión del material; no se incluye como recurso.

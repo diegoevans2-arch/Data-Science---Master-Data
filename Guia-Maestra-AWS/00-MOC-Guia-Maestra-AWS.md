@@ -56,6 +56,7 @@ Las líneas **🎯 Para el examen** marcan lo que el curso señala como relevant
 ## 📚 Mapa de tomos
 
 ### Curso 1 · AWS Cloud Technical Essentials (≈21 h)
+
 | Tomo | Tema |
 |---|---|
 | [[01-Vision-General-y-Seguridad]] | Nube, infraestructura global, formas de interactuar, responsabilidad compartida, root user, IAM |
@@ -64,6 +65,7 @@ Las líneas **🎯 Para el examen** marcan lo que el curso señala como relevant
 | [[04-Monitoreo-y-Optimizacion]] | CloudWatch, ELB, EC2 Auto Scaling, rediseño serverless e IA generativa (Bedrock, Amazon Q) |
 
 ### Curso 2 · Architecting Solutions on AWS (≈22 h)
+
 | Tomo | Tema |
 |---|---|
 | [[05-Backend-Web-Serverless]] | Backend web sin servidor |
@@ -72,6 +74,7 @@ Las líneas **🎯 Para el examen** marcan lo que el curso señala como relevant
 | [[08-Gobierno-y-Multicuenta]] | Gobierno y gestión de cuentas |
 
 ### Curso 3 · Introduction to Designing Data Lakes on AWS (≈11 h)
+
 | Tomo | Tema |
 |---|---|
 | [[09-Introduccion-a-Data-Lakes]] | Qué es un data lake |
@@ -82,6 +85,7 @@ Las líneas **🎯 Para el examen** marcan lo que el curso señala como relevant
 | [[14-Arquitectura-de-Datos-Moderna]] | Arquitectura de datos moderna |
 
 ### Curso 4 · Exam Prep: AWS Certified Solutions Architect – Associate (≈8 h)
+
 | Tomo | Tema |
 |---|---|
 | [[15-Examen-SAA-Estrategia]] | SAA-C03: 65 preguntas, 130 min; estrategia y cómo medir la preparación |
@@ -91,6 +95,7 @@ Las líneas **🎯 Para el examen** marcan lo que el curso señala como relevant
 | [[19-Dominio-4-Arquitecturas-Optimizadas-en-Costo]] | D4 · Design Cost-Optimized Architectures (20 %) |
 
 ### Anexos
+
 | Tomo | Tema |
 |---|---|
 | [[20-Glosario]] | Términos y servicios |

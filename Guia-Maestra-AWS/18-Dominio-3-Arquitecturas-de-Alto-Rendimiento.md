@@ -1,7 +1,7 @@
 ---
 title: "Tomo 18 — Dominio 3: Design High-Performing Architectures (24 %)"
 tags: [aws, solutions-architect, saa-c03, rendimiento, almacenamiento, computo, bases-de-datos, redes, ingesta]
-curso: 4 · Exam Prep: AWS Certified Solutions Architect – Associate
+curso: "4 · Exam Prep: AWS Certified Solutions Architect – Associate"
 modulo: "Dominio 3 · Diseñar arquitecturas de alto rendimiento"
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 18
@@ -10,7 +10,7 @@ updated: 2026-11-10
 fuente: "Coursera · AWS Cloud Solutions Architect Professional Certificate"
 ---
 
-# ⚡ Tomo 18 — Dominio 3: Design High-Performing Architectures (24 %)
+# 🚀 Tomo 18 — Dominio 3: Design High-Performing Architectures (24 %)
 
 **Navegación:** [[00-MOC-Guia-Maestra-AWS|⬅ Volver al índice]] · Anterior: [[17-Dominio-2-Arquitecturas-Resilientes|17 · Dominio 2: Arquitecturas Resilientes]] · Siguiente: [[19-Dominio-4-Arquitecturas-Optimizadas-en-Costo|19 · Dominio 4: Costo ➡]]
 
@@ -372,23 +372,23 @@ Palabras clave: *S3*, el tamaño concreto (*100–500 MB*: si dan números, impo
 
 ## 📖 Recursos del módulo
 
-- Almacenamiento en AWS · https://docs.aws.amazon.com/whitepapers/latest/aws-overview/storage-services.html
-- Almacenamiento en la nube en AWS · https://aws.amazon.com/products/storage/
-- Administración del ciclo de vida del almacenamiento · https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html
-- Servicios de cómputo · https://docs.aws.amazon.com/whitepapers/latest/aws-overview/compute-services.html
-- Bases de datos en AWS · https://docs.aws.amazon.com/whitepapers/latest/aws-overview/database.html
-- Redes en Amazon EC2 · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-networking.html
-- Comenzar con Amazon VPC · https://docs.aws.amazon.com/vpc/latest/userguide/vpc-getting-started.html
-- Conectar VPC con VPC peering · https://docs.aws.amazon.com/vpc/latest/userguide/vpc-peering.html
-- Conectar su VPC a servicios con AWS PrivateLink · https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-services-overview.html
-- Filtrar tráfico con AWS Network Firewall · https://docs.aws.amazon.com/vpc/latest/userguide/network-firewall.html
-- Filtrar tráfico DNS con Route 53 Resolver DNS Firewall · https://docs.aws.amazon.com/vpc/latest/userguide/resolver-dns-firewall.html
-- Escenarios con VPC · https://docs.aws.amazon.com/vpc/latest/userguide/vpc-scenarios-intro.html
-- ¿Qué es AWS Global Accelerator? · https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html
-- ¿Qué es Amazon CloudFront? · https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html
-- Métodos de ingesta de datos · https://docs.aws.amazon.com/whitepapers/latest/building-data-lakes/data-ingestion-methods.html
-- Procesamiento de datos · https://docs.aws.amazon.com/whitepapers/latest/data-warehousing-on-aws/data-processing.html
-- ¿Qué es AWS Lake Formation? · https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html
+- [Almacenamiento en AWS](https://docs.aws.amazon.com/whitepapers/latest/aws-overview/storage-services.html)
+- [Almacenamiento en la nube en AWS](https://aws.amazon.com/products/storage/)
+- [Administración del ciclo de vida del almacenamiento](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html)
+- [Servicios de cómputo](https://docs.aws.amazon.com/whitepapers/latest/aws-overview/compute-services.html)
+- [Bases de datos en AWS](https://docs.aws.amazon.com/whitepapers/latest/aws-overview/database.html)
+- [Redes en Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-networking.html)
+- [Comenzar con Amazon VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-getting-started.html)
+- [Conectar VPC con VPC peering](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-peering.html)
+- [Conectar su VPC a servicios con AWS PrivateLink](https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-services-overview.html)
+- [Filtrar tráfico con AWS Network Firewall](https://docs.aws.amazon.com/vpc/latest/userguide/network-firewall.html)
+- [Filtrar tráfico DNS con Route 53 Resolver DNS Firewall](https://docs.aws.amazon.com/vpc/latest/userguide/resolver-dns-firewall.html)
+- [Escenarios con VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-scenarios-intro.html)
+- [¿Qué es AWS Global Accelerator?](https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html)
+- [¿Qué es Amazon CloudFront?](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html)
+- [Métodos de ingesta de datos](https://docs.aws.amazon.com/whitepapers/latest/building-data-lakes/data-ingestion-methods.html)
+- [Procesamiento de datos](https://docs.aws.amazon.com/whitepapers/latest/data-warehousing-on-aws/data-processing.html)
+- [¿Qué es AWS Lake Formation?](https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html)
 
 ---
 **Navegación:** [[00-MOC-Guia-Maestra-AWS|⬅ Volver al índice]] · Anterior: [[17-Dominio-2-Arquitecturas-Resilientes|17 · Dominio 2: Arquitecturas Resilientes]] · Siguiente: [[19-Dominio-4-Arquitecturas-Optimizadas-en-Costo|19 · Dominio 4: Costo ➡]]

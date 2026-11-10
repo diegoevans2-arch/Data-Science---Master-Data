@@ -1,7 +1,7 @@
 ---
 title: "Tomo 19 — Dominio 4: Design Cost-Optimized Architectures (20 %)"
 tags: [aws, solutions-architect, saa-c03, costos, finops, right-sizing, pricing]
-curso: 4 · Exam Prep: AWS Certified Solutions Architect – Associate
+curso: "4 · Exam Prep: AWS Certified Solutions Architect – Associate"
 modulo: "Dominio 4 · Ámbito 4: Diseñar arquitecturas de costos optimizados"
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 19
@@ -335,13 +335,13 @@ Audiencia: 🔧 🧭
 
 ## 📖 Recursos del módulo
 
-- Mejores prácticas de arquitectura para la optimización de costos · https://aws.amazon.com/architecture/cost-optimization/?cards-all.sort-by=item.additionalFields.sortDate&cards-all.sort-order=desc&awsf.content-type=*all&awsf.methodology=*all
-- Pilar de optimización de costos · https://wa.aws.amazon.com/wellarchitected/2020-07-02T19-33-23/wat.pillar.costOptimization.en.html
-- Optimización de costos de AWS · https://docs.aws.amazon.com/whitepapers/latest/how-aws-pricing-works/aws-cost-optimization.html
-- Herramientas de AWS para informes y optimización de costos · https://docs.aws.amazon.com/whitepapers/latest/cost-optimization-laying-the-foundation/reporting-cost-optimization-tools.html
-- Amazon Data Lifecycle Manager · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/snapshot-lifecycle.html
-- Precios de Amazon EC2 · https://aws.amazon.com/ec2/pricing/
-- Recursos costo-efectivos · https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/cost-effective-resources.html
+- [Mejores prácticas de arquitectura para la optimización de costos](https://aws.amazon.com/architecture/cost-optimization/?cards-all.sort-by=item.additionalFields.sortDate&cards-all.sort-order=desc&awsf.content-type=*all&awsf.methodology=*all)
+- [Pilar de optimización de costos](https://wa.aws.amazon.com/wellarchitected/2020-07-02T19-33-23/wat.pillar.costOptimization.en.html)
+- [Optimización de costos de AWS](https://docs.aws.amazon.com/whitepapers/latest/how-aws-pricing-works/aws-cost-optimization.html)
+- [Herramientas de AWS para informes y optimización de costos](https://docs.aws.amazon.com/whitepapers/latest/cost-optimization-laying-the-foundation/reporting-cost-optimization-tools.html)
+- [Amazon Data Lifecycle Manager](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/snapshot-lifecycle.html)
+- [Precios de Amazon EC2](https://aws.amazon.com/ec2/pricing/)
+- [Recursos costo-efectivos](https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/cost-effective-resources.html)
 
 ---
 **Navegación:** [[00-MOC-Guia-Maestra-AWS|⬅ Volver al índice]] · Anterior: [[18-Dominio-3-Arquitecturas-de-Alto-Rendimiento|18 · Dominio 3: Alto Rendimiento]] · Siguiente: [[20-Glosario|20 · Glosario ➡]]

@@ -251,7 +251,7 @@ Este módulo **no tiene demos en video**. El curso anunció un **laboratorio aut
 
 ## 📖 Recursos del módulo
 
-- AWS Well-Architected · https://aws.amazon.com/well-architected (citado en el video de cierre)
+- [AWS Well-Architected](https://aws.amazon.com/well-architected) (citado en el video de cierre)
 - Whitepaper *Modern Data Architecture Rationales on AWS* · mencionado como base del módulo, sin URL en el material
 
 ---

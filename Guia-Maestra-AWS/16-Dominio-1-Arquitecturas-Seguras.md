@@ -1,7 +1,7 @@
 ---
 title: "Tomo 16 — Dominio 1: Design Secure Architectures (30 %)"
 tags: [aws, solutions-architect, saa-c03, seguridad, iam, kms, vpc]
-curso: 4 · Exam Prep: AWS Certified Solutions Architect – Associate
+curso: "4 · Exam Prep: AWS Certified Solutions Architect – Associate"
 modulo: "Dominio 1 · Ámbito 1: Diseñar arquitecturas seguras"
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 16
@@ -10,7 +10,7 @@ updated: 2026-11-10
 fuente: "Coursera · AWS Cloud Solutions Architect Professional Certificate"
 ---
 
-# 🔐 Tomo 16 — Dominio 1: Design Secure Architectures (30 %)
+# 🔒 Tomo 16 — Dominio 1: Design Secure Architectures (30 %)
 
 **Navegación:** [[00-MOC-Guia-Maestra-AWS|⬅ Volver al índice]] · Anterior: [[15-Examen-SAA-Estrategia|15 · Examen SAA: Estrategia]] · Siguiente: [[17-Dominio-2-Arquitecturas-Resilientes|17 · Dominio 2: Arquitecturas Resilientes ➡]]
 
@@ -340,30 +340,30 @@ El método que se aplica en cada una: leer el enunciado (stem), identificar pala
 
 ## 📖 Recursos del módulo
 
-- Administración de su cuenta de AWS · https://docs.aws.amazon.com/accounts/latest/reference/managing-accounts.html
-- ¿Qué es IAM? · https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html
-- ¿Qué es Amazon VPC? · https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html
-- Seguridad en Amazon VPC · https://docs.aws.amazon.com/vpc/latest/userguide/security.html
-- Seguridad, identidad y conformidad · https://docs.aws.amazon.com/whitepapers/latest/aws-overview/security-services.html
-- Cifrado de datos · https://docs.aws.amazon.com/whitepapers/latest/introduction-aws-security/data-encryption.html
-- Instantáneas de Amazon EBS · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html
-- Point-in-time recovery para DynamoDB · https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/PointInTimeRecovery.html
-- Backup y restauración de RDS · https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_CommonTasks.BackupRestore.html
-- Snapshot de clúster Aurora · https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_CreateSnapshotCluster.html
-- AWS Backup con Amazon EFS · https://docs.aws.amazon.com/efs/latest/ug/awsbackup.html
-- Snapshots y backups de Amazon Redshift · https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-snapshots.html
-- Backup y restauración en Neptune · https://docs.aws.amazon.com/neptune/latest/userguide/backup-restore-overview.html
-- Backup y restauración en DocumentDB · https://docs.aws.amazon.com/documentdb/latest/developerguide/backup_restore.html
-- S3 Cross-Region Replication · http://aws.amazon.com/s3/features/replication/
-- AWS Backup · http://aws.amazon.com/backup
-- Amazon EBS · http://aws.amazon.com/ebs/
-- Amazon EC2 · http://aws.amazon.com/ec2/
-- Amazon RDS · http://aws.amazon.com/rds/
-- Amazon Aurora · http://aws.amazon.com/rds/aurora/
-- Amazon DynamoDB · http://aws.amazon.com/dynamodb/
-- Amazon EFS · http://aws.amazon.com/efs/
-- AWS Storage Gateway · http://aws.amazon.com/storagegateway/
-- Amazon FSx for Windows File Server y FSx for Lustre · http://aws.amazon.com/fsx/windows/
+- [Administración de su cuenta de AWS](https://docs.aws.amazon.com/accounts/latest/reference/managing-accounts.html)
+- [¿Qué es IAM?](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html)
+- [¿Qué es Amazon VPC?](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html)
+- [Seguridad en Amazon VPC](https://docs.aws.amazon.com/vpc/latest/userguide/security.html)
+- [Seguridad, identidad y conformidad](https://docs.aws.amazon.com/whitepapers/latest/aws-overview/security-services.html)
+- [Cifrado de datos](https://docs.aws.amazon.com/whitepapers/latest/introduction-aws-security/data-encryption.html)
+- [Instantáneas de Amazon EBS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html)
+- [Point-in-time recovery para DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/PointInTimeRecovery.html)
+- [Backup y restauración de RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_CommonTasks.BackupRestore.html)
+- [Snapshot de clúster Aurora](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_CreateSnapshotCluster.html)
+- [AWS Backup con Amazon EFS](https://docs.aws.amazon.com/efs/latest/ug/awsbackup.html)
+- [Snapshots y backups de Amazon Redshift](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-snapshots.html)
+- [Backup y restauración en Neptune](https://docs.aws.amazon.com/neptune/latest/userguide/backup-restore-overview.html)
+- [Backup y restauración en DocumentDB](https://docs.aws.amazon.com/documentdb/latest/developerguide/backup_restore.html)
+- [S3 Cross-Region Replication](http://aws.amazon.com/s3/features/replication/)
+- [AWS Backup](http://aws.amazon.com/backup)
+- [Amazon EBS](http://aws.amazon.com/ebs/)
+- [Amazon EC2](http://aws.amazon.com/ec2/)
+- [Amazon RDS](http://aws.amazon.com/rds/)
+- [Amazon Aurora](http://aws.amazon.com/rds/aurora/)
+- [Amazon DynamoDB](http://aws.amazon.com/dynamodb/)
+- [Amazon EFS](http://aws.amazon.com/efs/)
+- [AWS Storage Gateway](http://aws.amazon.com/storagegateway/)
+- [Amazon FSx for Windows File Server y FSx for Lustre](http://aws.amazon.com/fsx/windows/)
 
 ---
 **Navegación:** [[00-MOC-Guia-Maestra-AWS|⬅ Volver al índice]] · Anterior: [[15-Examen-SAA-Estrategia|15 · Examen SAA: Estrategia]] · Siguiente: [[17-Dominio-2-Arquitecturas-Resilientes|17 · Dominio 2: Arquitecturas Resilientes ➡]]

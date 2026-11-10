@@ -839,65 +839,65 @@ Audiencia: 🔧 🧭
 ## 📖 Recursos del módulo
 
 **Lectura 2.1, Computación como servicio**
-- AWS: Compute Services Whitepaper · https://docs.aws.amazon.com/whitepapers/latest/aws-overview/compute-services.html
-- AWS: Computación en AWS · https://aws.amazon.com/products/compute/
-- AWS: Blog de informática de AWS · https://aws.amazon.com/blogs/compute/
+- [AWS: Compute Services Whitepaper](https://docs.aws.amazon.com/whitepapers/latest/aws-overview/compute-services.html)
+- [AWS: Computación en AWS](https://aws.amazon.com/products/compute/)
+- [AWS: Blog de informática de AWS](https://aws.amazon.com/blogs/compute/)
 
 **Lectura 2.2, Introducción a Amazon EC2**
-- AWS: Amazon EC2 · https://aws.amazon.com/ec2/
-- AWS: Imágenes de máquina de Amazon (AMI) · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html
-- AWS: Creación de una AMI Linux respaldada por Amazon EBS · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html
-- AWS: ¿Qué es EC2 Image Builder? · https://docs.aws.amazon.com/imagebuilder/latest/userguide/what-is-image-builder.html
+- [AWS: Amazon EC2](https://aws.amazon.com/ec2/)
+- [AWS: Imágenes de máquina de Amazon (AMI)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html)
+- [AWS: Creación de una AMI Linux respaldada por Amazon EBS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html)
+- [AWS: ¿Qué es EC2 Image Builder?](https://docs.aws.amazon.com/imagebuilder/latest/userguide/what-is-image-builder.html)
 
 **Lectura 2.25, Ciclo de vida de las instancias EC2**
-- AWS: Amazon EC2 · https://aws.amazon.com/ec2/
-- AWS: VPC por defecto y subredes por defecto · https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html
-- AWS: Pilar de fiabilidad de AWS · https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html
-- AWS: Ciclo de vida de las instancias · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html
-- AWS: Precios de Amazon EC2 · https://aws.amazon.com/ec2/pricing/
-- AWS: Precios de Amazon EC2 On-Demand · https://aws.amazon.com/ec2/pricing/on-demand/
-- AWS: Precios de Amazon EC2 Spot Instances · https://aws.amazon.com/ec2/spot/pricing/
-- AWS: Precios de las instancias reservadas de Amazon EC2 · https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/
+- [AWS: Amazon EC2](https://aws.amazon.com/ec2/)
+- [AWS: VPC por defecto y subredes por defecto](https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html)
+- [AWS: Pilar de fiabilidad de AWS](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html)
+- [AWS: Ciclo de vida de las instancias](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html)
+- [AWS: Precios de Amazon EC2](https://aws.amazon.com/ec2/pricing/)
+- [AWS: Precios de Amazon EC2 On-Demand](https://aws.amazon.com/ec2/pricing/on-demand/)
+- [AWS: Precios de Amazon EC2 Spot Instances](https://aws.amazon.com/ec2/spot/pricing/)
+- [AWS: Precios de las instancias reservadas de Amazon EC2](https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/)
 
 **Lectura 2.3, Servicios de contenedores**
-- AWS: Contenedores en AWS · https://aws.amazon.com/containers/services/
-- Docker: ¿Qué es un contenedor? · https://www.docker.com/resources/what-container
-- AWS: Amazon Elastic Container Service · https://aws.amazon.com/ecs/
-- GitHub: Agente Amazon ECS · https://github.com/aws/amazon-ecs-agent
-- AWS: Instancias de contenedor de Amazon ECS · https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_instances.html
-- Coursera: Creación de aplicaciones en contenedores en AWS · https://www.coursera.org/learn/containerized-apps-on-aws
+- [AWS: Contenedores en AWS](https://aws.amazon.com/containers/services/)
+- [Docker: ¿Qué es un contenedor?](https://www.docker.com/resources/what-container)
+- [AWS: Amazon Elastic Container Service](https://aws.amazon.com/ecs/)
+- [GitHub: Agente Amazon ECS](https://github.com/aws/amazon-ecs-agent)
+- [AWS: Instancias de contenedor de Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_instances.html)
+- [Coursera: Creación de aplicaciones en contenedores en AWS](https://www.coursera.org/learn/containerized-apps-on-aws)
 
 **Lectura 2.4, Serverless y AWS Lambda**
-- AWS News Blog · https://aws.amazon.com/blogs/
-- Serverless Image Handler · https://aws.amazon.com/answers/web-applications/serverless-image-handler/
-- AWS News Blog (tutorial y código de la demo Lambda) · https://aws.amazon.com/blogs/compute/resize-images-on-the-fly-with-amazon-s3-aws-lambda-and-amazon-api-gateway/
-- AWS: Serverless · https://aws.amazon.com/serverless/#:~:text=Serverless%20is%20the%20native%20architecture,services%20without%20thinking%20about%20servers.
-- Coursera: Creación de aplicaciones modernas de Python en AWS · https://www.coursera.org/learn/building-modern-python-applications-on-aws
-- AWS: Recursos de AWS Serverless · https://aws.amazon.com/serverless/resources/?serverless.sort-by=item.additionalFields.createdDate&serverless.sort-order=desc
-- AWS: Creación de aplicaciones con arquitecturas sin servidor · https://aws.amazon.com/lambda/serverless-architectures-learn-more/
-- AWS: Prácticas recomendadas para organizar aplicaciones sin servidor de mayor tamaño · https://aws.amazon.com/blogs/compute/best-practices-for-organizing-larger-serverless-applications/
-- AWS: Administración de funciones de AWS Lambda · https://docs.aws.amazon.com/lambda/latest/dg/lambda-functions.html
-- AWS: 10 Things Serverless Architects Should Know · https://aws.amazon.com/blogs/architecture/ten-things-serverless-architects-should-know/
-- AWS: ¡El ataque alienígena de AWS! Una aventura sin servidor · https://alienattack.workshop.aws/
+- [AWS News Blog](https://aws.amazon.com/blogs/)
+- [Serverless Image Handler](https://aws.amazon.com/answers/web-applications/serverless-image-handler/)
+- [AWS News Blog (tutorial y código de la demo Lambda)](https://aws.amazon.com/blogs/compute/resize-images-on-the-fly-with-amazon-s3-aws-lambda-and-amazon-api-gateway/)
+- [AWS: Serverless](https://aws.amazon.com/serverless/#:~:text=Serverless%20is%20the%20native%20architecture,services%20without%20thinking%20about%20servers).
+- [Coursera: Creación de aplicaciones modernas de Python en AWS](https://www.coursera.org/learn/building-modern-python-applications-on-aws)
+- [AWS: Recursos de AWS Serverless](https://aws.amazon.com/serverless/resources/?serverless.sort-by=item.additionalFields.createdDate&serverless.sort-order=desc)
+- [AWS: Creación de aplicaciones con arquitecturas sin servidor](https://aws.amazon.com/lambda/serverless-architectures-learn-more/)
+- [AWS: Prácticas recomendadas para organizar aplicaciones sin servidor de mayor tamaño](https://aws.amazon.com/blogs/compute/best-practices-for-organizing-larger-serverless-applications/)
+- [AWS: Administración de funciones de AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/lambda-functions.html)
+- [AWS: 10 Things Serverless Architects Should Know](https://aws.amazon.com/blogs/architecture/ten-things-serverless-architects-should-know/)
+- [AWS: ¡El ataque alienígena de AWS! Una aventura sin servidor](https://alienattack.workshop.aws/)
 
 **Lectura 2.5, Redes en AWS**
-- Stanford: Introducción a las redes informáticas · https://web.stanford.edu/class/cs101/network-1-introduction.html
-- Ionos: CIDR, ¿qué es el enrutamiento entre dominios sin clases? · https://www.ionos.com/digitalguide/server/know-how/cidr-classless-inter-domain-routing/
+- [Stanford: Introducción a las redes informáticas](https://web.stanford.edu/class/cs101/network-1-introduction.html)
+- [Ionos: CIDR, ¿qué es el enrutamiento entre dominios sin clases?](https://www.ionos.com/digitalguide/server/know-how/cidr-classless-inter-domain-routing/)
 
 **Lectura 2.6, Introducción a Amazon VPC**
-- AWS: VPC con subredes públicas y privadas (NAT) · https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenario2.html
-- AWS: Tablas de rutas personalizadas · https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html#CustomRouteTables
-- AWS: Puerta de enlace del cliente · https://docs.aws.amazon.com/vpn/latest/s2svpn/how_it_works.html#CustomerGateway
-- AWS: ¿Qué es Amazon VPC? · https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html
-- AWS: VPC y subredes · https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html
+- [AWS: VPC con subredes públicas y privadas (NAT)](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenario2.html)
+- [AWS: Tablas de rutas personalizadas](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html#CustomRouteTables)
+- [AWS: Puerta de enlace del cliente](https://docs.aws.amazon.com/vpn/latest/s2svpn/how_it_works.html#CustomerGateway)
+- [AWS: ¿Qué es Amazon VPC?](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html)
+- [AWS: VPC y subredes](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html)
 
 **Lectura 2.7, Enrutamiento y seguridad de Amazon VPC**
-- AWS: Tablas de rutas · https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html
-- AWS: Ejemplo de opciones de enrutamiento · https://docs.aws.amazon.com/vpc/latest/userguide/route-table-options.html
-- AWS: Trabajar con tablas de enrutamiento · https://docs.aws.amazon.com/vpc/latest/userguide/WorkWithRouteTables.html
-- AWS: ACLs de red · https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html
-- AWS: Grupos de seguridad para su VPC · https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html
-- AWS: Alojo un sitio web en una instancia EC2. ¿Cómo permito que mis usuarios se conecten por HTTP (80) o HTTPS (443)? · https://aws.amazon.com/premiumsupport/knowledge-center/connect-http-https-ec2/
+- [AWS: Tablas de rutas](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html)
+- [AWS: Ejemplo de opciones de enrutamiento](https://docs.aws.amazon.com/vpc/latest/userguide/route-table-options.html)
+- [AWS: Trabajar con tablas de enrutamiento](https://docs.aws.amazon.com/vpc/latest/userguide/WorkWithRouteTables.html)
+- [AWS: ACLs de red](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html)
+- [AWS: Grupos de seguridad para su VPC](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html)
+- [AWS: Alojo un sitio web en una instancia EC2. ¿Cómo permito que mis usuarios se conecten por HTTP (80) o HTTPS (443)?](https://aws.amazon.com/premiumsupport/knowledge-center/connect-http-https-ec2/)
 
 > [!note] ➕ Nota del editor: discrepancias del material
 > - En el video «Introducción a Amazon VPC», la Private Subnet 1 se anuncia como `10.1.3.0/4` (error de dictado por `/24`) y luego se crea como `10.1.3.0/24`. En la demo de relanzamiento, la Private Subnet 1 es `10.1.2.0/24` y `10.1.3.0/24` pasa a ser la Public Subnet 2. Este tomo sigue el esquema de la demo de relanzamiento.

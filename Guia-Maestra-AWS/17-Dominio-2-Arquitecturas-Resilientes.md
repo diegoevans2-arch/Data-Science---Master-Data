@@ -1,7 +1,7 @@
 ---
 title: "Tomo 17 — Dominio 2: Design Resilient Architectures (26 %)"
 tags: [aws, solutions-architect, saa-c03, resiliencia, alta-disponibilidad, desacoplamiento, disaster-recovery]
-curso: 4 · Exam Prep: AWS Certified Solutions Architect – Associate
+curso: "4 · Exam Prep: AWS Certified Solutions Architect – Associate"
 modulo: "Dominio 2 · Ámbito 2: Diseñar arquitecturas resilientes"
 audiencias: [tecnico, puente, ejecutivo]
 tomo: 17
@@ -295,21 +295,21 @@ Audiencia: 🔧 🧭
 
 ## 📖 Recursos del módulo
 
-- High Performance Computing Lens · https://docs.aws.amazon.com/wellarchitected/latest/high-performance-computing-lens/scenarios.html
-- AWS Auto Scaling · https://aws.amazon.com/autoscaling/
-- ¿Qué es Amazon EC2 Auto Scaling? · https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html
-- Edge networking con AWS · https://aws.amazon.com/products/networking/edge-networking/
-- ¿Qué es AWS Transfer Family? · https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html
-- Serverless en AWS · https://aws.amazon.com/serverless/
-- Amazon API Gateway · https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html
-- ¿Qué es Amazon SNS? · https://docs.aws.amazon.com/sns/latest/dg/welcome.html
-- ¿Qué es Amazon SQS? · https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html
-- Alta disponibilidad y escalabilidad en AWS · https://docs.aws.amazon.com/whitepapers/latest/real-time-communication-on-aws/high-availability-and-scalability-on-aws.html
-- Tolerancia a fallos y aislamiento de fallos · https://docs.aws.amazon.com/whitepapers/latest/availability-and-beyond-improving-resilience/fault-tolerance-and-fault-isolation.html
-- ¿Qué es AWS Elastic Disaster Recovery? · https://docs.aws.amazon.com/drs/latest/userguide/what-is-drs.html
-- Conectar su VPC a otras redes · https://docs.aws.amazon.com/vpc/latest/userguide/extend-intro.html
-- ¿Qué es Amazon Route 53? · https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/Welcome.html
-- Uso de Amazon RDS Proxy · https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html
+- [High Performance Computing Lens](https://docs.aws.amazon.com/wellarchitected/latest/high-performance-computing-lens/scenarios.html)
+- [AWS Auto Scaling](https://aws.amazon.com/autoscaling/)
+- [¿Qué es Amazon EC2 Auto Scaling?](https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html)
+- [Edge networking con AWS](https://aws.amazon.com/products/networking/edge-networking/)
+- [¿Qué es AWS Transfer Family?](https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html)
+- [Serverless en AWS](https://aws.amazon.com/serverless/)
+- [Amazon API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html)
+- [¿Qué es Amazon SNS?](https://docs.aws.amazon.com/sns/latest/dg/welcome.html)
+- [¿Qué es Amazon SQS?](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html)
+- [Alta disponibilidad y escalabilidad en AWS](https://docs.aws.amazon.com/whitepapers/latest/real-time-communication-on-aws/high-availability-and-scalability-on-aws.html)
+- [Tolerancia a fallos y aislamiento de fallos](https://docs.aws.amazon.com/whitepapers/latest/availability-and-beyond-improving-resilience/fault-tolerance-and-fault-isolation.html)
+- [¿Qué es AWS Elastic Disaster Recovery?](https://docs.aws.amazon.com/drs/latest/userguide/what-is-drs.html)
+- [Conectar su VPC a otras redes](https://docs.aws.amazon.com/vpc/latest/userguide/extend-intro.html)
+- [¿Qué es Amazon Route 53?](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/Welcome.html)
+- [Uso de Amazon RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html)
 
 ---
 **Navegación:** [[00-MOC-Guia-Maestra-AWS|⬅ Volver al índice]] · Anterior: [[16-Dominio-1-Arquitecturas-Seguras|16 · Dominio 1: Arquitecturas Seguras]] · Siguiente: [[18-Dominio-3-Arquitecturas-de-Alto-Rendimiento|18 · Dominio 3: Alto Rendimiento ➡]]

@@ -397,7 +397,7 @@ Si se crea una tabla en Athena, aparece en el Glue Data Catalog. La tabla es una
 
 ## 📖 Recursos del módulo
 
-- Precios de Amazon Athena · https://aws.amazon.com/athena/pricing (mostrado en video)
+- [Precios de Amazon Athena](https://aws.amazon.com/athena/pricing) (mostrado en video)
 
 > [!warning] ⚠️ Datos que conviene verificar
 > - En la demo Parquet el instructor dice que 730 MB pasaron a ~19 MB y lo llama "cinco veces menos"; la proporción real sería cercana a 38×. Se conservan las cifras, no la razón.

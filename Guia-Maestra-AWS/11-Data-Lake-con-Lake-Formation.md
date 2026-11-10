@@ -10,7 +10,7 @@ updated: 2026-11-10
 fuente: "Coursera · AWS Cloud Solutions Architect Professional Certificate"
 ---
 
-# 🏗️ Tomo 11 — Data Lake con AWS Lake Formation
+# 🧱 Tomo 11 — Data Lake con AWS Lake Formation
 
 **Navegación:** [[00-MOC-Guia-Maestra-AWS|⬅ Volver al índice]] · Anterior: [[10-Ingesta-Catalogo-y-Preparacion|10 · Ingesta, Catálogo y Preparación]] · Siguiente: [[12-Procesamiento-y-Analisis|12 · Procesamiento y Análisis ➡]]
 
@@ -253,7 +253,7 @@ El módulo no tiene demos en video. Después de él, el curso ofrece un **labora
 
 ## 📖 Recursos del módulo
 
-- AWS Lake Formation Developer Guide · https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html
+- [AWS Lake Formation Developer Guide](https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html)
 - Prácticas recomendadas de seguridad en IAM (Guía del usuario de IAM) · citada en la lectura, sin URL
 
 > [!warning] ⚠️ Dato a verificar

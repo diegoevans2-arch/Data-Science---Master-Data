@@ -750,28 +750,28 @@ La aplicación queda **funcional**: alta de empleados con foto, que se guarda en
 
 ## 📖 Recursos del módulo
 
-- AWS: Qué es el almacenamiento en la nube · https://aws.amazon.com/what-is-cloud-storage/
-- AWS: Tipos de almacenamiento en la nube · https://aws.amazon.com/what-is-cloud-object-storage/#types
-- Documentación de AWS: almacén de instancias · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html
-- Documentación de EBS Multi-Attach · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volumes-multi.html
-- AWS: Amazon Elastic Block Store (Amazon EBS) · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html
-- AWS: Preguntas frecuentes sobre Amazon EBS · https://aws.amazon.com/ebs/faqs/
-- AWS: Almacenamiento · https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Storage.html
-- AWS: Almacenamiento en la nube en AWS · https://aws.amazon.com/products/storage/
-- Amazon EFS: cómo funciona · https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html
-- Amazon FSx para Windows File Server · https://aws.amazon.com/fsx/windows/
-- Amazon FSx para Lustre · https://aws.amazon.com/fsx/lustre/
-- AWS: ¿Qué es una base de datos relacional? · https://aws.amazon.com/relational-database/
-- AWS: Bases de datos en AWS · https://aws.amazon.com/products/databases/
-- Preguntas frecuentes sobre Amazon Aurora · https://aws.amazon.com/rds/aurora/faqs/?nc=sn&loc=6
-- AWS: Trabajar con copias de seguridad · https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html
-- AWS: Copia de seguridad y restauración de Amazon RDS · https://aws.amazon.com/rds/details/backup/
-- AWS: Creación y uso de una política de IAM para el acceso a la base de datos de IAM · https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.IAMPolicy.html
-- AWS: Amazon Virtual Private Cloud VPCs y Amazon RDS · https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html
-- Cifrado en reposo de DynamoDB · https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/EncryptionAtRest.html
-- Introducción a Amazon DynamoDB · https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html
-- AWS: Blog de bases de datos de AWS · https://aws.amazon.com/blogs/database/?nc=sn&loc=4
-- AWS: Libertad de base de datos · https://aws.amazon.com/products/databases/freedom/?nc=sn&loc=5
+- [AWS: Qué es el almacenamiento en la nube](https://aws.amazon.com/what-is-cloud-storage/)
+- [AWS: Tipos de almacenamiento en la nube](https://aws.amazon.com/what-is-cloud-object-storage/#types)
+- [Documentación de AWS: almacén de instancias](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html)
+- [Documentación de EBS Multi-Attach](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volumes-multi.html)
+- [AWS: Amazon Elastic Block Store (Amazon EBS)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html)
+- [AWS: Preguntas frecuentes sobre Amazon EBS](https://aws.amazon.com/ebs/faqs/)
+- [AWS: Almacenamiento](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Storage.html)
+- [AWS: Almacenamiento en la nube en AWS](https://aws.amazon.com/products/storage/)
+- [Amazon EFS: cómo funciona](https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html)
+- [Amazon FSx para Windows File Server](https://aws.amazon.com/fsx/windows/)
+- [Amazon FSx para Lustre](https://aws.amazon.com/fsx/lustre/)
+- [AWS: ¿Qué es una base de datos relacional?](https://aws.amazon.com/relational-database/)
+- [AWS: Bases de datos en AWS](https://aws.amazon.com/products/databases/)
+- [Preguntas frecuentes sobre Amazon Aurora](https://aws.amazon.com/rds/aurora/faqs/?nc=sn&loc=6)
+- [AWS: Trabajar con copias de seguridad](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html)
+- [AWS: Copia de seguridad y restauración de Amazon RDS](https://aws.amazon.com/rds/details/backup/)
+- [AWS: Creación y uso de una política de IAM para el acceso a la base de datos de IAM](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.IAMPolicy.html)
+- [AWS: Amazon Virtual Private Cloud VPCs y Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html)
+- [Cifrado en reposo de DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/EncryptionAtRest.html)
+- [Introducción a Amazon DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html)
+- [AWS: Blog de bases de datos de AWS](https://aws.amazon.com/blogs/database/?nc=sn&loc=4)
+- [AWS: Libertad de base de datos](https://aws.amazon.com/products/databases/freedom/?nc=sn&loc=5)
 
 ---
 **Navegación:** [[00-MOC-Guia-Maestra-AWS|⬅ Volver al índice]] · Anterior: [[02-Computo-y-Redes|02 · Cómputo y Redes]] · Siguiente: [[04-Monitoreo-y-Optimizacion|04 · Monitoreo y Optimización ➡]]

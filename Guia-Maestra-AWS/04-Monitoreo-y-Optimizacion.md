@@ -907,34 +907,34 @@ Las sugerencias se basan en LLM entrenados con miles de millones de líneas de c
 ## 📖 Recursos del módulo
 
 **Lectura 4.1 — Monitorización en AWS**
-- AWS: Amazon CloudWatch · https://aws.amazon.com/cloudwatch/
+- [AWS: Amazon CloudWatch](https://aws.amazon.com/cloudwatch/)
 
 **Lectura 4.2 — Introducción a Amazon CloudWatch**
-- AWS: Primeros pasos con Amazon CloudWatch · https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/GettingStarted.html
-- AWS: ¿Qué es Amazon CloudWatch Logs? · https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html
-- Servicios de AWS que publican métricas de CloudWatch · https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html
-- AWS: Ver métricas disponibles · https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/viewing_metrics_with_cloudwatch.html
-- AWS: Precios de Amazon CloudWatch · https://aws.amazon.com/cloudwatch/pricing/
-- AWS: Amazon Simple Notification Service · https://aws.amazon.com/sns/
-- AWS: Acciones de autoescalado de EC2 · https://aws.amazon.com/ec2/autoscaling/
+- [AWS: Primeros pasos con Amazon CloudWatch](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/GettingStarted.html)
+- [AWS: ¿Qué es Amazon CloudWatch Logs?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html)
+- [Servicios de AWS que publican métricas de CloudWatch](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html)
+- [AWS: Ver métricas disponibles](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/viewing_metrics_with_cloudwatch.html)
+- [AWS: Precios de Amazon CloudWatch](https://aws.amazon.com/cloudwatch/pricing/)
+- [AWS: Amazon Simple Notification Service](https://aws.amazon.com/sns/)
+- [AWS: Acciones de autoescalado de EC2](https://aws.amazon.com/ec2/autoscaling/)
 
 **Lectura 4.3 — Optimización de soluciones en AWS**
-- Alta disponibilidad y escalabilidad en AWS · https://docs.aws.amazon.com/whitepapers/latest/real-time-communication-on-aws/high-availability-and-scalability-on-aws.html
-- AWS: Pilar de fiabilidad del AWS Well-Architected Framework · https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html
+- [Alta disponibilidad y escalabilidad en AWS](https://docs.aws.amazon.com/whitepapers/latest/real-time-communication-on-aws/high-availability-and-scalability-on-aws.html)
+- [AWS: Pilar de fiabilidad del AWS Well-Architected Framework](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html)
 
 **Lectura 4.4 — Elastic Load Balancing**
-- AWS: Comparación de productos de Elastic Load Balancing · https://aws.amazon.com/elasticloadbalancing/features/#Product_comparisons
-- AWS: AWS Certificate Manager · https://aws.amazon.com/certificate-manager/
-- AWS: Autenticación de usuarios mediante un Application Load Balancer · https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html
-- AWS: Cómo funciona AWS WAF · https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works.html
+- [AWS: Comparación de productos de Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/features/#Product_comparisons)
+- [AWS: AWS Certificate Manager](https://aws.amazon.com/certificate-manager/)
+- [AWS: Autenticación de usuarios mediante un Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html)
+- [AWS: Cómo funciona AWS WAF](https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works.html)
 
 **Lectura 4.5 — Amazon EC2 Auto Scaling**
-- AWS: Amazon EC2 Auto Scaling · https://aws.amazon.com/ec2/autoscaling/
-- AWS: Preguntas frecuentes sobre Amazon EC2 Auto Scaling · https://aws.amazon.com/ec2/autoscaling/faqs/
-- AWS: Configuración de límites de capacidad para su grupo de Auto Scaling · https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-capacity-limits.html
-- AWS: Políticas de escalado por pasos y simples para Amazon EC2 Auto Scaling · https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html
-- AWS: Políticas de escalado de seguimiento de objetivos para Amazon EC2 Auto Scaling · https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html
-- AWS: Creación de un grupo de Auto Scaling mediante una plantilla de lanzamiento · https://docs.aws.amazon.com/autoscaling/ec2/userguide/create-asg-launch-template.html
+- [AWS: Amazon EC2 Auto Scaling](https://aws.amazon.com/ec2/autoscaling/)
+- [AWS: Preguntas frecuentes sobre Amazon EC2 Auto Scaling](https://aws.amazon.com/ec2/autoscaling/faqs/)
+- [AWS: Configuración de límites de capacidad para su grupo de Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-capacity-limits.html)
+- [AWS: Políticas de escalado por pasos y simples para Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html)
+- [AWS: Políticas de escalado de seguimiento de objetivos para Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html)
+- [AWS: Creación de un grupo de Auto Scaling mediante una plantilla de lanzamiento](https://docs.aws.amazon.com/autoscaling/ec2/userguide/create-asg-launch-template.html)
 
 ---
 
